@@ -2,3 +2,9 @@ project_id = "snqrnpphjjskjtupwlfp"
 
 [functions.ai-meal-suggestions]
 verify_jwt = true
+
+[functions.analyze-food-image]
+verify_jwt = true
+
+[functions.ai-diet-suggestions]
+verify_jwt = true
