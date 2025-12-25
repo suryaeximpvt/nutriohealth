@@ -96,12 +96,14 @@ export const useUserData = () => {
     setFoodLogs((data || []) as FoodLog[]);
   }, [user, today]);
 
+const [lastWaterLogTime, setLastWaterLogTime] = useState<Date | null>(null);
+
   const fetchWaterLogs = useCallback(async () => {
     if (!user) return;
 
     const { data, error } = await supabase
       .from("water_logs")
-      .select("glasses")
+      .select("glasses, created_at")
       .eq("user_id", user.id)
       .eq("logged_at", today)
       .maybeSingle();
@@ -112,6 +114,9 @@ export const useUserData = () => {
     }
 
     setWaterGlasses(data?.glasses || 0);
+    if (data?.created_at) {
+      setLastWaterLogTime(new Date(data.created_at));
+    }
   }, [user, today]);
 
   const logFood = async (
@@ -195,7 +200,7 @@ export const useUserData = () => {
     return { error: null };
   };
 
-  const updateWater = async (glasses: number) => {
+const updateWater = async (glasses: number) => {
     if (!user) return { error: "Not authenticated" };
 
     // Upsert water log for today
@@ -212,6 +217,7 @@ export const useUserData = () => {
     }
 
     setWaterGlasses(glasses);
+    setLastWaterLogTime(new Date());
     return { error: null };
   };
 
@@ -258,10 +264,11 @@ export const useUserData = () => {
     }
   }, [user, fetchProfile, fetchFoodLogs, fetchWaterLogs]);
 
-  return {
+return {
     profile,
     foodLogs,
     waterGlasses,
+    lastWaterLogTime,
     dailySummary,
     loading,
     logFood,
