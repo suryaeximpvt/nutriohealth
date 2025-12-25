@@ -10,6 +10,7 @@ export interface AISuggestion {
   fat: number;
   prepTime: string;
   emoji: string;
+  nutrioProduct?: string | null;
 }
 
 export interface DailySuggestions {
@@ -137,7 +138,7 @@ export const useDailyAISuggestions = () => {
   };
 };
 
-// Fallback suggestions based on context
+// Fallback suggestions based on context - includes Nutrio products for breakfast/snacks
 function getFallbackSuggestions(
   preference: 'indian' | 'uk' | 'mixed',
   context: Omit<UserContext, 'timeOfDay'>
@@ -149,22 +150,24 @@ function getFallbackSuggestions(
   if (preference === 'indian') {
     return {
       breakfast: {
-        name: isLowProtein ? "Protein Paratha with Paneer" : "Poha with Vegetables",
+        name: isLowProtein ? "Nutrio Protein Pancakes with Banana" : "Nutrio Breakfast Smoothie Bowl",
         description: isLowProtein 
-          ? "High protein start with stuffed paratha and fresh paneer"
-          : "Light and nutritious flattened rice with mixed vegetables",
+          ? "High protein start with Nutrio Protein Pancake Mix topped with fresh banana slices"
+          : "Nutrio Breakfast Smoothie blended thick with seasonal fruits and nuts",
+        nutrioProduct: isLowProtein ? "Nutrio Protein Pancake Mix" : "Nutrio Breakfast Smoothie",
         calories: Math.min(caloriesPerMeal, 450),
-        protein: isLowProtein ? 22 : 12,
+        protein: isLowProtein ? 28 : 22,
         carbs: 45,
-        fat: 15,
-        prepTime: "20 min",
-        emoji: "🥘",
+        fat: 12,
+        prepTime: "15 min",
+        emoji: "🥞",
       },
       lunch: {
         name: isLowProtein ? "Chicken Curry with Brown Rice" : "Dal Tadka with Roti",
         description: isLowProtein
           ? "Lean protein with aromatic spices and fiber-rich brown rice"
           : "Comforting lentils tempered with spices, served with whole wheat roti",
+        nutrioProduct: null,
         calories: Math.min(caloriesPerMeal, 550),
         protein: isLowProtein ? 38 : 18,
         carbs: 55,
@@ -173,22 +176,24 @@ function getFallbackSuggestions(
         emoji: "🍛",
       },
       snacks: {
-        name: isLowProtein ? "Greek Yogurt with Almonds" : "Fruit Chaat",
+        name: isLowProtein ? "Nutrio Protein Bar with Masala Chai" : "Nutrio Nut Mix with Fresh Fruit",
         description: isLowProtein
-          ? "Protein-packed snack with healthy fats"
-          : "Fresh seasonal fruits with tangy spices",
+          ? "Quick protein boost with a Nutrio Protein Bar paired with spiced tea"
+          : "Nutrio Nut Mix for healthy fats and protein with fresh seasonal fruit",
+        nutrioProduct: isLowProtein ? "Nutrio Protein Bar" : "Nutrio Nut Mix",
         calories: Math.min(caloriesPerMeal, 200),
-        protein: isLowProtein ? 15 : 3,
+        protein: isLowProtein ? 15 : 10,
         carbs: 18,
         fat: 8,
-        prepTime: "5 min",
-        emoji: "🥜",
+        prepTime: "2 min",
+        emoji: "🍫",
       },
       dinner: {
         name: isLowProtein ? "Grilled Fish with Sabzi" : "Vegetable Khichdi",
         description: isLowProtein
           ? "Omega-rich fish with sautéed vegetables"
           : "Light one-pot meal with rice and lentils",
+        nutrioProduct: null,
         calories: Math.min(caloriesPerMeal, 480),
         protein: isLowProtein ? 35 : 15,
         carbs: 35,
@@ -202,22 +207,24 @@ function getFallbackSuggestions(
   // UK / Mixed fallback
   return {
     breakfast: {
-      name: isLowProtein ? "Scrambled Eggs on Toast" : "Overnight Oats with Berries",
+      name: isLowProtein ? "Nutrio Protein Pancakes with Berries" : "Nutrio Overnight Oats Cup",
       description: isLowProtein
-        ? "Classic protein-rich breakfast with whole grain toast"
-        : "Creamy oats with fresh berries and a drizzle of honey",
+        ? "Fluffy Nutrio Protein Pancake Mix stacked with fresh berries for a high-protein start"
+        : "Ready-to-eat Nutrio Overnight Oats Cup with creamy texture and natural sweetness",
+      nutrioProduct: isLowProtein ? "Nutrio Protein Pancake Mix" : "Nutrio Overnight Oats Cup",
       calories: Math.min(caloriesPerMeal, 420),
-      protein: isLowProtein ? 24 : 12,
+      protein: isLowProtein ? 25 : 20,
       carbs: 35,
-      fat: 18,
+      fat: 12,
       prepTime: "10 min",
-      emoji: "🍳",
+      emoji: "🥞",
     },
     lunch: {
       name: isLowProtein ? "Grilled Chicken Salad" : "Jacket Potato with Beans",
       description: isLowProtein
         ? "Lean chicken breast with mixed greens and light dressing"
         : "Fluffy baked potato with protein-rich baked beans",
+      nutrioProduct: null,
       calories: Math.min(caloriesPerMeal, 520),
       protein: isLowProtein ? 42 : 18,
       carbs: 28,
@@ -226,22 +233,24 @@ function getFallbackSuggestions(
       emoji: "🥗",
     },
     snacks: {
-      name: isLowProtein ? "Cottage Cheese & Apple" : "Rice Cakes with Hummus",
+      name: isLowProtein ? "Nutrio Protein Bar" : "Nutrio Shake Sachet with Apple",
       description: isLowProtein
-        ? "High-protein snack with natural sweetness"
-        : "Light and crunchy with creamy chickpea dip",
+        ? "Grab a Nutrio Protein Bar for quick protein on-the-go"
+        : "Mix a Nutrio Shake Sachet with water and enjoy with a crisp apple",
+      nutrioProduct: isLowProtein ? "Nutrio Protein Bar" : "Nutrio Shake Sachet",
       calories: Math.min(caloriesPerMeal, 180),
-      protein: isLowProtein ? 14 : 5,
+      protein: isLowProtein ? 15 : 20,
       carbs: 15,
       fat: 6,
-      prepTime: "5 min",
-      emoji: "🍎",
+      prepTime: "2 min",
+      emoji: "🍫",
     },
     dinner: {
       name: isLowProtein ? "Salmon with Roasted Vegetables" : "Vegetable Stir-Fry with Quinoa",
       description: isLowProtein
         ? "Omega-3 rich salmon with seasonal roasted veg"
         : "Colorful vegetables with protein-packed quinoa",
+      nutrioProduct: null,
       calories: Math.min(caloriesPerMeal, 550),
       protein: isLowProtein ? 38 : 16,
       carbs: 32,
