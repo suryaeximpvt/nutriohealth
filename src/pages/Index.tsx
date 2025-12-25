@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { useDailyAISuggestions } from "@/hooks/useDailyAISuggestions";
 import { usePremium } from "@/hooks/usePremium";
+import { useNotifications } from "@/hooks/useNotifications";
 import { toast } from "sonner";
 
 const MEAL_CONFIG = [
@@ -34,7 +35,10 @@ const Index = () => {
 const { profile, dailySummary, loading: dataLoading, logFood, deleteFood, waterGlasses, lastWaterLogTime, updateWater } = useUserData();
   const { loading: aiLoading, suggestions, fetchDailySuggestions, regenerateMeal } = useDailyAISuggestions();
 
-  const { isPremium, canUseAI, getAISuggestionsRemaining, incrementAIUsage } = usePremium();
+const { isPremium, canUseAI, getAISuggestionsRemaining, incrementAIUsage } = usePremium();
+  
+  // Initialize notifications (schedules reminders on native platforms)
+  useNotifications();
 
   const [foodModalOpen, setFoodModalOpen] = useState(false);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);

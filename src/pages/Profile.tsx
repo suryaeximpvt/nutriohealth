@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Settings, ChevronRight, Target, TrendingUp, Award, User, Heart, LogOut, Crown, Sparkles } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
+import { NotificationSettings } from "@/components/NotificationSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { usePremium } from "@/hooks/usePremium";
@@ -216,7 +217,16 @@ const Profile = () => {
           </div>
         </motion.section>
 
-        {/* Account Section */}
+        {/* Notification Settings */}
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.22 }}
+          className="mb-6"
+        >
+          <h2 className="font-bold text-foreground mb-3">Notifications</h2>
+          <NotificationSettings />
+        </motion.section>
         <motion.section
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
