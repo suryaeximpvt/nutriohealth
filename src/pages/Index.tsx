@@ -329,7 +329,7 @@ return (
           </div>
 
           <motion.button
-            className="flex justify-center mb-6 cursor-pointer"
+            className="flex justify-center mb-6 cursor-pointer w-full mx-auto"
             onClick={() => setIntakeBreakdownOpen(true)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
