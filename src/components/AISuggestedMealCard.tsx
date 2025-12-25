@@ -2,16 +2,16 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw, Plus, Camera, Loader2, Sparkles, PenLine, ChevronDown, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AISuggestion } from "@/hooks/useDailyAISuggestions";
+import { MealOptions, AISuggestion } from "@/hooks/useDailyAISuggestions";
 
 interface AISuggestedMealCardProps {
   title: string;
   mealType: "breakfast" | "lunch" | "snacks" | "dinner";
   emoji: string;
-  suggestion: AISuggestion | null;
+  mealOptions: MealOptions | null;
   isLoading: boolean;
   loggedFoods: { id: string; food_name: string; calories: number; protein: number }[];
-  onLogMeal: () => void;
+  onLogMeal: (suggestion: AISuggestion) => void;
   onRegenerate: () => void;
   onAddPhoto: () => void;
   onAddManual?: () => void;
@@ -23,7 +23,7 @@ export const AISuggestedMealCard = ({
   title,
   mealType,
   emoji,
-  suggestion,
+  mealOptions,
   isLoading,
   loggedFoods,
   onLogMeal,
@@ -34,11 +34,20 @@ export const AISuggestedMealCard = ({
   delay = 0,
 }: AISuggestedMealCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<AISuggestion | null>(null);
+  
   const totalLogged = loggedFoods.reduce((sum, f) => sum + f.calories, 0);
   const hasLogged = loggedFoods.length > 0;
 
+  // Use primary suggestion or selected option
+  const currentSuggestion = selectedOption || mealOptions?.primary || null;
+
   // Calculate display calories - logged or suggested
-  const displayCalories = hasLogged ? totalLogged : (suggestion?.calories || 0);
+  const displayCalories = hasLogged ? totalLogged : (currentSuggestion?.calories || 0);
+
+  const handleSelectOption = (option: AISuggestion) => {
+    setSelectedOption(option);
+  };
 
   return (
     <motion.div
@@ -53,12 +62,12 @@ export const AISuggestedMealCard = ({
         className="w-full p-4 flex items-center gap-3 text-left hover:bg-muted/30 transition-colors"
       >
         <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-2xl">
-          {emoji}
+          {currentSuggestion?.emoji || emoji}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold text-foreground truncate">
-              {suggestion?.name || title}
+              {currentSuggestion?.name || title}
             </h3>
           </div>
           <div className="flex items-center gap-2 mt-0.5">
@@ -132,49 +141,43 @@ export const AISuggestedMealCard = ({
                       Nutrio AI is thinking...
                     </span>
                   </div>
-                ) : suggestion ? (
-                  <div className="space-y-3">
-                    {/* Suggestion Card */}
-                    <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-4 border border-primary/20">
-                      <div className="flex items-start gap-3">
-                        <span className="text-2xl">{suggestion.emoji}</span>
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-foreground">{suggestion.name}</h4>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {suggestion.description}
-                          </p>
-                          
-                          {/* Nutrio Product Badge */}
-                          {suggestion.nutrioProduct && (
-                            <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-primary/15 rounded-lg border border-primary/30">
-                              <Package className="w-4 h-4 text-primary" />
-                              <span className="text-xs font-medium text-primary">
-                                Includes: {suggestion.nutrioProduct}
-                              </span>
-                            </div>
-                          )}
-                          
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            <span className="px-2 py-1 bg-primary/10 rounded-full text-xs font-medium text-primary">
-                              {suggestion.calories} kcal
-                            </span>
-                            <span className="px-2 py-1 bg-nutrio-blue/10 rounded-full text-xs font-medium text-nutrio-blue">
-                              {suggestion.protein}g protein
-                            </span>
-                            <span className="px-2 py-1 bg-nutrio-amber/10 rounded-full text-xs font-medium text-nutrio-amber">
-                              {suggestion.prepTime}
-                            </span>
-                          </div>
+                ) : currentSuggestion ? (
+                  <div className="space-y-4">
+                    {/* Primary Suggestion Card */}
+                    <SuggestionCard
+                      suggestion={currentSuggestion}
+                      isSelected={true}
+                      onSelect={() => {}}
+                      onLog={() => onLogMeal(currentSuggestion)}
+                    />
+
+                    {/* Other AI Options */}
+                    {mealOptions?.alternatives && mealOptions.alternatives.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          Other AI Options
+                        </p>
+                        <div className="space-y-2">
+                          {mealOptions.alternatives.map((alt, idx) => (
+                            <SuggestionCard
+                              key={idx}
+                              suggestion={alt}
+                              isSelected={selectedOption?.name === alt.name}
+                              isCompact
+                              onSelect={() => handleSelectOption(alt)}
+                              onLog={() => onLogMeal(alt)}
+                            />
+                          ))}
                         </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Action Buttons */}
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 gap-2 pt-2">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onLogMeal();
+                          onLogMeal(currentSuggestion);
                         }}
                         className="flex flex-col items-center justify-center gap-1 px-2 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors"
                       >
@@ -264,5 +267,105 @@ export const AISuggestedMealCard = ({
         )}
       </AnimatePresence>
     </motion.div>
+  );
+};
+
+// Individual suggestion card component
+const SuggestionCard = ({
+  suggestion,
+  isSelected,
+  isCompact = false,
+  onSelect,
+  onLog,
+}: {
+  suggestion: AISuggestion;
+  isSelected: boolean;
+  isCompact?: boolean;
+  onSelect: () => void;
+  onLog: () => void;
+}) => {
+  const hasNutrio = !!suggestion.nutrioProduct;
+
+  if (isCompact) {
+    return (
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect();
+        }}
+        className={cn(
+          "w-full text-left p-3 rounded-xl border transition-all",
+          isSelected
+            ? "border-primary bg-primary/5"
+            : "border-border/50 hover:border-primary/50 hover:bg-muted/30",
+          hasNutrio && "border-nutrio-amber/50"
+        )}
+      >
+        <div className="flex items-start gap-2">
+          <span className="text-lg">{suggestion.emoji}</span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="font-medium text-foreground text-sm truncate">{suggestion.name}</p>
+              {hasNutrio && (
+                <span className="flex-shrink-0 flex items-center gap-1 px-1.5 py-0.5 bg-nutrio-amber/10 rounded text-nutrio-amber text-[10px] font-medium">
+                  <Package className="w-2.5 h-2.5" />
+                  Nutrio
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-muted-foreground">{suggestion.calories} kcal</span>
+              <span className="text-xs text-muted-foreground">•</span>
+              <span className="text-xs text-muted-foreground">{suggestion.protein}g protein</span>
+            </div>
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onLog();
+            }}
+            className="flex-shrink-0 px-2 py-1 bg-primary/10 text-primary rounded-lg text-xs font-medium hover:bg-primary/20 transition-colors"
+          >
+            Log
+          </button>
+        </div>
+      </button>
+    );
+  }
+
+  return (
+    <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-4 border border-primary/20">
+      <div className="flex items-start gap-3">
+        <span className="text-2xl">{suggestion.emoji}</span>
+        <div className="flex-1">
+          <h4 className="font-semibold text-foreground">{suggestion.name}</h4>
+          <p className="text-sm text-muted-foreground mt-1">
+            {suggestion.description}
+          </p>
+          
+          {/* Nutrio Product Badge */}
+          {hasNutrio && (
+            <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-nutrio-amber/10 rounded-lg border border-nutrio-amber/30">
+              <Package className="w-4 h-4 text-nutrio-amber" />
+              <span className="text-xs font-medium text-nutrio-amber">
+                AI alternative using: {suggestion.nutrioProduct}
+              </span>
+            </div>
+          )}
+          
+          <div className="flex flex-wrap gap-2 mt-3">
+            <span className="px-2 py-1 bg-primary/10 rounded-full text-xs font-medium text-primary">
+              {suggestion.calories} kcal
+            </span>
+            <span className="px-2 py-1 bg-nutrio-blue/10 rounded-full text-xs font-medium text-nutrio-blue">
+              {suggestion.protein}g protein
+            </span>
+            <span className="px-2 py-1 bg-nutrio-amber/10 rounded-full text-xs font-medium text-nutrio-amber">
+              {suggestion.prepTime}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
