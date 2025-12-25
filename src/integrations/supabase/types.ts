@@ -65,6 +65,7 @@ export type Database = {
       profiles: {
         Row: {
           activity_level: string | null
+          age: number | null
           allergies: string[] | null
           calorie_target: number | null
           carbs_target: number | null
@@ -74,6 +75,7 @@ export type Database = {
           fat_target: number | null
           fibre_target: number | null
           full_name: string | null
+          gender: string | null
           goal: string | null
           height_cm: number | null
           id: string
@@ -84,6 +86,7 @@ export type Database = {
         }
         Insert: {
           activity_level?: string | null
+          age?: number | null
           allergies?: string[] | null
           calorie_target?: number | null
           carbs_target?: number | null
@@ -93,6 +96,7 @@ export type Database = {
           fat_target?: number | null
           fibre_target?: number | null
           full_name?: string | null
+          gender?: string | null
           goal?: string | null
           height_cm?: number | null
           id?: string
@@ -103,6 +107,7 @@ export type Database = {
         }
         Update: {
           activity_level?: string | null
+          age?: number | null
           allergies?: string[] | null
           calorie_target?: number | null
           carbs_target?: number | null
@@ -112,6 +117,7 @@ export type Database = {
           fat_target?: number | null
           fibre_target?: number | null
           full_name?: string | null
+          gender?: string | null
           goal?: string | null
           height_cm?: number | null
           id?: string

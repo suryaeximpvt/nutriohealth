@@ -29,12 +29,38 @@ const Index = () => {
   const [foodLogModalOpen, setFoodLogModalOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>("breakfast");
 
-  // Redirect to auth if not logged in
+  // Handle tab changes from bottom nav
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    if (tab === "log") {
+      // Open food log modal when Log tab is clicked
+      setFoodLogModalOpen(true);
+    } else if (tab === "profile") {
+      // Navigate to profile/settings (for now just show toast)
+      toast.info("Profile settings coming soon!");
+    } else if (tab === "workout") {
+      toast.info("Workout tracking coming soon!");
+    } else if (tab === "progress") {
+      toast.info("Progress charts coming soon!");
+    }
+  };
+
+  // Redirect to auth if not logged in, or onboarding if profile incomplete
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/auth");
     }
   }, [user, authLoading, navigate]);
+
+  // Redirect to onboarding if profile is incomplete (first login)
+  useEffect(() => {
+    if (!authLoading && !dataLoading && user && profile) {
+      // Check if essential profile data is missing (means onboarding not completed)
+      if (!profile.goal || !profile.height_cm || !profile.weight_kg) {
+        navigate("/onboarding");
+      }
+    }
+  }, [user, authLoading, dataLoading, profile, navigate]);
 
   // Calculate values from profile and daily summary
   const calorieTarget = profile?.calorie_target || 2000;
@@ -272,7 +298,7 @@ const Index = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
 
       {/* AI Meal Recommendation Modal */}
       <AIMealModal
