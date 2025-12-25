@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, ChevronRight, Star } from "lucide-react";
+import { X, Sparkles, ChevronRight, Star, Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface MealOption {
@@ -17,6 +17,8 @@ interface AIMealModalProps {
   options: MealOption[];
   followUpQuestion: string;
   onSelectMeal: (meal: MealOption) => void;
+  isLoading?: boolean;
+  onLogFood?: () => void;
 }
 
 export const AIMealModal = ({
@@ -27,6 +29,8 @@ export const AIMealModal = ({
   options,
   followUpQuestion,
   onSelectMeal,
+  isLoading = false,
+  onLogFood,
 }: AIMealModalProps) => {
   return (
     <AnimatePresence>
@@ -72,81 +76,111 @@ export const AIMealModal = ({
 
             {/* Content */}
             <div className="overflow-y-auto max-h-[calc(85vh-80px)] px-6 py-4">
-              {/* AI Explanation */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-nutrio-sage-light rounded-xl p-4 mb-5"
-              >
-                <p className="text-sm text-foreground leading-relaxed">
-                  {explanation}
-                </p>
-              </motion.div>
-
-              {/* Meal Options */}
-              <div className="space-y-3">
-                {options.map((option, index) => (
-                  <motion.button
-                    key={option.name}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.15 + index * 0.1 }}
-                    onClick={() => onSelectMeal(option)}
-                    className="w-full glass-card rounded-xl p-4 text-left hover:shadow-elevated transition-all active:scale-[0.98] group"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-foreground">
-                            {option.name}
-                          </h3>
-                          {option.isNutrio && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-nutrio-amber bg-nutrio-amber/10 px-2 py-0.5 rounded-full">
-                              <Star className="w-3 h-3" />
-                              AI-Preferred
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {option.description}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-right">
-                          <span className="font-bold text-foreground">
-                            {option.calories}
-                          </span>
-                          <span className="text-xs text-muted-foreground ml-1">
-                            kcal
-                          </span>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </div>
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
-
-              {/* Follow-up Question */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="mt-6 p-4 border border-border rounded-xl"
-              >
-                <p className="text-sm text-muted-foreground mb-3">
-                  {followUpQuestion}
-                </p>
-                <div className="flex gap-2">
-                  <Button variant="secondary" size="sm" className="flex-1">
-                    Yes
-                  </Button>
-                  <Button variant="secondary" size="sm" className="flex-1">
-                    No
-                  </Button>
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
+                  <p className="text-muted-foreground">Getting AI suggestions...</p>
                 </div>
-              </motion.div>
+              ) : (
+                <>
+                  {/* AI Explanation */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="bg-nutrio-sage-light rounded-xl p-4 mb-5"
+                  >
+                    <p className="text-sm text-foreground leading-relaxed">
+                      {explanation}
+                    </p>
+                  </motion.div>
+
+                  {/* Meal Options */}
+                  <div className="space-y-3">
+                    {options.map((option, index) => (
+                      <motion.button
+                        key={option.name}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.15 + index * 0.1 }}
+                        onClick={() => onSelectMeal(option)}
+                        className="w-full glass-card rounded-xl p-4 text-left hover:shadow-elevated transition-all active:scale-[0.98] group"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold text-foreground">
+                                {option.name}
+                              </h3>
+                              {option.isNutrio && (
+                                <span className="inline-flex items-center gap-1 text-xs font-medium text-nutrio-amber bg-nutrio-amber/10 px-2 py-0.5 rounded-full">
+                                  <Star className="w-3 h-3" />
+                                  AI-Preferred
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {option.description}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="text-right">
+                              <span className="font-bold text-foreground">
+                                {option.calories}
+                              </span>
+                              <span className="text-xs text-muted-foreground ml-1">
+                                kcal
+                              </span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                          </div>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+
+                  {/* Log Food Button */}
+                  {onLogFood && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="mt-4"
+                    >
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={onLogFood}
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Log custom food instead
+                      </Button>
+                    </motion.div>
+                  )}
+
+                  {/* Follow-up Question */}
+                  {followUpQuestion && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="mt-6 p-4 border border-border rounded-xl"
+                    >
+                      <p className="text-sm text-muted-foreground mb-3">
+                        {followUpQuestion}
+                      </p>
+                      <div className="flex gap-2">
+                        <Button variant="secondary" size="sm" className="flex-1">
+                          Yes
+                        </Button>
+                        <Button variant="secondary" size="sm" className="flex-1">
+                          No
+                        </Button>
+                      </div>
+                    </motion.div>
+                  )}
+                </>
+              )}
             </div>
           </motion.div>
         </>
