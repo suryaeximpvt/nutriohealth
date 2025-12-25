@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.ai-daily-suggestions]
 verify_jwt = false
+
+[functions.ai-chat]
+verify_jwt = false
