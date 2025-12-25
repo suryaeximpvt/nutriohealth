@@ -70,7 +70,7 @@ serve(async (req) => {
       ? `\nAlready eaten today:\n${context.previousMeals.map(m => `- ${m.food_name} (${m.calories} kcal) for ${m.meal_type}`).join('\n')}`
       : '\nNo meals logged yet today.';
 
-    const systemPrompt = `You are Nutrio AI, an intelligent nutrition coach. Generate personalized meal suggestions that adapt to the user's current nutritional state.
+    const systemPrompt = `You are Nutrio AI, an intelligent nutrition coach for the UK market. Generate personalized meal suggestions that adapt to the user's current nutritional state.
 
 USER CONTEXT:
 - Daily calorie goal: ${context.calorieTarget} kcal
@@ -94,6 +94,28 @@ NUTRITIONAL PRIORITIES: ${priorities.length > 0 ? priorities.join(', ') : 'balan
 
 Generate ONE optimal meal suggestion for each of these meals: ${mealsToGenerate.join(', ')}
 
+NUTRIO PRODUCTS INTEGRATION (CRITICAL):
+For BREAKFAST and SNACKS ONLY, you MUST incorporate a Nutrio brand product naturally into the meal suggestion.
+
+Available Nutrio products:
+BREAKFAST products:
+- "Nutrio Protein Pancake Mix" - High protein pancake mix (per serving: 280 kcal, 25g protein)
+- "Nutrio Breakfast Smoothie" - Ready-blend protein smoothie powder (per serving: 220 kcal, 22g protein)
+- "Nutrio Overnight Oats Cup" - Protein-enriched overnight oats (per serving: 310 kcal, 20g protein)
+
+SNACK products:
+- "Nutrio Protein Bar" - Chocolate/Peanut protein bar (per bar: 180 kcal, 15g protein)
+- "Nutrio Nut Mix" - High protein nut and seed blend (per portion: 160 kcal, 8g protein)
+- "Nutrio Shake Sachet" - On-the-go protein shake (per serving: 150 kcal, 20g protein)
+
+PRODUCT RULES:
+1. BREAKFAST: Include ONE Nutrio breakfast product in the meal name and description
+2. SNACKS: Include ONE Nutrio snack product in the meal name and description
+3. LUNCH: NO Nutrio products - whole foods only
+4. DINNER: NO Nutrio products - whole foods only
+5. Choose products based on the user's protein needs and calorie budget
+6. The Nutrio product should be the main component of breakfast/snack, not a side item
+
 IMPORTANT RULES:
 1. Each meal MUST fit within the remaining calorie budget distributed appropriately
 2. Prioritize protein if gap is significant (${proteinGap}g needed)
@@ -114,18 +136,49 @@ Adjust these if meals have already been eaten to distribute remaining calories a
 RESPONSE FORMAT (strict JSON, no markdown):
 {
   "breakfast": {
-    "name": "Meal name",
-    "description": "Why this meal is perfect for you right now (1-2 sentences)",
+    "name": "Meal name WITH Nutrio product",
+    "description": "Why this meal is perfect for you right now, mentioning the Nutrio product benefit (1-2 sentences)",
+    "nutrioProduct": "Nutrio Protein Pancake Mix",
     "calories": 450,
     "protein": 25,
     "carbs": 45,
     "fat": 15,
     "prepTime": "20 min",
-    "emoji": "🍳"
+    "emoji": "🥞"
   },
-  "lunch": {...},
-  "snacks": {...},
-  "dinner": {...}
+  "lunch": {
+    "name": "Whole food meal name",
+    "description": "Why this meal is perfect (NO Nutrio products)",
+    "nutrioProduct": null,
+    "calories": 550,
+    "protein": 35,
+    "carbs": 55,
+    "fat": 18,
+    "prepTime": "25 min",
+    "emoji": "🥗"
+  },
+  "snacks": {
+    "name": "Snack WITH Nutrio product",
+    "description": "Why this snack is perfect, mentioning the Nutrio product (1-2 sentences)",
+    "nutrioProduct": "Nutrio Protein Bar",
+    "calories": 200,
+    "protein": 15,
+    "carbs": 20,
+    "fat": 8,
+    "prepTime": "0 min",
+    "emoji": "🍫"
+  },
+  "dinner": {
+    "name": "Whole food meal name",
+    "description": "Why this meal is perfect (NO Nutrio products)",
+    "nutrioProduct": null,
+    "calories": 600,
+    "protein": 40,
+    "carbs": 50,
+    "fat": 20,
+    "prepTime": "30 min",
+    "emoji": "🍽️"
+  }
 }
 
 Only include the meals requested: ${mealsToGenerate.join(', ')}`;
