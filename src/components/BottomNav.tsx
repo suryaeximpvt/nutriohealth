@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home, User, Plus, Salad } from "lucide-react";
+import { Home, User, Plus, Salad, Dumbbell, ShoppingBag } from "lucide-react";
 
 const BottomNav = () => {
   const navigate = useNavigate();
@@ -14,11 +14,8 @@ const BottomNav = () => {
   ];
 
   const rightNavItems = [
-    { path: "/workout", icon: () => (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14.4 14.4 9.6 9.6M18 6 6 18M8 6H6v2M6 16v2h2M16 18h2v-2M18 8V6h-2" />
-      </svg>
-    ), label: "Workout", customIcon: true },
+    { path: "/workout", icon: Dumbbell, label: "Workout" },
+    { path: "/shop", icon: ShoppingBag, label: "Shop" },
     { path: "/profile", icon: User, label: "Profile" },
   ];
 
