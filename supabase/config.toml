@@ -1,10 +1,10 @@
 project_id = "snqrnpphjjskjtupwlfp"
 
 [functions.ai-meal-suggestions]
-verify_jwt = true
+verify_jwt = false
 
 [functions.analyze-food-image]
-verify_jwt = true
+verify_jwt = false
 
 [functions.ai-diet-suggestions]
-verify_jwt = true
+verify_jwt = false
