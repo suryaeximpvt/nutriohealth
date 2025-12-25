@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Camera, ChevronRight, Sparkles, Crown, Loader2, Lock } from "lucide-react";
+import { Camera, ChevronRight, Sparkles, Crown, Loader2 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProgressRing } from "@/components/ProgressRing";
 import { MacroBar } from "@/components/MacroBar";
@@ -12,6 +12,7 @@ import { FoodLogModal } from "@/components/FoodLogModal";
 import { PhotoUploadModal } from "@/components/PhotoUploadModal";
 import { MealTypeSelector } from "@/components/MealTypeSelector";
 import { PremiumModal } from "@/components/PremiumModal";
+import { ShopNutrioSection } from "@/components/ShopNutrioSection";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { useDailyAISuggestions } from "@/hooks/useDailyAISuggestions";
@@ -433,6 +434,16 @@ const Index = () => {
               />
             ))}
           </div>
+        </motion.div>
+
+        {/* Shop Nutrio Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55 }}
+          className="mb-4"
+        >
+          <ShopNutrioSection suggestions={suggestions} />
         </motion.div>
       </div>
 
