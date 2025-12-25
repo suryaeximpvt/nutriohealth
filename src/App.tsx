@@ -11,6 +11,7 @@ import Log from "./pages/Log";
 import Workout from "./pages/Workout";
 import Profile from "./pages/Profile";
 import Shop from "./pages/Shop";
+import AskAI from "./pages/AskAI";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/workout" element={<Workout />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/ask-ai" element={<AskAI />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
