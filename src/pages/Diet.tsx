@@ -46,10 +46,10 @@ const Diet = () => {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (user && profile && !suggestions && !suggestionsLoading) {
+    if (user && profile && !suggestionsLoading) {
       loadSuggestions();
     }
-  }, [user, profile]);
+  }, [user, profile, culturalPreference]);
 
   const loadSuggestions = async () => {
     if (!profile) return;

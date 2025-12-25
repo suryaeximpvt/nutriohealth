@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.ai-diet-suggestions]
 verify_jwt = false
+
+[functions.ai-daily-suggestions]
+verify_jwt = false

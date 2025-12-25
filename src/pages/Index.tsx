@@ -7,13 +7,12 @@ import { ProgressRing } from "@/components/ProgressRing";
 import { MacroBar } from "@/components/MacroBar";
 import { BottomNav } from "@/components/BottomNav";
 import { HealthStats } from "@/components/HealthStats";
-import { MealSection } from "@/components/MealSection";
+import { AISuggestedMealCard } from "@/components/AISuggestedMealCard";
 import { FoodLogModal } from "@/components/FoodLogModal";
 import { PhotoUploadModal } from "@/components/PhotoUploadModal";
-import { AIMealModal } from "@/components/AIMealModal";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
-import { useAIMeals } from "@/hooks/useAIMeals";
+import { useDailyAISuggestions } from "@/hooks/useDailyAISuggestions";
 import { toast } from "sonner";
 
 const MEAL_CONFIG = [
@@ -26,13 +25,13 @@ const MEAL_CONFIG = [
 const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { profile, dailySummary, loading: dataLoading, logFood, deleteFood, refreshData } = useUserData();
-  const { loading: aiLoading, response: aiResponse, getMealSuggestions } = useAIMeals();
+  const { profile, dailySummary, loading: dataLoading, logFood, deleteFood } = useUserData();
+  const { loading: aiLoading, suggestions, fetchDailySuggestions, regenerateMeal } = useDailyAISuggestions();
 
   const [foodModalOpen, setFoodModalOpen] = useState(false);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
-  const [aiModalOpen, setAiModalOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<"breakfast" | "lunch" | "snacks" | "dinner">("breakfast");
+  const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -48,6 +47,49 @@ const Index = () => {
     }
   }, [user, authLoading, dataLoading, profile, navigate]);
 
+  // Auto-fetch AI suggestions when profile and data are loaded
+  useEffect(() => {
+    if (profile && !dataLoading && !suggestionsLoaded && user) {
+      const calorieTarget = profile.calorie_target || 2000;
+      const caloriesConsumed = dailySummary.totalCalories;
+      const caloriesRemaining = Math.max(0, calorieTarget - caloriesConsumed);
+
+      const previousMeals = Object.values(dailySummary.meals)
+        .flat()
+        .map((m) => ({
+          meal_type: m.meal_type,
+          food_name: m.food_name,
+          calories: m.calories,
+        }));
+
+      // Determine cultural preference (default to mixed)
+      const culturalPref = (profile.diet_preference?.toLowerCase().includes('indian') 
+        ? 'indian' 
+        : profile.diet_preference?.toLowerCase().includes('uk') || profile.diet_preference?.toLowerCase().includes('british')
+        ? 'uk'
+        : 'mixed') as 'indian' | 'uk' | 'mixed';
+
+      fetchDailySuggestions({
+        calorieTarget,
+        caloriesRemaining,
+        proteinTarget: profile.protein_target || 120,
+        proteinConsumed: dailySummary.totalProtein,
+        carbsTarget: profile.carbs_target || 250,
+        carbsConsumed: dailySummary.totalCarbs,
+        fatTarget: profile.fat_target || 65,
+        fatConsumed: dailySummary.totalFat,
+        activityLevel: profile.activity_level || 'moderate',
+        dietPreference: profile.diet_preference || '',
+        culturalPreference: culturalPref,
+        allergies: profile.allergies || [],
+        excludedFoods: profile.excluded_foods || [],
+        goal: profile.goal || 'maintain',
+        previousMeals,
+      });
+      setSuggestionsLoaded(true);
+    }
+  }, [profile, dataLoading, suggestionsLoaded, user, dailySummary, fetchDailySuggestions]);
+
   const calorieTarget = profile?.calorie_target || 2000;
   const caloriesConsumed = dailySummary.totalCalories;
   const caloriesRemaining = Math.max(0, calorieTarget - caloriesConsumed);
@@ -57,27 +99,66 @@ const Index = () => {
   const today = new Date();
   const dateStr = today.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 
-  const handleAddManual = (mealType: typeof selectedMealType) => {
-    setSelectedMealType(mealType);
-    setFoodModalOpen(true);
+  const handleLogAIMeal = async (mealType: typeof selectedMealType) => {
+    const suggestion = suggestions[mealType];
+    if (!suggestion) return;
+
+    const result = await logFood(mealType, {
+      name: suggestion.name,
+      calories: suggestion.calories,
+      protein: suggestion.protein,
+      carbs: suggestion.carbs,
+      fat: suggestion.fat,
+      fibre: Math.round(suggestion.calories / 100),
+      quantity: 1,
+    });
+
+    if (result.error) {
+      toast.error("Failed to log meal");
+    } else {
+      toast.success(`Added ${suggestion.name} to ${mealType}`);
+    }
+  };
+
+  const handleRegenerate = async (mealType: typeof selectedMealType) => {
+    const culturalPref = (profile?.diet_preference?.toLowerCase().includes('indian') 
+      ? 'indian' 
+      : profile?.diet_preference?.toLowerCase().includes('uk') || profile?.diet_preference?.toLowerCase().includes('british')
+      ? 'uk'
+      : 'mixed') as 'indian' | 'uk' | 'mixed';
+
+    const previousMeals = Object.values(dailySummary.meals)
+      .flat()
+      .map((m) => ({
+        meal_type: m.meal_type,
+        food_name: m.food_name,
+        calories: m.calories,
+      }));
+
+    await regenerateMeal(mealType, {
+      calorieTarget,
+      caloriesRemaining,
+      proteinTarget: profile?.protein_target || 120,
+      proteinConsumed: dailySummary.totalProtein,
+      carbsTarget: profile?.carbs_target || 250,
+      carbsConsumed: dailySummary.totalCarbs,
+      fatTarget: profile?.fat_target || 65,
+      fatConsumed: dailySummary.totalFat,
+      activityLevel: profile?.activity_level || 'moderate',
+      dietPreference: profile?.diet_preference || '',
+      culturalPreference: culturalPref,
+      allergies: profile?.allergies || [],
+      excludedFoods: profile?.excluded_foods || [],
+      goal: profile?.goal || 'maintain',
+      previousMeals,
+    });
+
+    toast.success(`Generated new ${mealType} suggestion`);
   };
 
   const handleAddPhoto = (mealType: typeof selectedMealType) => {
     setSelectedMealType(mealType);
     setPhotoModalOpen(true);
-  };
-
-  const handleCustomiseAI = async (mealType: typeof selectedMealType) => {
-    setSelectedMealType(mealType);
-    setAiModalOpen(true);
-    
-    const todaysMeals = Object.values(dailySummary.meals).flat().map(m => ({
-      meal_type: m.meal_type,
-      food_name: m.food_name,
-      calories: m.calories,
-    }));
-
-    await getMealSuggestions(mealType, profile, caloriesRemaining, todaysMeals);
   };
 
   const handleFoodRecognized = async (food: {
@@ -102,31 +183,6 @@ const Index = () => {
       toast.error("Failed to log food");
     } else {
       toast.success(`Added ${food.name} to ${selectedMealType}`);
-    }
-  };
-
-  const handleSelectAIMeal = async (meal: { name: string; calories: number }) => {
-    // Estimate macros based on calorie split
-    const protein = Math.round(meal.calories * 0.25 / 4);
-    const carbs = Math.round(meal.calories * 0.45 / 4);
-    const fat = Math.round(meal.calories * 0.30 / 9);
-    const fibre = Math.round(meal.calories / 100);
-
-    const result = await logFood(selectedMealType, {
-      name: meal.name,
-      calories: meal.calories,
-      protein,
-      carbs,
-      fat,
-      fibre,
-      quantity: 1,
-    });
-
-    if (result.error) {
-      toast.error("Failed to log meal");
-    } else {
-      toast.success(`Added ${meal.name} to ${selectedMealType}`);
-      setAiModalOpen(false);
     }
   };
 
@@ -287,26 +343,33 @@ const Index = () => {
           <HealthStats isConnected={false} />
         </motion.div>
 
-        {/* Meal Sections */}
+        {/* AI-Powered Meal Suggestions */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
           className="mb-4"
         >
-          <h2 className="font-bold text-foreground mb-4">Today's Meals</h2>
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-5 h-5 text-primary" />
+            <h2 className="font-bold text-foreground">Nutrio AI Picks for Today</h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Personalized meals based on your {caloriesRemaining} kcal remaining and nutritional goals
+          </p>
           <div className="space-y-3">
             {MEAL_CONFIG.map((meal, index) => (
-              <MealSection
+              <AISuggestedMealCard
                 key={meal.type}
                 title={meal.title}
                 mealType={meal.type}
                 emoji={meal.emoji}
-                foods={dailySummary.meals[meal.type]}
-                targetCalories={Math.round(calorieTarget * meal.targetRatio)}
-                onAddManual={() => handleAddManual(meal.type)}
+                suggestion={suggestions[meal.type]}
+                isLoading={aiLoading && !suggestions[meal.type]}
+                loggedFoods={dailySummary.meals[meal.type]}
+                onLogMeal={() => handleLogAIMeal(meal.type)}
+                onRegenerate={() => handleRegenerate(meal.type)}
                 onAddPhoto={() => handleAddPhoto(meal.type)}
-                onCustomiseAI={() => handleCustomiseAI(meal.type)}
                 onDeleteFood={deleteFood}
                 delay={0.4 + index * 0.05}
               />
@@ -338,17 +401,6 @@ const Index = () => {
         onClose={() => setPhotoModalOpen(false)}
         mealType={selectedMealType}
         onFoodRecognized={handleFoodRecognized}
-      />
-
-      <AIMealModal
-        isOpen={aiModalOpen}
-        onClose={() => setAiModalOpen(false)}
-        mealType={selectedMealType}
-        isLoading={aiLoading}
-        explanation={aiResponse?.explanation || ""}
-        options={aiResponse?.options || []}
-        followUpQuestion={aiResponse?.followUpQuestion || ""}
-        onSelectMeal={handleSelectAIMeal}
       />
     </div>
   );
