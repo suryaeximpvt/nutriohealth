@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Camera, ChevronRight, Sparkles, Crown, Loader2 } from "lucide-react";
+import { Camera, ChevronRight, Sparkles, Crown, Loader2, Lock } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProgressRing } from "@/components/ProgressRing";
 import { MacroBar } from "@/components/MacroBar";
@@ -11,9 +11,11 @@ import { AISuggestedMealCard } from "@/components/AISuggestedMealCard";
 import { FoodLogModal } from "@/components/FoodLogModal";
 import { PhotoUploadModal } from "@/components/PhotoUploadModal";
 import { MealTypeSelector } from "@/components/MealTypeSelector";
+import { PremiumModal } from "@/components/PremiumModal";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { useDailyAISuggestions } from "@/hooks/useDailyAISuggestions";
+import { usePremium } from "@/hooks/usePremium";
 import { toast } from "sonner";
 
 const MEAL_CONFIG = [
@@ -29,9 +31,12 @@ const Index = () => {
   const { profile, dailySummary, loading: dataLoading, logFood, deleteFood } = useUserData();
   const { loading: aiLoading, suggestions, fetchDailySuggestions, regenerateMeal } = useDailyAISuggestions();
 
+  const { isPremium, canUseAI, getAISuggestionsRemaining, incrementAIUsage } = usePremium();
+
   const [foodModalOpen, setFoodModalOpen] = useState(false);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [mealSelectorOpen, setMealSelectorOpen] = useState(false);
+  const [premiumModalOpen, setPremiumModalOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<"breakfast" | "lunch" | "snacks" | "dinner">("breakfast");
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
 
@@ -123,6 +128,13 @@ const Index = () => {
   };
 
   const handleRegenerate = async (mealType: typeof selectedMealType) => {
+    // Check if user can use AI
+    if (!canUseAI()) {
+      toast.error("You've used all your AI suggestions today. Upgrade to Premium for unlimited access!");
+      setPremiumModalOpen(true);
+      return;
+    }
+
     const culturalPref = (profile?.diet_preference?.toLowerCase().includes('indian') 
       ? 'indian' 
       : profile?.diet_preference?.toLowerCase().includes('uk') || profile?.diet_preference?.toLowerCase().includes('british')
@@ -155,6 +167,8 @@ const Index = () => {
       previousMeals,
     });
 
+    // Increment AI usage for free users
+    await incrementAIUsage();
     toast.success(`Generated new ${mealType} suggestion`);
   };
 
@@ -235,28 +249,53 @@ const Index = () => {
           </div>
         </motion.button>
 
-        {/* Go Premium Card */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          onClick={() => toast.info("Premium features coming soon!")}
-          className="w-full bg-gradient-to-r from-primary/90 to-primary/70 rounded-2xl p-4 flex items-center justify-between mb-6"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
-              <Crown className="w-5 h-5 text-primary-foreground" />
+        {/* Go Premium Card - Only show if not premium */}
+        {!isPremium && (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            onClick={() => setPremiumModalOpen(true)}
+            className="w-full bg-gradient-to-r from-primary/90 to-primary/70 rounded-2xl p-4 flex items-center justify-between mb-6"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
+                <Crown className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <div className="text-left">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-primary-foreground">Go Premium</span>
+                  <Sparkles className="w-4 h-4 text-nutrio-amber" />
+                </div>
+                <p className="text-primary-foreground/80 text-sm">
+                  {getAISuggestionsRemaining()} AI suggestions left today
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-primary-foreground" />
+          </motion.button>
+        )}
+
+        {/* Premium Badge - Show if premium */}
+        {isPremium && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="w-full bg-gradient-to-r from-nutrio-amber/20 to-primary/20 rounded-2xl p-4 flex items-center gap-3 mb-6 border border-nutrio-amber/30"
+          >
+            <div className="w-10 h-10 rounded-xl bg-nutrio-amber/20 flex items-center justify-center">
+              <Crown className="w-5 h-5 text-nutrio-amber" />
             </div>
             <div className="text-left">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-primary-foreground">Go Premium</span>
+                <span className="font-semibold text-foreground">Premium Member</span>
                 <Sparkles className="w-4 h-4 text-nutrio-amber" />
               </div>
-              <p className="text-primary-foreground/80 text-sm">Unlock AI coach & personalized plans</p>
+              <p className="text-muted-foreground text-sm">Unlimited AI suggestions active</p>
             </div>
-          </div>
-          <ChevronRight className="w-5 h-5 text-primary-foreground" />
-        </motion.button>
+          </motion.div>
+        )}
 
         {/* Today's Summary Card */}
         <motion.div
@@ -426,6 +465,11 @@ const Index = () => {
         isOpen={mealSelectorOpen}
         onClose={() => setMealSelectorOpen(false)}
         onSelect={handleMealTypeSelected}
+      />
+
+      <PremiumModal
+        isOpen={premiumModalOpen}
+        onClose={() => setPremiumModalOpen(false)}
       />
     </div>
   );

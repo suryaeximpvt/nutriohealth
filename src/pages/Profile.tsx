@@ -1,10 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Settings, ChevronRight, Target, TrendingUp, Award, User, Heart, LogOut, Crown } from "lucide-react";
+import { Settings, ChevronRight, Target, TrendingUp, Award, User, Heart, LogOut, Crown, Sparkles } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
+import { usePremium } from "@/hooks/usePremium";
+import { PremiumModal } from "@/components/PremiumModal";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -12,6 +14,8 @@ const Profile = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
   const { profile, loading: dataLoading } = useUserData();
+  const { isPremium, getAISuggestionsRemaining } = usePremium();
+  const [premiumModalOpen, setPremiumModalOpen] = useState(false);
 
   const userName = profile?.full_name || "User";
   const email = user?.email || "";
@@ -57,9 +61,19 @@ const Profile = () => {
                 <p className="text-primary-foreground/70 text-sm">{email}</p>
                 <div className="flex items-center gap-1 mt-1">
                   <Crown className="w-4 h-4 text-nutrio-amber" />
-                  <span className="text-primary-foreground text-xs font-medium bg-primary-foreground/20 px-2 py-0.5 rounded-full">
-                    Premium Member
-                  </span>
+                  {isPremium ? (
+                    <span className="text-primary-foreground text-xs font-medium bg-primary-foreground/20 px-2 py-0.5 rounded-full">
+                      Premium Member
+                    </span>
+                  ) : (
+                    <button 
+                      onClick={() => setPremiumModalOpen(true)}
+                      className="text-primary-foreground text-xs font-medium bg-primary-foreground/20 px-2 py-0.5 rounded-full hover:bg-primary-foreground/30 transition-colors flex items-center gap-1"
+                    >
+                      Free Plan
+                      <Sparkles className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -157,11 +171,56 @@ const Profile = () => {
           </div>
         </motion.section>
 
-        {/* Account Section */}
+        {/* Subscription Section */}
         <motion.section
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="mb-6"
+        >
+          <h2 className="font-bold text-foreground mb-3">Subscription</h2>
+          <div className="bg-card rounded-2xl shadow-card overflow-hidden">
+            {isPremium ? (
+              <div className="p-4 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-nutrio-amber/20 flex items-center justify-center">
+                  <Crown className="w-5 h-5 text-nutrio-amber" />
+                </div>
+                <div className="flex-1 text-left">
+                  <h3 className="font-medium text-foreground">Premium Plan</h3>
+                  <p className="text-sm text-muted-foreground">Unlimited AI suggestions</p>
+                </div>
+                <span className="text-xs bg-nutrio-amber/20 text-nutrio-amber px-2 py-1 rounded-full font-medium">
+                  Active
+                </span>
+              </div>
+            ) : (
+              <button
+                onClick={() => setPremiumModalOpen(true)}
+                className="w-full p-4 flex items-center gap-4"
+              >
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Crown className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1 text-left">
+                  <h3 className="font-medium text-foreground">Upgrade to Premium</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {getAISuggestionsRemaining()} AI suggestions left today
+                  </p>
+                </div>
+                <div className="flex items-center gap-1 text-primary">
+                  <Sparkles className="w-4 h-4" />
+                  <ChevronRight className="w-5 h-5" />
+                </div>
+              </button>
+            )}
+          </div>
+        </motion.section>
+
+        {/* Account Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
         >
           <h2 className="font-bold text-foreground mb-3">Account</h2>
           <div className="bg-card rounded-2xl shadow-card overflow-hidden">
@@ -209,6 +268,11 @@ const Profile = () => {
       </div>
 
       <BottomNav />
+
+      <PremiumModal
+        isOpen={premiumModalOpen}
+        onClose={() => setPremiumModalOpen(false)}
+      />
     </div>
   );
 };
