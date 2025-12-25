@@ -164,6 +164,37 @@ export const useUserData = () => {
     return { error: null };
   };
 
+  const editFood = async (id: string, quantity: number) => {
+    if (!user) return { error: "Not authenticated" };
+
+    // First get the original food to recalculate values
+    const food = foodLogs.find(f => f.id === id);
+    if (!food) return { error: "Food not found" };
+
+    // Calculate the ratio to adjust all values
+    const ratio = quantity / food.quantity;
+
+    const { error } = await supabase
+      .from("food_logs")
+      .update({
+        quantity,
+        calories: Math.round(food.calories * ratio),
+        protein: Math.round((Number(food.protein) * ratio) * 100) / 100,
+        carbs: Math.round((Number(food.carbs) * ratio) * 100) / 100,
+        fat: Math.round((Number(food.fat) * ratio) * 100) / 100,
+        fibre: Math.round((Number(food.fibre) * ratio) * 100) / 100,
+      })
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error editing food:", error);
+      return { error: error.message };
+    }
+
+    await fetchFoodLogs();
+    return { error: null };
+  };
+
   const updateWater = async (glasses: number) => {
     if (!user) return { error: "Not authenticated" };
 
@@ -235,6 +266,7 @@ export const useUserData = () => {
     loading,
     logFood,
     deleteFood,
+    editFood,
     updateWater,
     updateProfile,
     refreshData: () =>
