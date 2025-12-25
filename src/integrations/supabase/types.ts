@@ -152,6 +152,45 @@ export type Database = {
         }
         Relationships: []
       }
+      workout_logs: {
+        Row: {
+          calories_burned: number
+          created_at: string | null
+          duration_minutes: number
+          exercise_name: string
+          exercise_type: string
+          id: string
+          intensity: string
+          logged_at: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          calories_burned?: number
+          created_at?: string | null
+          duration_minutes?: number
+          exercise_name: string
+          exercise_type?: string
+          id?: string
+          intensity?: string
+          logged_at?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          calories_burned?: number
+          created_at?: string | null
+          duration_minutes?: number
+          exercise_name?: string
+          exercise_type?: string
+          id?: string
+          intensity?: string
+          logged_at?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
