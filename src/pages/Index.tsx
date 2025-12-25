@@ -1,224 +1,159 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Coffee, UtensilsCrossed, Cookie, Moon, Footprints, Scale, TrendingUp, Loader2 } from "lucide-react";
-import { Header } from "@/components/Header";
+import { Camera, ChevronRight, Sparkles, Crown } from "lucide-react";
+import { AppHeader } from "@/components/AppHeader";
 import { ProgressRing } from "@/components/ProgressRing";
 import { MacroBar } from "@/components/MacroBar";
-import { MealCard } from "@/components/MealCard";
-import { QuickStat } from "@/components/QuickStat";
 import { BottomNav } from "@/components/BottomNav";
-import { WaterTracker } from "@/components/WaterTracker";
-import { AIMealModal } from "@/components/AIMealModal";
-import { FoodLogModal } from "@/components/FoodLogModal";
-import { MealDetailsModal } from "@/components/MealDetailsModal";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
-import { useAIMeals } from "@/hooks/useAIMeals";
-import { toast } from "sonner";
-
-type MealType = "breakfast" | "lunch" | "snacks" | "dinner";
+import { Loader2 } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { profile, dailySummary, waterGlasses, loading: dataLoading, logFood, deleteFood, editFood, updateWater } = useUserData();
-  const { loading: aiLoading, response: aiResponse, getMealSuggestions } = useAIMeals();
+  const { profile, dailySummary, loading: dataLoading } = useUserData();
 
-  const [activeTab, setActiveTab] = useState("home");
-  const [aiModalOpen, setAiModalOpen] = useState(false);
-  const [foodLogModalOpen, setFoodLogModalOpen] = useState(false);
-  const [mealDetailsModalOpen, setMealDetailsModalOpen] = useState(false);
-  const [selectedMealType, setSelectedMealType] = useState<MealType>("breakfast");
-
-  // Handle tab changes from bottom nav
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    if (tab === "log") {
-      // Open food log modal when Log tab is clicked
-      setFoodLogModalOpen(true);
-    } else if (tab === "profile") {
-      toast.info("Profile settings coming soon!");
-    } else if (tab === "workout") {
-      navigate("/workout");
-    } else if (tab === "progress") {
-      toast.info("Progress charts coming soon!");
-    }
-  };
-
-  // Redirect to auth if not logged in, or onboarding if profile incomplete
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/auth");
     }
   }, [user, authLoading, navigate]);
 
-  // Redirect to onboarding if profile is incomplete (first login)
   useEffect(() => {
     if (!authLoading && !dataLoading && user && profile) {
-      // Check if essential profile data is missing (means onboarding not completed)
       if (!profile.goal || !profile.height_cm || !profile.weight_kg) {
         navigate("/onboarding");
       }
     }
   }, [user, authLoading, dataLoading, profile, navigate]);
 
-  // Calculate values from profile and daily summary
   const calorieTarget = profile?.calorie_target || 2000;
   const caloriesConsumed = dailySummary.totalCalories;
   const caloriesRemaining = Math.max(0, calorieTarget - caloriesConsumed);
   const calorieProgress = Math.min((caloriesConsumed / calorieTarget) * 100, 100);
-
   const userName = profile?.full_name?.split(" ")[0] || "there";
 
-  const getMealSummary = (mealType: MealType) => {
-    const meals = dailySummary.meals[mealType];
-    if (meals.length === 0) {
-      return { logged: false, calories: 0, items: "Tap for AI suggestions" };
-    }
-    const totalCalories = meals.reduce((sum, m) => sum + m.calories, 0);
-    const itemNames = meals.map((m) => m.food_name).join(", ");
-    return { logged: true, calories: totalCalories, items: itemNames };
-  };
+  const today = new Date();
+  const dateStr = today.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 
-  const handleMealClick = (mealType: MealType) => {
-    setSelectedMealType(mealType);
-    const meals = dailySummary.meals[mealType];
-    
-    // If meals are logged, show details modal; otherwise show AI suggestions
-    if (meals.length > 0) {
-      setMealDetailsModalOpen(true);
-    } else {
-      openAISuggestions(mealType);
-    }
-  };
-
-  const openAISuggestions = async (mealType: MealType) => {
-    setSelectedMealType(mealType);
-    setMealDetailsModalOpen(false);
-    setAiModalOpen(true);
-
-    // Fetch AI suggestions
-    const todaysMeals = Object.entries(dailySummary.meals).flatMap(([type, meals]) =>
-      meals.map((m) => ({ meal_type: type, food_name: m.food_name, calories: m.calories }))
-    );
-
-    await getMealSuggestions(mealType, profile, caloriesRemaining, todaysMeals);
-  };
-
-  const handleSelectMeal = (meal: { name: string; calories: number }) => {
-    // Close AI modal and open food log modal to confirm
-    setAiModalOpen(false);
-    setFoodLogModalOpen(true);
-  };
-
-  const handleOpenFoodLog = () => {
-    setMealDetailsModalOpen(false);
-    setAiModalOpen(false);
-    setFoodLogModalOpen(true);
-  };
-
-  const handleLogFood = async (food: {
-    name: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-    fibre: number;
-    quantity: number;
-  }) => {
-    const { error } = await logFood(selectedMealType, food);
-    if (error) {
-      toast.error("Failed to log food");
-    }
-  };
-
-  const handleWaterAdd = async () => {
-    const newGlasses = waterGlasses + 1;
-    const { error } = await updateWater(newGlasses);
-    if (error) {
-      toast.error("Failed to update water intake");
-    }
-  };
-
-  const handleWaterRemove = async () => {
-    const newGlasses = Math.max(0, waterGlasses - 1);
-    const { error } = await updateWater(newGlasses);
-    if (error) {
-      toast.error("Failed to update water intake");
-    }
-  };
-
-  // Show loading state
   if (authLoading || (user && dataLoading)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading your data...</p>
-        </div>
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  // Don't render if not authenticated (will redirect)
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="container max-w-lg mx-auto px-4">
-        <Header userName={userName} />
+        <AppHeader userName={userName} />
 
-        {/* Main Calorie Ring */}
-        <motion.section
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center py-6"
+        {/* Scan Food Card */}
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          onClick={() => navigate("/log")}
+          className="w-full bg-gradient-to-r from-primary to-primary/80 rounded-2xl p-5 flex items-center gap-4 mb-3"
         >
-          <ProgressRing
-            progress={calorieProgress}
-            size={180}
-            strokeWidth={12}
-            color="hsl(var(--primary))"
-          >
-            <div className="text-center">
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="text-4xl font-bold text-foreground"
-              >
-                {caloriesRemaining}
-              </motion.p>
-              <p className="text-sm text-muted-foreground">kcal remaining</p>
-            </div>
-          </ProgressRing>
+          <div className="w-12 h-12 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
+            <Camera className="w-6 h-6 text-primary-foreground" />
+          </div>
+          <div className="text-left">
+            <h3 className="font-semibold text-primary-foreground text-lg">Scan Food</h3>
+            <p className="text-primary-foreground/80 text-sm">Take a photo to track calories</p>
+          </div>
+        </motion.button>
 
-          <div className="flex items-center gap-6 mt-4 text-sm">
+        {/* Go Premium Card */}
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="w-full bg-gradient-to-r from-primary/90 to-primary/70 rounded-2xl p-4 flex items-center justify-between mb-6"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
+              <Crown className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-primary-foreground">Go Premium</span>
+                <Sparkles className="w-4 h-4 text-nutrio-amber" />
+              </div>
+              <p className="text-primary-foreground/80 text-sm">Unlock AI coach & personalized plans</p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-primary-foreground" />
+        </motion.button>
+
+        {/* Today's Summary Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-card rounded-2xl p-6 shadow-card mb-4"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-bold text-foreground text-lg">Today's Summary</h2>
+            <span className="text-muted-foreground text-sm">{dateStr}</span>
+          </div>
+
+          <div className="flex justify-center mb-6">
+            <ProgressRing
+              progress={calorieProgress}
+              size={180}
+              strokeWidth={12}
+              color="hsl(var(--primary))"
+            >
+              <div className="text-center">
+                <p className="text-4xl font-bold text-foreground">{caloriesRemaining}</p>
+                <p className="text-muted-foreground text-sm">Remaining</p>
+              </div>
+            </ProgressRing>
+          </div>
+
+          <div className="flex items-center justify-around">
             <div className="text-center">
-              <p className="font-semibold text-foreground">{caloriesConsumed}</p>
-              <p className="text-muted-foreground">Eaten</p>
+              <div className="flex items-center gap-1 justify-center">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                <span className="font-semibold text-foreground">{caloriesConsumed}</span>
+              </div>
+              <span className="text-muted-foreground text-sm">Eaten</span>
             </div>
             <div className="w-px h-8 bg-border" />
             <div className="text-center">
-              <p className="font-semibold text-foreground">{calorieTarget}</p>
-              <p className="text-muted-foreground">Target</p>
+              <div className="flex items-center gap-1 justify-center">
+                <span className="w-2 h-2 rounded-full bg-nutrio-amber" />
+                <span className="font-semibold text-foreground">0</span>
+              </div>
+              <span className="text-muted-foreground text-sm">Burned</span>
+            </div>
+            <div className="w-px h-8 bg-border" />
+            <div className="text-center">
+              <div className="flex items-center gap-1 justify-center">
+                <span className="w-2 h-2 rounded-full bg-nutrio-blue" />
+                <span className="font-semibold text-foreground">{calorieTarget}</span>
+              </div>
+              <span className="text-muted-foreground text-sm">Goal</span>
             </div>
           </div>
-        </motion.section>
+        </motion.div>
 
-        {/* Macros Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
+        {/* Macronutrients Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="glass-card rounded-xl p-5 mb-4"
+          transition={{ delay: 0.25 }}
+          className="bg-card rounded-2xl p-5 shadow-card"
         >
-          <h2 className="font-semibold text-foreground mb-4">Today's Macros</h2>
-          <div className="space-y-3">
+          <h2 className="font-bold text-foreground mb-4">Macronutrients</h2>
+          <div className="space-y-4">
             <MacroBar
               label="Carbs"
               current={Math.round(dailySummary.totalCarbs)}
@@ -231,127 +166,27 @@ const Index = () => {
               current={Math.round(dailySummary.totalProtein)}
               target={profile?.protein_target || 120}
               color="hsl(var(--primary))"
-              delay={0.4}
+              delay={0.35}
             />
             <MacroBar
               label="Fat"
               current={Math.round(dailySummary.totalFat)}
               target={profile?.fat_target || 65}
               color="hsl(var(--nutrio-amber))"
-              delay={0.5}
+              delay={0.4}
             />
             <MacroBar
               label="Fibre"
               current={Math.round(dailySummary.totalFibre)}
               target={profile?.fibre_target || 30}
               color="hsl(var(--nutrio-purple))"
-              delay={0.6}
+              delay={0.45}
             />
           </div>
-        </motion.section>
-
-        {/* Quick Stats */}
-        <div className="flex gap-3 mb-4">
-          <QuickStat
-            icon={<Footprints className="w-5 h-5" />}
-            value="--"
-            label="Steps"
-            color="hsl(var(--nutrio-coral))"
-            delay={0.3}
-          />
-          <QuickStat
-            icon={<Scale className="w-5 h-5" />}
-            value={profile?.weight_kg ? `${profile.weight_kg}kg` : "--"}
-            label="Weight"
-            color="hsl(var(--nutrio-purple))"
-            delay={0.4}
-          />
-          <QuickStat
-            icon={<TrendingUp className="w-5 h-5" />}
-            value="1"
-            label="Day Streak"
-            color="hsl(var(--nutrio-amber))"
-            delay={0.5}
-          />
-        </div>
-
-        {/* Water Tracker */}
-        <WaterTracker
-          current={waterGlasses * 250}
-          target={2500}
-          onAdd={handleWaterAdd}
-          onRemove={handleWaterRemove}
-        />
-
-        {/* Meals Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-6"
-        >
-          <h2 className="font-semibold text-foreground mb-3">Today's Meals</h2>
-          <div className="space-y-3">
-            {(["breakfast", "lunch", "snacks", "dinner"] as MealType[]).map((mealType, index) => {
-              const meal = getMealSummary(mealType);
-              const icons = {
-                breakfast: <Coffee className="w-5 h-5" />,
-                lunch: <UtensilsCrossed className="w-5 h-5" />,
-                snacks: <Cookie className="w-5 h-5" />,
-                dinner: <Moon className="w-5 h-5" />,
-              };
-              return (
-                <MealCard
-                  key={mealType}
-                  title={mealType.charAt(0).toUpperCase() + mealType.slice(1)}
-                  subtitle={meal.items}
-                  calories={meal.calories}
-                  icon={icons[mealType]}
-                  logged={meal.logged}
-                  onClick={() => handleMealClick(mealType)}
-                  delay={0.5 + index * 0.05}
-                />
-              );
-            })}
-          </div>
-        </motion.section>
+        </motion.div>
       </div>
 
-      {/* Bottom Navigation */}
-      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
-
-      {/* AI Meal Recommendation Modal */}
-      <AIMealModal
-        isOpen={aiModalOpen}
-        onClose={() => setAiModalOpen(false)}
-        mealType={selectedMealType.charAt(0).toUpperCase() + selectedMealType.slice(1)}
-        explanation={aiResponse?.explanation || "Loading suggestions..."}
-        options={aiResponse?.options || []}
-        followUpQuestion={aiResponse?.followUpQuestion || ""}
-        onSelectMeal={handleSelectMeal}
-        isLoading={aiLoading}
-        onLogFood={handleOpenFoodLog}
-      />
-
-      {/* Food Log Modal */}
-      <FoodLogModal
-        isOpen={foodLogModalOpen}
-        onClose={() => setFoodLogModalOpen(false)}
-        mealType={selectedMealType.charAt(0).toUpperCase() + selectedMealType.slice(1)}
-        onLogFood={handleLogFood}
-      />
-
-      {/* Meal Details Modal */}
-      <MealDetailsModal
-        isOpen={mealDetailsModalOpen}
-        onClose={() => setMealDetailsModalOpen(false)}
-        mealType={selectedMealType.charAt(0).toUpperCase() + selectedMealType.slice(1)}
-        foods={dailySummary.meals[selectedMealType]}
-        onDeleteFood={deleteFood}
-        onEditFood={editFood}
-        onAddFood={handleOpenFoodLog}
-        onGetAISuggestions={() => openAISuggestions(selectedMealType)}
-      />
+      <BottomNav />
     </div>
   );
 };
