@@ -1,19 +1,38 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Camera, ChevronRight, Sparkles, Crown } from "lucide-react";
+import { Camera, ChevronRight, Sparkles, Crown, Loader2 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProgressRing } from "@/components/ProgressRing";
 import { MacroBar } from "@/components/MacroBar";
 import { BottomNav } from "@/components/BottomNav";
+import { HealthStats } from "@/components/HealthStats";
+import { MealSection } from "@/components/MealSection";
+import { FoodLogModal } from "@/components/FoodLogModal";
+import { PhotoUploadModal } from "@/components/PhotoUploadModal";
+import { AIMealModal } from "@/components/AIMealModal";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
-import { Loader2 } from "lucide-react";
+import { useAIMeals } from "@/hooks/useAIMeals";
+import { toast } from "sonner";
+
+const MEAL_CONFIG = [
+  { type: "breakfast" as const, title: "Breakfast", emoji: "🌅", targetRatio: 0.25 },
+  { type: "lunch" as const, title: "Lunch", emoji: "☀️", targetRatio: 0.30 },
+  { type: "snacks" as const, title: "Snacks", emoji: "🍎", targetRatio: 0.15 },
+  { type: "dinner" as const, title: "Dinner", emoji: "🌙", targetRatio: 0.30 },
+];
 
 const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { profile, dailySummary, loading: dataLoading } = useUserData();
+  const { profile, dailySummary, loading: dataLoading, logFood, deleteFood, refreshData } = useUserData();
+  const { loading: aiLoading, response: aiResponse, getMealSuggestions } = useAIMeals();
+
+  const [foodModalOpen, setFoodModalOpen] = useState(false);
+  const [photoModalOpen, setPhotoModalOpen] = useState(false);
+  const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [selectedMealType, setSelectedMealType] = useState<"breakfast" | "lunch" | "snacks" | "dinner">("breakfast");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -37,6 +56,79 @@ const Index = () => {
 
   const today = new Date();
   const dateStr = today.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+
+  const handleAddManual = (mealType: typeof selectedMealType) => {
+    setSelectedMealType(mealType);
+    setFoodModalOpen(true);
+  };
+
+  const handleAddPhoto = (mealType: typeof selectedMealType) => {
+    setSelectedMealType(mealType);
+    setPhotoModalOpen(true);
+  };
+
+  const handleCustomiseAI = async (mealType: typeof selectedMealType) => {
+    setSelectedMealType(mealType);
+    setAiModalOpen(true);
+    
+    const todaysMeals = Object.values(dailySummary.meals).flat().map(m => ({
+      meal_type: m.meal_type,
+      food_name: m.food_name,
+      calories: m.calories,
+    }));
+
+    await getMealSuggestions(mealType, profile, caloriesRemaining, todaysMeals);
+  };
+
+  const handleFoodRecognized = async (food: {
+    name: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fibre: number;
+  }) => {
+    const result = await logFood(selectedMealType, {
+      name: food.name,
+      calories: food.calories,
+      protein: food.protein,
+      carbs: food.carbs,
+      fat: food.fat,
+      fibre: food.fibre,
+      quantity: 1,
+    });
+
+    if (result.error) {
+      toast.error("Failed to log food");
+    } else {
+      toast.success(`Added ${food.name} to ${selectedMealType}`);
+    }
+  };
+
+  const handleSelectAIMeal = async (meal: { name: string; calories: number }) => {
+    // Estimate macros based on calorie split
+    const protein = Math.round(meal.calories * 0.25 / 4);
+    const carbs = Math.round(meal.calories * 0.45 / 4);
+    const fat = Math.round(meal.calories * 0.30 / 9);
+    const fibre = Math.round(meal.calories / 100);
+
+    const result = await logFood(selectedMealType, {
+      name: meal.name,
+      calories: meal.calories,
+      protein,
+      carbs,
+      fat,
+      fibre,
+      quantity: 1,
+    });
+
+    if (result.error) {
+      toast.error("Failed to log meal");
+    } else {
+      toast.success(`Added ${meal.name} to ${selectedMealType}`);
+      setAiModalOpen(false);
+    }
+  };
 
   if (authLoading || (user && dataLoading)) {
     return (
@@ -150,7 +242,7 @@ const Index = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="bg-card rounded-2xl p-5 shadow-card"
+          className="bg-card rounded-2xl p-5 shadow-card mb-4"
         >
           <h2 className="font-bold text-foreground mb-4">Macronutrients</h2>
           <div className="space-y-4">
@@ -184,9 +276,80 @@ const Index = () => {
             />
           </div>
         </motion.div>
+
+        {/* Health Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-4"
+        >
+          <HealthStats isConnected={false} />
+        </motion.div>
+
+        {/* Meal Sections */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="mb-4"
+        >
+          <h2 className="font-bold text-foreground mb-4">Today's Meals</h2>
+          <div className="space-y-3">
+            {MEAL_CONFIG.map((meal, index) => (
+              <MealSection
+                key={meal.type}
+                title={meal.title}
+                mealType={meal.type}
+                emoji={meal.emoji}
+                foods={dailySummary.meals[meal.type]}
+                targetCalories={Math.round(calorieTarget * meal.targetRatio)}
+                onAddManual={() => handleAddManual(meal.type)}
+                onAddPhoto={() => handleAddPhoto(meal.type)}
+                onCustomiseAI={() => handleCustomiseAI(meal.type)}
+                onDeleteFood={deleteFood}
+                delay={0.4 + index * 0.05}
+              />
+            ))}
+          </div>
+        </motion.div>
       </div>
 
       <BottomNav />
+
+      {/* Modals */}
+      <FoodLogModal
+        isOpen={foodModalOpen}
+        onClose={() => setFoodModalOpen(false)}
+        mealType={selectedMealType}
+        onLogFood={async (food) => {
+          const result = await logFood(selectedMealType, food);
+          if (result.error) {
+            toast.error("Failed to log food");
+          } else {
+            toast.success(`Added ${food.name} to ${selectedMealType}`);
+            setFoodModalOpen(false);
+          }
+        }}
+      />
+
+      <PhotoUploadModal
+        isOpen={photoModalOpen}
+        onClose={() => setPhotoModalOpen(false)}
+        mealType={selectedMealType}
+        onFoodRecognized={handleFoodRecognized}
+      />
+
+      <AIMealModal
+        isOpen={aiModalOpen}
+        onClose={() => setAiModalOpen(false)}
+        mealType={selectedMealType}
+        isLoading={aiLoading}
+        explanation={aiResponse?.explanation || ""}
+        options={aiResponse?.options || []}
+        followUpQuestion={aiResponse?.followUpQuestion || ""}
+        onSelectMeal={handleSelectAIMeal}
+      />
     </div>
   );
 };
