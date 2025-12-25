@@ -19,7 +19,7 @@ const QUICK_ACTIONS = [
   { id: "steps", label: "Steps", icon: "👟", color: "bg-nutrio-amber/10 text-nutrio-amber" },
   { id: "water", label: "Water", icon: "💧", color: "bg-nutrio-blue/10 text-nutrio-blue" },
   { id: "weight", label: "Weight", icon: "⚖️", color: "bg-nutrio-purple/10 text-nutrio-purple" },
-  { id: "exercise", label: "Exercise", icon: "🏃", color: "bg-nutrio-coral/10 text-nutrio-coral" },
+  { id: "exercise", label: "Exercise", icon: "🏃", color: "bg-nutrio-orange/10 text-nutrio-orange" },
 ];
 
 const Log = () => {
@@ -154,7 +154,30 @@ const Log = () => {
           </div>
         </motion.div>
 
-        {/* Quick Action Icons */}
+        {/* Meal Type Selector */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16 }}
+          className="flex gap-2 mb-4 overflow-x-auto scrollbar-hide"
+        >
+          {(["breakfast", "lunch", "snacks", "dinner"] as MealType[]).map((meal) => (
+            <button
+              key={meal}
+              onClick={() => {
+                setSelectedMealType(meal);
+                setFoodLogModalOpen(true);
+              }}
+              className={`flex-shrink-0 px-4 py-2 rounded-full font-medium text-sm transition-colors ${
+                selectedMealType === meal
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-card text-foreground border border-border"
+              }`}
+            >
+              + {meal.charAt(0).toUpperCase() + meal.slice(1)}
+            </button>
+          ))}
+        </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

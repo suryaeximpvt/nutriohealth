@@ -158,7 +158,7 @@ const Index = () => {
               label="Carbs"
               current={Math.round(dailySummary.totalCarbs)}
               target={profile?.carbs_target || 250}
-              color="hsl(var(--nutrio-coral))"
+              color="hsl(var(--nutrio-orange))"
               delay={0.3}
             />
             <MacroBar

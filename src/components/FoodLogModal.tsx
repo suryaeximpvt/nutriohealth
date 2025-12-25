@@ -221,7 +221,7 @@ export const FoodLogModal = forwardRef<HTMLDivElement, FoodLogModalProps>(({
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
-                  className="bg-nutrio-sage-light rounded-xl p-4 mb-4"
+                  className="bg-primary/10 rounded-xl p-4 mb-4"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-semibold text-foreground">{selectedFood.name}</h3>
