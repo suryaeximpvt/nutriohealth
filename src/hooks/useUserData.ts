@@ -18,6 +18,8 @@ interface Profile {
   weight_kg: number | null;
   height_cm: number | null;
   goal: string;
+  gender: string | null;
+  age: number | null;
 }
 
 interface FoodLog {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Search, Camera, Barcode, Mic, Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -45,12 +45,12 @@ const FOOD_DATABASE: FoodItem[] = [
   { name: "Cappuccino (medium)", calories: 120, protein: 6, carbs: 10, fat: 6, fibre: 0 },
 ];
 
-export const FoodLogModal = ({
+export const FoodLogModal = forwardRef<HTMLDivElement, FoodLogModalProps>(({
   isOpen,
   onClose,
   mealType,
   onLogFood,
-}: FoodLogModalProps) => {
+}, ref) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -316,4 +316,6 @@ export const FoodLogModal = ({
       )}
     </AnimatePresence>
   );
-};
+});
+
+FoodLogModal.displayName = "FoodLogModal";

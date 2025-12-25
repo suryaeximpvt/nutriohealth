@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, ChevronRight, Star, Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ interface AIMealModalProps {
   onLogFood?: () => void;
 }
 
-export const AIMealModal = ({
+export const AIMealModal = forwardRef<HTMLDivElement, AIMealModalProps>(({
   isOpen,
   onClose,
   mealType,
@@ -31,7 +32,7 @@ export const AIMealModal = ({
   onSelectMeal,
   isLoading = false,
   onLogFood,
-}: AIMealModalProps) => {
+}, ref) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -187,4 +188,6 @@ export const AIMealModal = ({
       )}
     </AnimatePresence>
   );
-};
+});
+
+AIMealModal.displayName = "AIMealModal";
