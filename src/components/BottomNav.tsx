@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home, User, Plus } from "lucide-react";
+import { Home, User, Plus, Salad } from "lucide-react";
 
 const BottomNav = () => {
   const navigate = useNavigate();
@@ -10,11 +10,7 @@ const BottomNav = () => {
 
   const navItems = [
     { path: "/", icon: Home, label: "Home" },
-    { path: "/diet", icon: () => (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-      </svg>
-    ), label: "Diet", customIcon: true },
+    { path: "/diet", icon: Salad, label: "Diet" },
   ];
 
   const rightNavItems = [
