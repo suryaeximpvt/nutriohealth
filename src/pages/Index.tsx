@@ -13,6 +13,8 @@ import { PhotoUploadModal } from "@/components/PhotoUploadModal";
 import { MealTypeSelector } from "@/components/MealTypeSelector";
 import { PremiumModal } from "@/components/PremiumModal";
 import { ShopNutrioSection } from "@/components/ShopNutrioSection";
+import { WaterTracker } from "@/components/WaterTracker";
+import { WaterHydrationPrompt } from "@/components/WaterHydrationPrompt";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { useDailyAISuggestions } from "@/hooks/useDailyAISuggestions";
@@ -29,7 +31,7 @@ const MEAL_CONFIG = [
 const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { profile, dailySummary, loading: dataLoading, logFood, deleteFood } = useUserData();
+const { profile, dailySummary, loading: dataLoading, logFood, deleteFood, waterGlasses, lastWaterLogTime, updateWater } = useUserData();
   const { loading: aiLoading, suggestions, fetchDailySuggestions, regenerateMeal } = useDailyAISuggestions();
 
   const { isPremium, canUseAI, getAISuggestionsRemaining, incrementAIUsage } = usePremium();
@@ -228,8 +230,19 @@ const Index = () => {
 
   if (!user) return null;
 
-  return (
+return (
     <div className="min-h-screen bg-background pb-24">
+      {/* Water Hydration Prompt */}
+      <WaterHydrationPrompt
+        lastWaterLogTime={lastWaterLogTime}
+        waterGlasses={waterGlasses}
+        waterTarget={8}
+        proteinConsumed={dailySummary.totalProtein}
+        activityLevel={profile?.activity_level || "moderate"}
+        onAddWater={(glasses) => updateWater(waterGlasses + glasses)}
+        onDismiss={() => {}}
+      />
+
       <div className="container max-w-lg mx-auto px-4">
         <AppHeader userName={userName} />
 
@@ -391,11 +404,26 @@ const Index = () => {
           </div>
         </motion.div>
 
-        {/* Health Stats */}
+        {/* Water Tracker */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          className="mb-4"
+        >
+          <WaterTracker
+            current={waterGlasses * 250}
+            target={2000}
+            onAdd={() => updateWater(waterGlasses + 1)}
+            onRemove={() => updateWater(Math.max(0, waterGlasses - 1))}
+          />
+        </motion.div>
+
+        {/* Health Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
           className="mb-4"
         >
           <HealthStats isConnected={false} />
