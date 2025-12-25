@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
+import { useAIMeals } from "@/hooks/useAIMeals";
 import { FoodLogModal } from "@/components/FoodLogModal";
 import { MealDetailsModal } from "@/components/MealDetailsModal";
+import { AIMealModal } from "@/components/AIMealModal";
 import { toast } from "sonner";
 
 type MealType = "breakfast" | "lunch" | "snacks" | "dinner";
@@ -26,10 +28,12 @@ const Log = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { profile, dailySummary, waterGlasses, loading: dataLoading, logFood, deleteFood, editFood, updateWater } = useUserData();
+  const { loading: aiLoading, response: aiResponse, getMealSuggestions } = useAIMeals();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"food" | "exercise">("food");
   const [foodLogModalOpen, setFoodLogModalOpen] = useState(false);
   const [mealDetailsModalOpen, setMealDetailsModalOpen] = useState(false);
+  const [aiMealModalOpen, setAiMealModalOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>("breakfast");
   const [isScanning, setIsScanning] = useState(false);
 
@@ -93,6 +97,41 @@ const Log = () => {
   const handleLogFood = async (food: { name: string; calories: number; protein: number; carbs: number; fat: number; fibre: number; quantity: number }) => {
     const { error } = await logFood(selectedMealType, food);
     if (error) toast.error("Failed to log food");
+  };
+
+  const handleGetAISuggestions = async () => {
+    setAiMealModalOpen(true);
+    const caloriesRemaining = (profile?.calorie_target || 2000) - dailySummary.totalCalories;
+    const todaysMeals = Object.values(dailySummary.meals).flat().map(m => ({
+      meal_type: m.meal_type,
+      food_name: m.food_name,
+      calories: m.calories,
+    }));
+    await getMealSuggestions(selectedMealType, profile, caloriesRemaining, todaysMeals);
+  };
+
+  const handleSelectAIMeal = async (meal: { name: string; description: string; calories: number }) => {
+    // Log the selected AI meal with estimated macros based on calories
+    const estimatedProtein = Math.round(meal.calories * 0.25 / 4); // 25% from protein
+    const estimatedCarbs = Math.round(meal.calories * 0.45 / 4); // 45% from carbs
+    const estimatedFat = Math.round(meal.calories * 0.30 / 9); // 30% from fat
+    
+    const { error } = await logFood(selectedMealType, {
+      name: meal.name,
+      calories: meal.calories,
+      protein: estimatedProtein,
+      carbs: estimatedCarbs,
+      fat: estimatedFat,
+      fibre: 3, // default estimate
+      quantity: 1,
+    });
+    
+    if (error) {
+      toast.error("Failed to log meal");
+    } else {
+      toast.success(`Added ${meal.name} to ${selectedMealType}`);
+      setAiMealModalOpen(false);
+    }
   };
 
   const todaysMeals = Object.values(dailySummary.meals).flat();
@@ -334,7 +373,19 @@ const Log = () => {
         onDeleteFood={deleteFood}
         onEditFood={editFood}
         onAddFood={() => { setMealDetailsModalOpen(false); setFoodLogModalOpen(true); }}
-        onGetAISuggestions={() => toast.info("AI suggestions coming soon!")}
+        onGetAISuggestions={() => { setMealDetailsModalOpen(false); handleGetAISuggestions(); }}
+      />
+
+      <AIMealModal
+        isOpen={aiMealModalOpen}
+        onClose={() => setAiMealModalOpen(false)}
+        mealType={selectedMealType.charAt(0).toUpperCase() + selectedMealType.slice(1)}
+        explanation={aiResponse?.explanation || ""}
+        options={aiResponse?.options || []}
+        followUpQuestion={aiResponse?.followUpQuestion || ""}
+        onSelectMeal={handleSelectAIMeal}
+        isLoading={aiLoading}
+        onLogFood={() => { setAiMealModalOpen(false); setFoodLogModalOpen(true); }}
       />
     </div>
   );

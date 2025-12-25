@@ -1,1 +1,4 @@
 project_id = "snqrnpphjjskjtupwlfp"
+
+[functions.ai-meal-suggestions]
+verify_jwt = true

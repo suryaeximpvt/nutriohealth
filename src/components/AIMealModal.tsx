@@ -89,7 +89,7 @@ export const AIMealModal = forwardRef<HTMLDivElement, AIMealModalProps>(({
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-nutrio-sage-light rounded-xl p-4 mb-5"
+                    className="bg-primary/10 rounded-xl p-4 mb-5"
                   >
                     <p className="text-sm text-foreground leading-relaxed">
                       {explanation}
@@ -114,7 +114,7 @@ export const AIMealModal = forwardRef<HTMLDivElement, AIMealModalProps>(({
                                 {option.name}
                               </h3>
                               {option.isNutrio && (
-                                <span className="inline-flex items-center gap-1 text-xs font-medium text-nutrio-amber bg-nutrio-amber/10 px-2 py-0.5 rounded-full">
+                                <span className="inline-flex items-center gap-1 text-xs font-medium text-nutrio-yellow bg-nutrio-yellow/10 px-2 py-0.5 rounded-full">
                                   <Star className="w-3 h-3" />
                                   AI-Preferred
                                 </span>

@@ -137,7 +137,7 @@ export const MealDetailsModal = forwardRef<HTMLDivElement, MealDetailsModalProps
               ) : (
                 <>
                   {/* Totals Summary */}
-                  <div className="bg-nutrio-sage-light rounded-xl p-4 mb-4">
+                  <div className="bg-primary/10 rounded-xl p-4 mb-4">
                     <div className="grid grid-cols-5 gap-2 text-center">
                       <div>
                         <p className="text-lg font-bold text-foreground">{totalCalories}</p>
