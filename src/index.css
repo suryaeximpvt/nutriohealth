@@ -2,117 +2,118 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
 
-/* Nutrio Design System - Calm, British, Practical */
+/* Nutrio Design System - Fresh, Energetic, Vibrant */
 
 @layer base {
   :root {
-    /* Core palette - warm, earthy, approachable */
-    --background: 40 33% 98%;
-    --foreground: 220 20% 20%;
+    /* Core palette - fresh, vibrant, health-focused */
+    --background: 0 0% 98%;
+    --foreground: 220 15% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 20%;
+    --card-foreground: 220 15% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 20%;
+    --popover-foreground: 220 15% 20%;
 
-    /* Sage green - calming, health-focused */
-    --primary: 152 35% 45%;
+    /* Vibrant teal/green - energetic, fresh */
+    --primary: 160 84% 39%;
     --primary-foreground: 0 0% 100%;
 
-    /* Warm cream secondary */
-    --secondary: 40 30% 94%;
-    --secondary-foreground: 220 20% 20%;
+    /* Light gray secondary */
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 15% 20%;
 
     /* Soft muted tones */
-    --muted: 40 20% 92%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 10% 46%;
 
-    /* Coral accent - warm, friendly */
-    --accent: 15 75% 60%;
+    /* Orange accent - energetic, motivational */
+    --accent: 25 95% 53%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 40 20% 88%;
-    --input: 40 20% 88%;
-    --ring: 152 35% 45%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 160 84% 39%;
 
     --radius: 1rem;
 
     /* Custom Nutrio tokens */
-    --nutrio-sage: 152 35% 45%;
-    --nutrio-sage-light: 152 30% 92%;
-    --nutrio-cream: 40 33% 98%;
-    --nutrio-coral: 15 75% 60%;
-    --nutrio-coral-light: 15 70% 95%;
-    --nutrio-charcoal: 220 20% 20%;
-    --nutrio-warm-gray: 30 10% 60%;
-    --nutrio-amber: 38 92% 50%;
-    --nutrio-blue: 210 70% 55%;
-    --nutrio-purple: 270 50% 60%;
+    --nutrio-green: 160 84% 39%;
+    --nutrio-green-light: 160 60% 95%;
+    --nutrio-teal: 174 72% 40%;
+    --nutrio-orange: 25 95% 53%;
+    --nutrio-orange-light: 25 100% 95%;
+    --nutrio-charcoal: 220 15% 20%;
+    --nutrio-gray: 220 10% 46%;
+    --nutrio-yellow: 45 93% 47%;
+    --nutrio-blue: 210 90% 55%;
+    --nutrio-purple: 265 70% 60%;
+    --nutrio-red: 0 84% 60%;
 
     /* Gradients */
-    --gradient-sage: linear-gradient(135deg, hsl(152 35% 45%), hsl(152 40% 55%));
-    --gradient-warm: linear-gradient(135deg, hsl(40 33% 98%), hsl(30 30% 95%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(40 20% 99%));
+    --gradient-primary: linear-gradient(135deg, hsl(160 84% 39%), hsl(174 72% 40%));
+    --gradient-orange: linear-gradient(135deg, hsl(25 95% 53%), hsl(35 95% 55%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 14% 99%));
 
     /* Shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(220 20% 20% / 0.08);
-    --shadow-card: 0 2px 12px -2px hsl(220 20% 20% / 0.06);
-    --shadow-elevated: 0 8px 30px -6px hsl(220 20% 20% / 0.12);
+    --shadow-soft: 0 4px 20px -4px hsl(220 15% 20% / 0.08);
+    --shadow-card: 0 2px 12px -2px hsl(220 15% 20% / 0.08);
+    --shadow-elevated: 0 8px 30px -6px hsl(220 15% 20% / 0.15);
 
     /* Sidebar tokens */
-    --sidebar-background: 40 33% 98%;
-    --sidebar-foreground: 220 20% 20%;
-    --sidebar-primary: 152 35% 45%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 220 15% 20%;
+    --sidebar-primary: 160 84% 39%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 30% 94%;
-    --sidebar-accent-foreground: 220 20% 20%;
-    --sidebar-border: 40 20% 88%;
-    --sidebar-ring: 152 35% 45%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 220 15% 20%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 160 84% 39%;
   }
 
   .dark {
     --background: 220 20% 10%;
-    --foreground: 40 20% 95%;
+    --foreground: 0 0% 95%;
 
     --card: 220 18% 14%;
-    --card-foreground: 40 20% 95%;
+    --card-foreground: 0 0% 95%;
 
     --popover: 220 18% 14%;
-    --popover-foreground: 40 20% 95%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 152 40% 50%;
-    --primary-foreground: 220 20% 10%;
+    --primary: 160 70% 45%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 220 15% 20%;
-    --secondary-foreground: 40 20% 95%;
+    --secondary-foreground: 0 0% 95%;
 
     --muted: 220 15% 20%;
-    --muted-foreground: 40 10% 60%;
+    --muted-foreground: 220 10% 60%;
 
-    --accent: 15 70% 55%;
+    --accent: 25 90% 55%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62% 45%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 15% 22%;
     --input: 220 15% 22%;
-    --ring: 152 40% 50%;
+    --ring: 160 70% 45%;
 
     --sidebar-background: 220 20% 10%;
-    --sidebar-foreground: 40 20% 95%;
-    --sidebar-primary: 152 40% 50%;
-    --sidebar-primary-foreground: 220 20% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 160 70% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 15% 20%;
-    --sidebar-accent-foreground: 40 20% 95%;
+    --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 220 15% 22%;
-    --sidebar-ring: 152 40% 50%;
+    --sidebar-ring: 160 70% 45%;
   }
 }
 
@@ -123,7 +124,11 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', system-ui, sans-serif;
   }
 }
 
@@ -138,11 +143,19 @@
     box-shadow: var(--shadow-elevated);
   }
 
-  .text-gradient-sage {
-    background: var(--gradient-sage);
+  .text-gradient-primary {
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-orange {
+    background: var(--gradient-orange);
   }
 
   .ring-glow {

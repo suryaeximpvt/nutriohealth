@@ -18,7 +18,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        display: ['"Outfit"', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -65,16 +66,17 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         nutrio: {
-          sage: "hsl(var(--nutrio-sage))",
-          "sage-light": "hsl(var(--nutrio-sage-light))",
-          cream: "hsl(var(--nutrio-cream))",
-          coral: "hsl(var(--nutrio-coral))",
-          "coral-light": "hsl(var(--nutrio-coral-light))",
+          green: "hsl(var(--nutrio-green))",
+          "green-light": "hsl(var(--nutrio-green-light))",
+          teal: "hsl(var(--nutrio-teal))",
+          orange: "hsl(var(--nutrio-orange))",
+          "orange-light": "hsl(var(--nutrio-orange-light))",
           charcoal: "hsl(var(--nutrio-charcoal))",
-          "warm-gray": "hsl(var(--nutrio-warm-gray))",
-          amber: "hsl(var(--nutrio-amber))",
+          gray: "hsl(var(--nutrio-gray))",
+          yellow: "hsl(var(--nutrio-yellow))",
           blue: "hsl(var(--nutrio-blue))",
           purple: "hsl(var(--nutrio-purple))",
+          red: "hsl(var(--nutrio-red))",
         },
       },
       borderRadius: {
