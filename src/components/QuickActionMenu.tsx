@@ -32,14 +32,14 @@ export const QuickActionMenu = ({ isOpen, onClose, onOpenWaterTracker }: QuickAc
       icon: Settings, 
       label: "Settings", 
       desc: "App preferences & account",
-      onClick: () => { navigate("/profile"); onClose(); },
+      onClick: () => { navigate("/settings?tab=account"); onClose(); },
       color: "text-gray-500"
     },
     { 
       icon: Target, 
       label: "Goals & Preferences", 
       desc: "Update your fitness goals",
-      onClick: () => { navigate("/onboarding"); onClose(); },
+      onClick: () => { navigate("/settings?tab=preferences"); onClose(); },
       color: "text-green-500"
     },
     { 
@@ -53,7 +53,7 @@ export const QuickActionMenu = ({ isOpen, onClose, onOpenWaterTracker }: QuickAc
       icon: Bell, 
       label: "Notifications", 
       desc: "Manage reminders",
-      onClick: () => { navigate("/profile"); onClose(); },
+      onClick: () => { navigate("/settings?tab=notifications"); onClose(); },
       color: "text-amber-500"
     },
   ];
