@@ -10,6 +10,7 @@ import { HealthStats } from "@/components/HealthStats";
 import { AISuggestedMealCard } from "@/components/AISuggestedMealCard";
 import { FoodLogModal } from "@/components/FoodLogModal";
 import { PhotoUploadModal } from "@/components/PhotoUploadModal";
+import { MealTypeSelector } from "@/components/MealTypeSelector";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { useDailyAISuggestions } from "@/hooks/useDailyAISuggestions";
@@ -30,6 +31,7 @@ const Index = () => {
 
   const [foodModalOpen, setFoodModalOpen] = useState(false);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
+  const [mealSelectorOpen, setMealSelectorOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<"breakfast" | "lunch" | "snacks" | "dinner">("breakfast");
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
 
@@ -156,6 +158,21 @@ const Index = () => {
     toast.success(`Generated new ${mealType} suggestion`);
   };
 
+  const handleQuickScan = () => {
+    setMealSelectorOpen(true);
+  };
+
+  const handleMealTypeSelected = (mealType: typeof selectedMealType) => {
+    setSelectedMealType(mealType);
+    setMealSelectorOpen(false);
+    setPhotoModalOpen(true);
+  };
+
+  const handleAddManual = (mealType: typeof selectedMealType) => {
+    setSelectedMealType(mealType);
+    setFoodModalOpen(true);
+  };
+
   const handleAddPhoto = (mealType: typeof selectedMealType) => {
     setSelectedMealType(mealType);
     setPhotoModalOpen(true);
@@ -206,7 +223,7 @@ const Index = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          onClick={() => navigate("/log")}
+          onClick={handleQuickScan}
           className="w-full bg-gradient-to-r from-primary to-primary/80 rounded-2xl p-5 flex items-center gap-4 mb-3"
         >
           <div className="w-12 h-12 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
@@ -223,6 +240,7 @@ const Index = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
+          onClick={() => toast.info("Premium features coming soon!")}
           className="w-full bg-gradient-to-r from-primary/90 to-primary/70 rounded-2xl p-4 flex items-center justify-between mb-6"
         >
           <div className="flex items-center gap-3">
@@ -370,6 +388,7 @@ const Index = () => {
                 onLogMeal={() => handleLogAIMeal(meal.type)}
                 onRegenerate={() => handleRegenerate(meal.type)}
                 onAddPhoto={() => handleAddPhoto(meal.type)}
+                onAddManual={() => handleAddManual(meal.type)}
                 onDeleteFood={deleteFood}
                 delay={0.4 + index * 0.05}
               />
@@ -401,6 +420,12 @@ const Index = () => {
         onClose={() => setPhotoModalOpen(false)}
         mealType={selectedMealType}
         onFoodRecognized={handleFoodRecognized}
+      />
+
+      <MealTypeSelector
+        isOpen={mealSelectorOpen}
+        onClose={() => setMealSelectorOpen(false)}
+        onSelect={handleMealTypeSelected}
       />
     </div>
   );

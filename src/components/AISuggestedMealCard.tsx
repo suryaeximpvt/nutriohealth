@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { RefreshCw, Plus, Camera, Loader2, Sparkles } from "lucide-react";
+import { RefreshCw, Plus, Camera, Loader2, Sparkles, PenLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AISuggestion } from "@/hooks/useDailyAISuggestions";
 
@@ -13,6 +13,7 @@ interface AISuggestedMealCardProps {
   onLogMeal: () => void;
   onRegenerate: () => void;
   onAddPhoto: () => void;
+  onAddManual?: () => void;
   onDeleteFood: (id: string) => void;
   delay?: number;
 }
@@ -27,6 +28,7 @@ export const AISuggestedMealCard = ({
   onLogMeal,
   onRegenerate,
   onAddPhoto,
+  onAddManual,
   onDeleteFood,
   delay = 0,
 }: AISuggestedMealCardProps) => {
@@ -120,31 +122,41 @@ export const AISuggestedMealCard = ({
             </div>
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               <button
                 onClick={onLogMeal}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors"
+                className="flex flex-col items-center justify-center gap-1 px-2 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                <span className="text-sm">Log This</span>
+                <span className="text-xs">Log</span>
               </button>
               
               <button
                 onClick={onRegenerate}
                 disabled={isLoading}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-muted rounded-xl font-medium hover:bg-muted/80 transition-colors disabled:opacity-50"
+                className="flex flex-col items-center justify-center gap-1 px-2 py-3 bg-muted rounded-xl font-medium hover:bg-muted/80 transition-colors disabled:opacity-50"
               >
                 <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
-                <span className="text-sm">New</span>
+                <span className="text-xs">New</span>
               </button>
               
               <button
                 onClick={onAddPhoto}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-nutrio-blue/10 text-nutrio-blue rounded-xl font-medium hover:bg-nutrio-blue/20 transition-colors"
+                className="flex flex-col items-center justify-center gap-1 px-2 py-3 bg-nutrio-blue/10 text-nutrio-blue rounded-xl font-medium hover:bg-nutrio-blue/20 transition-colors"
               >
                 <Camera className="w-4 h-4" />
-                <span className="text-sm">Scan</span>
+                <span className="text-xs">Scan</span>
               </button>
+
+              {onAddManual && (
+                <button
+                  onClick={onAddManual}
+                  className="flex flex-col items-center justify-center gap-1 px-2 py-3 bg-nutrio-purple/10 text-nutrio-purple rounded-xl font-medium hover:bg-nutrio-purple/20 transition-colors"
+                >
+                  <PenLine className="w-4 h-4" />
+                  <span className="text-xs">Manual</span>
+                </button>
+              )}
             </div>
           </div>
         ) : (
@@ -153,12 +165,28 @@ export const AISuggestedMealCard = ({
             <p className="text-sm text-muted-foreground">
               Tap to get AI suggestions
             </p>
-            <button
-              onClick={onRegenerate}
-              className="mt-3 px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors"
-            >
-              Generate Suggestion
-            </button>
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={onRegenerate}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors"
+              >
+                Generate
+              </button>
+              <button
+                onClick={onAddPhoto}
+                className="px-4 py-2 bg-nutrio-blue/10 text-nutrio-blue rounded-xl text-sm font-medium hover:bg-nutrio-blue/20 transition-colors"
+              >
+                Scan
+              </button>
+              {onAddManual && (
+                <button
+                  onClick={onAddManual}
+                  className="px-4 py-2 bg-muted rounded-xl text-sm font-medium hover:bg-muted/80 transition-colors"
+                >
+                  Manual
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
