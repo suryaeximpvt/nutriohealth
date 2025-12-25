@@ -14,7 +14,138 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      food_logs: {
+        Row: {
+          calories: number
+          carbs: number | null
+          created_at: string | null
+          fat: number | null
+          fibre: number | null
+          food_name: string
+          id: string
+          logged_at: string
+          meal_type: string
+          protein: number | null
+          quantity: number | null
+          unit: string | null
+          user_id: string
+        }
+        Insert: {
+          calories?: number
+          carbs?: number | null
+          created_at?: string | null
+          fat?: number | null
+          fibre?: number | null
+          food_name: string
+          id?: string
+          logged_at?: string
+          meal_type: string
+          protein?: number | null
+          quantity?: number | null
+          unit?: string | null
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbs?: number | null
+          created_at?: string | null
+          fat?: number | null
+          fibre?: number | null
+          food_name?: string
+          id?: string
+          logged_at?: string
+          meal_type?: string
+          protein?: number | null
+          quantity?: number | null
+          unit?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          activity_level: string | null
+          allergies: string[] | null
+          calorie_target: number | null
+          carbs_target: number | null
+          created_at: string | null
+          diet_preference: string | null
+          excluded_foods: string[] | null
+          fat_target: number | null
+          fibre_target: number | null
+          full_name: string | null
+          goal: string | null
+          height_cm: number | null
+          id: string
+          protein_target: number | null
+          updated_at: string | null
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          activity_level?: string | null
+          allergies?: string[] | null
+          calorie_target?: number | null
+          carbs_target?: number | null
+          created_at?: string | null
+          diet_preference?: string | null
+          excluded_foods?: string[] | null
+          fat_target?: number | null
+          fibre_target?: number | null
+          full_name?: string | null
+          goal?: string | null
+          height_cm?: number | null
+          id?: string
+          protein_target?: number | null
+          updated_at?: string | null
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          activity_level?: string | null
+          allergies?: string[] | null
+          calorie_target?: number | null
+          carbs_target?: number | null
+          created_at?: string | null
+          diet_preference?: string | null
+          excluded_foods?: string[] | null
+          fat_target?: number | null
+          fibre_target?: number | null
+          full_name?: string | null
+          goal?: string | null
+          height_cm?: number | null
+          id?: string
+          protein_target?: number | null
+          updated_at?: string | null
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      water_logs: {
+        Row: {
+          created_at: string | null
+          glasses: number
+          id: string
+          logged_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          glasses?: number
+          id?: string
+          logged_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          glasses?: number
+          id?: string
+          logged_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
