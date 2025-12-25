@@ -12,7 +12,6 @@ import { FoodLogModal } from "@/components/FoodLogModal";
 import { PhotoUploadModal } from "@/components/PhotoUploadModal";
 import { MealTypeSelector } from "@/components/MealTypeSelector";
 import { PremiumModal } from "@/components/PremiumModal";
-import { ShopNutrioSection } from "@/components/ShopNutrioSection";
 import { WaterTracker } from "@/components/WaterTracker";
 import { WaterHydrationPrompt } from "@/components/WaterHydrationPrompt";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,6 +19,7 @@ import { useUserData } from "@/hooks/useUserData";
 import { useDailyAISuggestions } from "@/hooks/useDailyAISuggestions";
 import { usePremium } from "@/hooks/usePremium";
 import { useNotifications } from "@/hooks/useNotifications";
+import { AISuggestion } from "@/hooks/useDailyAISuggestions";
 import { toast } from "sonner";
 
 const MEAL_CONFIG = [
@@ -113,8 +113,7 @@ const { isPremium, canUseAI, getAISuggestionsRemaining, incrementAIUsage } = use
   const today = new Date();
   const dateStr = today.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 
-  const handleLogAIMeal = async (mealType: typeof selectedMealType) => {
-    const suggestion = suggestions[mealType];
+const handleLogAIMeal = async (mealType: typeof selectedMealType, suggestion: AISuggestion) => {
     if (!suggestion) return;
 
     const result = await logFood(mealType, {
@@ -454,10 +453,10 @@ return (
                 title={meal.title}
                 mealType={meal.type}
                 emoji={meal.emoji}
-                suggestion={suggestions[meal.type]}
+                mealOptions={suggestions[meal.type]}
                 isLoading={aiLoading && !suggestions[meal.type]}
                 loggedFoods={dailySummary.meals[meal.type]}
-                onLogMeal={() => handleLogAIMeal(meal.type)}
+                onLogMeal={(suggestion) => handleLogAIMeal(meal.type, suggestion)}
                 onRegenerate={() => handleRegenerate(meal.type)}
                 onAddPhoto={() => handleAddPhoto(meal.type)}
                 onAddManual={() => handleAddManual(meal.type)}
@@ -468,14 +467,28 @@ return (
           </div>
         </motion.div>
 
-        {/* Shop Nutrio Section */}
+        {/* Shop Nutrio Button */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55 }}
           className="mb-4"
         >
-          <ShopNutrioSection suggestions={suggestions} />
+          <button
+            onClick={() => navigate("/shop")}
+            className="w-full bg-gradient-to-r from-nutrio-amber/20 to-nutrio-orange/20 border border-nutrio-amber/30 rounded-2xl p-4 flex items-center justify-between hover:from-nutrio-amber/30 hover:to-nutrio-orange/30 transition-all"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-nutrio-amber/20 flex items-center justify-center">
+                <span className="text-xl">🛒</span>
+              </div>
+              <div className="text-left">
+                <h3 className="font-semibold text-foreground">Shop Nutrio Products</h3>
+                <p className="text-sm text-muted-foreground">Browse our protein range</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-nutrio-amber" />
+          </button>
         </motion.div>
       </div>
 
