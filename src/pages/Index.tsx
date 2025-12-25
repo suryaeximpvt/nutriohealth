@@ -36,10 +36,9 @@ const Index = () => {
       // Open food log modal when Log tab is clicked
       setFoodLogModalOpen(true);
     } else if (tab === "profile") {
-      // Navigate to profile/settings (for now just show toast)
       toast.info("Profile settings coming soon!");
     } else if (tab === "workout") {
-      toast.info("Workout tracking coming soon!");
+      navigate("/workout");
     } else if (tab === "progress") {
       toast.info("Progress charts coming soon!");
     }
