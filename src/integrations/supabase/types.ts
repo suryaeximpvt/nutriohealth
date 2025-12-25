@@ -128,6 +128,45 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          ai_suggestions_today: number
+          created_at: string
+          expires_at: string | null
+          id: string
+          last_suggestion_date: string | null
+          plan: string
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_suggestions_today?: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          last_suggestion_date?: string | null
+          plan?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_suggestions_today?: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          last_suggestion_date?: string | null
+          plan?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       water_logs: {
         Row: {
           created_at: string | null
