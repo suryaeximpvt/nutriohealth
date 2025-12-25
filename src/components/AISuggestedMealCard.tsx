@@ -49,7 +49,7 @@ export const AISuggestedMealCard = ({
     setSelectedOption(option);
   };
 
-  return (
+return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -62,27 +62,32 @@ export const AISuggestedMealCard = ({
         className="w-full p-4 flex items-center gap-3 text-left hover:bg-muted/30 transition-colors"
       >
         <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-2xl">
-          {currentSuggestion?.emoji || emoji}
+          {emoji}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-foreground truncate">
-              {currentSuggestion?.name || title}
+            <h3 className="font-semibold text-foreground">
+              {title}
             </h3>
           </div>
           <div className="flex items-center gap-2 mt-0.5">
-            <div className="flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-primary" />
-              <span className="text-xs font-medium text-primary">AI Pick</span>
-            </div>
-            {displayCalories > 0 && (
+            {currentSuggestion && (
               <>
+                <div className="flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-primary" />
+                  <span className="text-xs font-medium text-primary">AI Pick</span>
+                </div>
                 <span className="text-muted-foreground">•</span>
-                <span className="text-xs text-muted-foreground">
-                  {displayCalories} kcal{hasLogged ? " logged" : ""}
-                </span>
               </>
             )}
+            <span className="text-xs text-muted-foreground">
+              {hasLogged 
+                ? `${displayCalories} kcal logged` 
+                : currentSuggestion 
+                  ? `${displayCalories} kcal suggested`
+                  : "Tap to see suggestions"
+              }
+            </span>
           </div>
         </div>
         <motion.div
