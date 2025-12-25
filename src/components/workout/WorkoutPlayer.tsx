@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Play, Pause, SkipForward, RotateCcw, Volume2, VolumeX, Check } from "lucide-react";
+import { X, Play, Pause, SkipForward, RotateCcw, Volume2, VolumeX, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { Workout, Exercise } from "@/data/workoutData";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +24,7 @@ export const WorkoutPlayer = ({ workout, onClose, onComplete }: WorkoutPlayerPro
   const [isMuted, setIsMuted] = useState(false);
   const [currentSet, setCurrentSet] = useState(1);
   const [totalTimeElapsed, setTotalTimeElapsed] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState(false);
   
   const currentExercise = workout.exercises[currentExerciseIndex];
   const totalExercises = workout.exercises.length;
@@ -41,10 +42,21 @@ export const WorkoutPlayer = ({ workout, onClose, onComplete }: WorkoutPlayerPro
       setCurrentSet(1);
       setPhase('rest');
       setTimeRemaining(currentExercise.restTime);
+      setImageLoaded(false);
     } else {
       setPhase('complete');
     }
   }, [currentExerciseIndex, totalExercises, currentExercise?.restTime]);
+
+  const handlePreviousExercise = () => {
+    if (currentExerciseIndex > 0) {
+      setCurrentExerciseIndex(prev => prev - 1);
+      setCurrentSet(1);
+      setPhase('exercise');
+      setTimeRemaining(getExerciseDuration(workout.exercises[currentExerciseIndex - 1]));
+      setImageLoaded(false);
+    }
+  };
 
   const handleCompleteWorkout = async () => {
     if (!user) return;
@@ -117,6 +129,15 @@ export const WorkoutPlayer = ({ workout, onClose, onComplete }: WorkoutPlayerPro
     setTimeRemaining(getExerciseDuration(currentExercise));
   };
 
+  // Preload next exercise image
+  useEffect(() => {
+    if (currentExerciseIndex < totalExercises - 1) {
+      const nextExercise = workout.exercises[currentExerciseIndex + 1];
+      const img = new Image();
+      img.src = nextExercise.demoUrl;
+    }
+  }, [currentExerciseIndex, workout.exercises, totalExercises]);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -142,7 +163,7 @@ export const WorkoutPlayer = ({ workout, onClose, onComplete }: WorkoutPlayerPro
       <Progress value={progress} className="h-1 rounded-none" />
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 overflow-hidden">
         <AnimatePresence mode="wait">
           {phase === 'countdown' && (
             <motion.div
@@ -153,49 +174,118 @@ export const WorkoutPlayer = ({ workout, onClose, onComplete }: WorkoutPlayerPro
               className="text-center"
             >
               <p className="text-xl text-muted-foreground mb-4">Get Ready!</p>
-              <div className="w-40 h-40 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+              <motion.div 
+                className="w-40 h-40 rounded-full bg-primary/10 flex items-center justify-center mb-6"
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ repeat: Infinity, duration: 1 }}
+              >
                 <span className="text-7xl font-bold text-primary">{timeRemaining}</span>
+              </motion.div>
+              <p className="text-lg font-medium text-foreground mb-2">First up:</p>
+              <p className="text-xl font-bold text-primary">{currentExercise.name}</p>
+              
+              {/* Preview of first exercise */}
+              <div className="mt-4 w-48 h-48 mx-auto rounded-xl overflow-hidden bg-muted">
+                <img 
+                  src={currentExercise.demoUrl} 
+                  alt={currentExercise.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <p className="text-lg font-medium text-foreground">First up: {currentExercise.name}</p>
             </motion.div>
           )}
 
           {phase === 'exercise' && (
             <motion.div
-              key="exercise"
+              key={`exercise-${currentExerciseIndex}`}
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -50, opacity: 0 }}
               className="text-center w-full max-w-md"
             >
-              {/* Video placeholder */}
-              <div className="aspect-video bg-gradient-to-br from-muted to-muted/50 rounded-2xl mb-6 flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <motion.div
-                  animate={{ scale: [1, 1.05, 1] }}
+              {/* Video/GIF demo */}
+              <div className="relative aspect-square max-h-[300px] bg-gradient-to-br from-muted to-muted/50 rounded-2xl mb-4 overflow-hidden shadow-lg">
+                {!imageLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                      className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
+                    />
+                  </div>
+                )}
+                <motion.img 
+                  src={currentExercise.demoUrl} 
+                  alt={currentExercise.name}
+                  className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  onLoad={() => setImageLoaded(true)}
+                  animate={{ scale: isPaused ? 1 : [1, 1.02, 1] }}
                   transition={{ repeat: Infinity, duration: 2 }}
-                  className="text-6xl"
-                >
-                  🏋️
-                </motion.div>
-                <div className="absolute bottom-4 left-4 right-4 text-white text-left">
-                  <p className="text-sm opacity-80">Demo video</p>
-                  <p className="font-semibold">{currentExercise.name}</p>
+                />
+                
+                {/* Overlay with exercise info */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4">
+                  <p className="text-white font-bold text-lg">{currentExercise.name}</p>
+                  <p className="text-white/80 text-sm">{currentExercise.muscleGroup}</p>
                 </div>
+
+                {/* Navigation arrows */}
+                <button
+                  onClick={handlePreviousExercise}
+                  disabled={currentExerciseIndex === 0}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 flex items-center justify-center disabled:opacity-30 hover:bg-black/60 transition-colors"
+                >
+                  <ChevronLeft className="w-6 h-6 text-white" />
+                </button>
+                <button
+                  onClick={skipExercise}
+                  disabled={currentExerciseIndex === totalExercises - 1}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 flex items-center justify-center disabled:opacity-30 hover:bg-black/60 transition-colors"
+                >
+                  <ChevronRight className="w-6 h-6 text-white" />
+                </button>
+
+                {/* Paused overlay */}
+                {isPaused && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute inset-0 bg-black/50 flex items-center justify-center"
+                  >
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-4">
+                      <Pause className="w-12 h-12 text-white" />
+                    </div>
+                  </motion.div>
+                )}
               </div>
 
-              <h2 className="text-2xl font-bold text-foreground mb-2">{currentExercise.name}</h2>
-              <p className="text-muted-foreground mb-4">{currentExercise.description}</p>
+              <p className="text-muted-foreground mb-2">{currentExercise.description}</p>
 
-              {currentExercise.sets && (
-                <p className="text-lg font-medium text-primary mb-4">
-                  Set {currentSet} of {currentExercise.sets} • {currentExercise.reps} reps
-                </p>
+              {currentExercise.sets ? (
+                <div className="flex items-center justify-center gap-4 mb-4">
+                  <div className="bg-primary/10 rounded-xl px-4 py-2">
+                    <p className="text-sm text-muted-foreground">Set</p>
+                    <p className="text-xl font-bold text-primary">{currentSet} / {currentExercise.sets}</p>
+                  </div>
+                  <div className="bg-muted rounded-xl px-4 py-2">
+                    <p className="text-sm text-muted-foreground">Reps</p>
+                    <p className="text-xl font-bold text-foreground">{currentExercise.reps}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-primary/10 rounded-xl px-4 py-2 inline-block mb-4">
+                  <p className="text-sm text-muted-foreground">Hold for</p>
+                  <p className="text-xl font-bold text-primary">{currentExercise.duration}s</p>
+                </div>
               )}
 
-              <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                <span className="text-4xl font-bold text-primary">{formatTime(timeRemaining)}</span>
-              </div>
+              <motion.div 
+                className="w-28 h-28 rounded-full bg-primary/10 flex items-center justify-center mx-auto"
+                animate={!isPaused ? { scale: [1, 1.05, 1] } : {}}
+                transition={{ repeat: Infinity, duration: 1 }}
+              >
+                <span className="text-3xl font-bold text-primary">{formatTime(timeRemaining)}</span>
+              </motion.div>
             </motion.div>
           )}
 
@@ -207,13 +297,57 @@ export const WorkoutPlayer = ({ workout, onClose, onComplete }: WorkoutPlayerPro
               exit={{ scale: 0.8, opacity: 0 }}
               className="text-center"
             >
-              <p className="text-xl text-muted-foreground mb-4">Rest Time</p>
-              <div className="w-40 h-40 rounded-full bg-nutrio-blue/10 flex items-center justify-center mb-6">
+              <motion.p 
+                className="text-2xl font-bold text-nutrio-blue mb-2"
+                animate={{ opacity: [1, 0.6, 1] }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+              >
+                Rest Time
+              </motion.p>
+              <p className="text-muted-foreground mb-6">Catch your breath</p>
+              
+              <motion.div 
+                className="w-40 h-40 rounded-full bg-nutrio-blue/10 flex items-center justify-center mb-6 mx-auto"
+                animate={{ scale: [1, 1.02, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
                 <span className="text-5xl font-bold text-nutrio-blue">{formatTime(timeRemaining)}</span>
-              </div>
-              <p className="text-lg font-medium text-foreground">
-                Next: {workout.exercises[currentExerciseIndex + 1]?.name || 'Workout Complete!'}
-              </p>
+              </motion.div>
+
+              {/* Preview of next exercise */}
+              {currentExerciseIndex < totalExercises - 1 && (
+                <div className="bg-card rounded-2xl p-4 shadow-card max-w-xs mx-auto">
+                  <p className="text-sm text-muted-foreground mb-2">Up Next</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-muted flex-shrink-0">
+                      <img 
+                        src={workout.exercises[currentExerciseIndex + 1].demoUrl}
+                        alt={workout.exercises[currentExerciseIndex + 1].name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-bold text-foreground">{workout.exercises[currentExerciseIndex + 1].name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {workout.exercises[currentExerciseIndex + 1].sets 
+                          ? `${workout.exercises[currentExerciseIndex + 1].sets} sets × ${workout.exercises[currentExerciseIndex + 1].reps} reps`
+                          : `${workout.exercises[currentExerciseIndex + 1].duration}s hold`
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={() => {
+                  setPhase('exercise');
+                  setTimeRemaining(getExerciseDuration(currentExercise));
+                }}
+                className="mt-4 text-primary font-medium hover:underline"
+              >
+                Skip Rest →
+              </button>
             </motion.div>
           )}
 
@@ -234,34 +368,72 @@ export const WorkoutPlayer = ({ workout, onClose, onComplete }: WorkoutPlayerPro
               </motion.div>
               <h2 className="text-3xl font-bold text-foreground mb-2">Workout Complete!</h2>
               <p className="text-muted-foreground mb-2">Amazing work! 💪</p>
+              
               <div className="flex justify-center gap-6 mt-6 mb-8">
-                <div className="text-center">
+                <motion.div 
+                  className="text-center"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
                   <p className="text-2xl font-bold text-primary">{formatTime(totalTimeElapsed)}</p>
                   <p className="text-sm text-muted-foreground">Duration</p>
-                </div>
-                <div className="text-center">
+                </motion.div>
+                <motion.div 
+                  className="text-center"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
                   <p className="text-2xl font-bold text-nutrio-coral">{workout.calories}</p>
                   <p className="text-sm text-muted-foreground">Calories</p>
-                </div>
-                <div className="text-center">
+                </motion.div>
+                <motion.div 
+                  className="text-center"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
                   <p className="text-2xl font-bold text-nutrio-blue">{totalExercises}</p>
                   <p className="text-sm text-muted-foreground">Exercises</p>
-                </div>
+                </motion.div>
               </div>
-              <button
+              
+              <motion.button
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6 }}
                 onClick={handleCompleteWorkout}
                 className="w-full max-w-xs bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 rounded-xl transition-colors"
               >
                 Save & Finish
-              </button>
+              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
+      {/* Exercise dots indicator */}
+      {phase !== 'complete' && (
+        <div className="flex justify-center gap-1.5 pb-2">
+          {workout.exercises.map((_, index) => (
+            <div
+              key={index}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                index < currentExerciseIndex 
+                  ? 'bg-primary' 
+                  : index === currentExerciseIndex 
+                    ? 'bg-primary w-4' 
+                    : 'bg-muted'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Controls */}
       {phase !== 'complete' && (
-        <div className="p-6 border-t border-border">
+        <div className="p-6 border-t border-border bg-card/50 backdrop-blur-sm">
           <div className="flex items-center justify-center gap-4">
             <button
               onClick={restartExercise}
@@ -271,7 +443,7 @@ export const WorkoutPlayer = ({ workout, onClose, onComplete }: WorkoutPlayerPro
             </button>
             <button
               onClick={() => setIsPaused(!isPaused)}
-              className="w-20 h-20 rounded-full bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors"
+              className="w-20 h-20 rounded-full bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors shadow-lg"
             >
               {isPaused ? (
                 <Play className="w-10 h-10 text-primary-foreground ml-1" />
@@ -287,7 +459,7 @@ export const WorkoutPlayer = ({ workout, onClose, onComplete }: WorkoutPlayerPro
             </button>
           </div>
           <p className="text-center text-sm text-muted-foreground mt-3">
-            {isPaused ? 'Paused' : 'Tap to pause'}
+            {isPaused ? 'Paused - Tap to resume' : 'Tap to pause'}
           </p>
         </div>
       )}
