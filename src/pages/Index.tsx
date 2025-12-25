@@ -14,6 +14,7 @@ import { MealTypeSelector } from "@/components/MealTypeSelector";
 import { PremiumModal } from "@/components/PremiumModal";
 import { WaterTracker } from "@/components/WaterTracker";
 import { WaterHydrationPrompt } from "@/components/WaterHydrationPrompt";
+import { DailyIntakeBreakdown } from "@/components/DailyIntakeBreakdown";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { useDailyAISuggestions } from "@/hooks/useDailyAISuggestions";
@@ -32,10 +33,10 @@ const MEAL_CONFIG = [
 const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-const { profile, dailySummary, loading: dataLoading, logFood, deleteFood, waterGlasses, lastWaterLogTime, updateWater } = useUserData();
+  const { profile, dailySummary, loading: dataLoading, logFood, deleteFood, waterGlasses, lastWaterLogTime, updateWater } = useUserData();
   const { loading: aiLoading, suggestions, fetchDailySuggestions, regenerateMeal } = useDailyAISuggestions();
 
-const { isPremium, canUseAI, getAISuggestionsRemaining, incrementAIUsage } = usePremium();
+  const { isPremium, canUseAI, getAISuggestionsRemaining, incrementAIUsage } = usePremium();
   
   // Initialize notifications (schedules reminders on native platforms)
   useNotifications();
@@ -44,6 +45,7 @@ const { isPremium, canUseAI, getAISuggestionsRemaining, incrementAIUsage } = use
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [mealSelectorOpen, setMealSelectorOpen] = useState(false);
   const [premiumModalOpen, setPremiumModalOpen] = useState(false);
+  const [intakeBreakdownOpen, setIntakeBreakdownOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<"breakfast" | "lunch" | "snacks" | "dinner">("breakfast");
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
 
@@ -326,7 +328,12 @@ return (
             <span className="text-muted-foreground text-sm">{dateStr}</span>
           </div>
 
-          <div className="flex justify-center mb-6">
+          <motion.button
+            className="flex justify-center mb-6 cursor-pointer"
+            onClick={() => setIntakeBreakdownOpen(true)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
             <ProgressRing
               progress={calorieProgress}
               size={180}
@@ -336,9 +343,10 @@ return (
               <div className="text-center">
                 <p className="text-4xl font-bold text-foreground">{caloriesRemaining}</p>
                 <p className="text-muted-foreground text-sm">Remaining</p>
+                <p className="text-xs text-primary mt-1">Tap to view</p>
               </div>
             </ProgressRing>
-          </div>
+          </motion.button>
 
           <div className="flex items-center justify-around">
             <div className="text-center">
@@ -526,6 +534,16 @@ return (
       <PremiumModal
         isOpen={premiumModalOpen}
         onClose={() => setPremiumModalOpen(false)}
+      />
+
+      <DailyIntakeBreakdown
+        isOpen={intakeBreakdownOpen}
+        onClose={() => setIntakeBreakdownOpen(false)}
+        meals={dailySummary.meals}
+        caloriesConsumed={caloriesConsumed}
+        caloriesRemaining={caloriesRemaining}
+        calorieTarget={calorieTarget}
+        onDeleteFood={deleteFood}
       />
     </div>
   );
