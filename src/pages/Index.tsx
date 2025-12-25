@@ -11,6 +11,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { WaterTracker } from "@/components/WaterTracker";
 import { AIMealModal } from "@/components/AIMealModal";
 import { FoodLogModal } from "@/components/FoodLogModal";
+import { MealDetailsModal } from "@/components/MealDetailsModal";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { useAIMeals } from "@/hooks/useAIMeals";
@@ -21,12 +22,13 @@ type MealType = "breakfast" | "lunch" | "snacks" | "dinner";
 const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { profile, dailySummary, waterGlasses, loading: dataLoading, logFood, updateWater } = useUserData();
+  const { profile, dailySummary, waterGlasses, loading: dataLoading, logFood, deleteFood, editFood, updateWater } = useUserData();
   const { loading: aiLoading, response: aiResponse, getMealSuggestions } = useAIMeals();
 
   const [activeTab, setActiveTab] = useState("home");
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [foodLogModalOpen, setFoodLogModalOpen] = useState(false);
+  const [mealDetailsModalOpen, setMealDetailsModalOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>("breakfast");
 
   // Handle tab changes from bottom nav
@@ -79,8 +81,21 @@ const Index = () => {
     return { logged: true, calories: totalCalories, items: itemNames };
   };
 
-  const handleMealClick = async (mealType: MealType) => {
+  const handleMealClick = (mealType: MealType) => {
     setSelectedMealType(mealType);
+    const meals = dailySummary.meals[mealType];
+    
+    // If meals are logged, show details modal; otherwise show AI suggestions
+    if (meals.length > 0) {
+      setMealDetailsModalOpen(true);
+    } else {
+      openAISuggestions(mealType);
+    }
+  };
+
+  const openAISuggestions = async (mealType: MealType) => {
+    setSelectedMealType(mealType);
+    setMealDetailsModalOpen(false);
     setAiModalOpen(true);
 
     // Fetch AI suggestions
@@ -93,6 +108,12 @@ const Index = () => {
 
   const handleSelectMeal = (meal: { name: string; calories: number }) => {
     // Close AI modal and open food log modal to confirm
+    setAiModalOpen(false);
+    setFoodLogModalOpen(true);
+  };
+
+  const handleOpenFoodLog = () => {
+    setMealDetailsModalOpen(false);
     setAiModalOpen(false);
     setFoodLogModalOpen(true);
   };
@@ -309,10 +330,7 @@ const Index = () => {
         followUpQuestion={aiResponse?.followUpQuestion || ""}
         onSelectMeal={handleSelectMeal}
         isLoading={aiLoading}
-        onLogFood={() => {
-          setAiModalOpen(false);
-          setFoodLogModalOpen(true);
-        }}
+        onLogFood={handleOpenFoodLog}
       />
 
       {/* Food Log Modal */}
@@ -321,6 +339,18 @@ const Index = () => {
         onClose={() => setFoodLogModalOpen(false)}
         mealType={selectedMealType.charAt(0).toUpperCase() + selectedMealType.slice(1)}
         onLogFood={handleLogFood}
+      />
+
+      {/* Meal Details Modal */}
+      <MealDetailsModal
+        isOpen={mealDetailsModalOpen}
+        onClose={() => setMealDetailsModalOpen(false)}
+        mealType={selectedMealType.charAt(0).toUpperCase() + selectedMealType.slice(1)}
+        foods={dailySummary.meals[selectedMealType]}
+        onDeleteFood={deleteFood}
+        onEditFood={editFood}
+        onAddFood={handleOpenFoodLog}
+        onGetAISuggestions={() => openAISuggestions(selectedMealType)}
       />
     </div>
   );
