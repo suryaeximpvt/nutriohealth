@@ -14,8 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import BottomNav from "@/components/BottomNav";
-import AppHeader from "@/components/AppHeader";
+import { BottomNav } from "@/components/BottomNav";
+import { AppHeader } from "@/components/AppHeader";
 
 const StrictMode = () => {
   const { user } = useAuth();
