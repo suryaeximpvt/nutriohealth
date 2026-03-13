@@ -35,6 +35,7 @@ const App = () => (
           <Route path="/shop" element={<Shop />} />
           <Route path="/ask-ai" element={<AskAI />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/strict-mode" element={<StrictMode />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

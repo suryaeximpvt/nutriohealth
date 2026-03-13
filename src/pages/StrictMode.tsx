@@ -343,7 +343,7 @@ const StrictMode = () => {
             {/* Weight */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {status?.today?.weightLogged ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-muted-foreground" />}
+                {status?.today?.weightLogged ? <CheckCircle2 className="w-4 h-4 text-primary" /> : <Clock className="w-4 h-4 text-muted-foreground" />}
                 <span className="text-sm">Weight Photo</span>
               </div>
               {!status?.today?.weightLogged && (
