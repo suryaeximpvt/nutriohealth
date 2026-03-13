@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import Shop from "./pages/Shop";
 import AskAI from "./pages/AskAI";
 import Settings from "./pages/Settings";
+import StrictMode from "./pages/StrictMode";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/shop" element={<Shop />} />
           <Route path="/ask-ai" element={<AskAI />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/strict-mode" element={<StrictMode />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
