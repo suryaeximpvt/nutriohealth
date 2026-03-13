@@ -310,7 +310,7 @@ const StrictMode = () => {
               return (
                 <div key={meal} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    {logged ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-muted-foreground" />}
+                    {logged ? <CheckCircle2 className="w-4 h-4 text-primary" /> : <Clock className="w-4 h-4 text-muted-foreground" />}
                     <span className="capitalize text-sm">{meal}</span>
                   </div>
                   {!logged && (
