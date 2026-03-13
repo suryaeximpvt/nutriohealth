@@ -330,7 +330,7 @@ const StrictMode = () => {
             {/* Workout */}
             <div className="flex items-center justify-between pt-2 border-t">
               <div className="flex items-center gap-2">
-                {status?.today?.workoutCompleted ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-muted-foreground" />}
+                {status?.today?.workoutCompleted ? <CheckCircle2 className="w-4 h-4 text-primary" /> : <Clock className="w-4 h-4 text-muted-foreground" />}
                 <span className="text-sm">Workout Proof</span>
               </div>
               {!status?.today?.workoutCompleted && (
