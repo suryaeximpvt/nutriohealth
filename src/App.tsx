@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import Shop from "./pages/Shop";
 import AskAI from "./pages/AskAI";
 import Settings from "./pages/Settings";
+import StrictMode from "./pages/StrictMode";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
