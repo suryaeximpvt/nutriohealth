@@ -394,6 +394,13 @@ return (
           />
         </div>
 
+        {/* Personalised AI recommendations */}
+        <div className="mb-4">
+          <RecommendationsCard delay={0.212} />
+        </div>
+
+
+
         {/* Weekly Nutrio Insight */}
         <div className="mb-4">
           <WeeklyInsightCard delay={0.215} />
