@@ -32,6 +32,8 @@ export type OnboardingStep = {
   imageAlt: string;
   fields: StepField[];
   required?: string[];
+  /** Optional steps show a "Skip for now" action. */
+  optional?: boolean;
 };
 
 export const FOOD_CULTURES: Option[] = [
@@ -145,6 +147,7 @@ export const NON_NEGOTIABLE_OPTIONS: Option[] = [
   { value: "Water goal", label: "Water goal", emoji: "💧" },
   { value: "Exercise", label: "Exercise", emoji: "🏃" },
   { value: "Family meals", label: "Family meals", emoji: "👨‍👩‍👧" },
+  { value: "Dessert", label: "Dessert / sweet treat", emoji: "🍰" },
 ];
 
 export const FREQUENCY_OPTIONS: Option[] = [
@@ -162,7 +165,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "A first name is perfect — this is how Nutrio will greet you.",
     image: aboutYouArt,
     imageAlt: "Illustration of a friendly person waving hello",
-    required: ["display_name"],
+    required: ["display_name", "age_range", "gender"],
     fields: [
       { kind: "text", key: "display_name", label: "Your name", placeholder: "e.g. Surya" },
       {
@@ -200,6 +203,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "Pick as many as you like — this shapes every suggestion Nutrio makes.",
     image: foodCultureArt,
     imageAlt: "Illustration of a globe surrounded by dishes from around the world",
+    required: ["residence_country", "food_cultures", "cultural_food_frequency"],
     fields: [
       { kind: "text", key: "residence_country", label: "Where do you live now?", placeholder: "e.g. United Kingdom" },
       { kind: "multi", key: "food_cultures", label: "Food culture", options: FOOD_CULTURES, columns: 2 },
@@ -224,6 +228,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "Choose the meals you genuinely enjoy — Nutrio builds around them.",
     image: foodPersonalityArt,
     imageAlt: "Illustration of a heart-shaped plate filled with favourite foods",
+    optional: true,
     fields: [
       { kind: "multi", key: "comfort_foods", label: "I enjoy these most", options: [], max: 5, columns: 2 },
       { kind: "tags", key: "favourite_foods", label: "Your top 3 favourite foods", placeholder: "Type a food and press Enter" },
@@ -236,6 +241,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "Tell us what to leave out and we'll never suggest it.",
     image: foodHabitsArt,
     imageAlt: "Illustration of a cooking pot with fresh vegetables",
+    optional: true,
     fields: [
       { kind: "tags", key: "disliked_foods", label: "Foods you dislike", placeholder: "e.g. mushrooms" },
       { kind: "tags", key: "avoided_foods", label: "Foods you avoid", placeholder: "e.g. pork, beef, alcohol" },
@@ -248,7 +254,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "You can change this whenever life changes.",
     image: goalArt,
     imageAlt: "Illustration of a target with an arrow and a rising chart",
-    required: ["primary_goal"],
+    required: ["primary_goal", "success_definition"],
     fields: [
       {
         kind: "single",
@@ -257,6 +263,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
           { value: "lose_weight", label: "Lose weight", emoji: "📉" },
           { value: "maintain_weight", label: "Maintain weight", emoji: "⚖️" },
           { value: "gain_muscle", label: "Gain muscle", emoji: "💪" },
+          { value: "lose_weight_gain_muscle", label: "Lose weight & gain muscle", emoji: "🔥" },
           { value: "eat_healthier", label: "Eat healthier", emoji: "🥗" },
           { value: "increase_protein", label: "Increase protein", emoji: "🍳" },
           { value: "improve_energy", label: "Improve energy", emoji: "⚡" },
@@ -287,7 +294,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "We use these to work out your daily calories and protein.",
     image: bodyActivityArt,
     imageAlt: "Illustration of a measuring tape, dumbbell and running shoe",
-    required: ["height_cm", "weight_kg"],
+    required: ["height_cm", "weight_kg", "activity_level"],
     fields: [
       { kind: "number", key: "height_cm", label: "Height (cm)", placeholder: "175" },
       { kind: "number", key: "weight_kg", label: "Current weight (kg)", placeholder: "70" },
@@ -313,6 +320,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "Skip anything that doesn't apply.",
     image: bodyActivityArt,
     imageAlt: "Illustration of training equipment",
+    required: ["workout_types", "workout_frequency"],
     fields: [
       {
         kind: "multi",
@@ -351,6 +359,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "Reminders will follow your rhythm, not a generic timetable.",
     image: routineArt,
     imageAlt: "Illustration of a clock surrounded by meal icons, a sun and a moon",
+    required: ["wake_time", "breakfast_time", "lunch_time", "dinner_time", "sleep_time", "meals_eaten", "timing_variability"],
     fields: [
       { kind: "time", key: "wake_time", label: "Wake up" },
       { kind: "time", key: "breakfast_time", label: "Breakfast" },
@@ -391,6 +400,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "This decides whether we suggest a 10-minute meal or a slow cook.",
     image: foodHabitsArt,
     imageAlt: "Illustration of a pot cooking on a hob with vegetables",
+    required: ["cooking_frequency", "cooking_time"],
     fields: [
       {
         kind: "single",
@@ -424,6 +434,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "Where do most of your meals happen?",
     image: eatingOutArt,
     imageAlt: "Illustration of a takeaway box beside a home dining table",
+    required: ["eating_location", "eating_out_frequency"],
     fields: [
       {
         kind: "single",
@@ -458,6 +469,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "Where does your protein come from?",
     image: proteinArt,
     imageAlt: "Illustration of eggs, chicken, fish, lentils and yogurt",
+    required: ["protein_sources"],
     fields: [
       {
         kind: "multi",
@@ -487,6 +499,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "Pick the habits you never want to lose, then set how often.",
     image: nonNegotiablesArt,
     imageAlt: "Illustration of a checklist with fruit, water and vegetables ticked off",
+    required: ["non_negotiables"],
     fields: [
       { kind: "multi", key: "non_negotiables", options: NON_NEGOTIABLE_OPTIONS, columns: 2 },
     ],
@@ -498,6 +511,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "Knowing this lets Nutrio step in at the right moment.",
     image: challengesArt,
     imageAlt: "Illustration of a person calmly stepping over small hurdles",
+    required: ["challenges", "off_routine_times"],
     fields: [
       {
         kind: "multi",
@@ -540,6 +554,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "You can change this any time in settings.",
     image: supportArt,
     imageAlt: "Illustration of a phone showing a gentle reminder bell and sliders",
+    required: ["support_style", "insight_frequency"],
     fields: [
       {
         kind: "single",
