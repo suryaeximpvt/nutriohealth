@@ -15,6 +15,9 @@ import { PremiumModal } from "@/components/PremiumModal";
 import { WaterTracker } from "@/components/WaterTracker";
 import { WaterHydrationPrompt } from "@/components/WaterHydrationPrompt";
 import { DailyIntakeBreakdown } from "@/components/DailyIntakeBreakdown";
+import { LifestyleModeCard } from "@/components/LifestyleModeCard";
+import { MealCheckIn } from "@/components/MealCheckIn";
+import { NonNegotiablesCard } from "@/components/NonNegotiablesCard";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { useDailyAISuggestions } from "@/hooks/useDailyAISuggestions";
@@ -374,6 +377,31 @@ return (
             </div>
           </div>
         </motion.div>
+
+        {/* Lifestyle Mode */}
+        <div className="mb-4">
+          <LifestyleModeCard delay={0.22} />
+        </div>
+
+        {/* Today's meal check-in */}
+        <div className="mb-4">
+          <MealCheckIn
+            delay={0.24}
+            loggedCounts={{
+              breakfast: dailySummary.meals.breakfast?.length ?? 0,
+              lunch: dailySummary.meals.lunch?.length ?? 0,
+              snacks: dailySummary.meals.snacks?.length ?? 0,
+              dinner: dailySummary.meals.dinner?.length ?? 0,
+            }}
+          />
+        </div>
+
+        {/* Non-negotiables */}
+        <div className="mb-4">
+          <NonNegotiablesCard delay={0.26} />
+        </div>
+
+
 
         {/* Macronutrients Card */}
         <motion.div
