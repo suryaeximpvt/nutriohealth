@@ -17,21 +17,29 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const nextParam = new URLSearchParams(window.location.search).get("next");
+  const nextPath = nextParam && /^\/(?!\/)/.test(nextParam) ? nextParam : "/";
+
   useEffect(() => {
+    const goNext = () => {
+      if (nextPath === "/") navigate("/");
+      else window.location.href = nextPath;
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate("/");
+        goNext();
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/");
+        goNext();
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, nextPath]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
