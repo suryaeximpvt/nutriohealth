@@ -9,6 +9,8 @@ import { useUserData } from "@/hooks/useUserData";
 import { useAIDietSuggestions } from "@/hooks/useAIDietSuggestions";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { PantryFinder } from "@/components/PantryFinder";
+import { PantryMeal } from "@/hooks/usePantrySuggestions";
 import { toast } from "sonner";
 
 interface MealSuggestion {
@@ -55,6 +57,7 @@ const Diet = () => {
   const { profile, dailySummary, loading: dataLoading, logFood } = useUserData();
   const { loading: suggestionsLoading, suggestions, getSuggestions } = useAIDietSuggestions();
   
+  const [activeTab, setActiveTab] = useState<"ai" | "pantry">("ai");
   const [goalFilter, setGoalFilter] = useState<GoalFilter>("balanced");
   const [cuisinePreference, setCuisinePreference] = useState<CuisinePreference>("global");
   const [cuisineSheetOpen, setCuisineSheetOpen] = useState(false);
@@ -112,6 +115,24 @@ const Diet = () => {
     }
   };
 
+  const handleAddPantryMeal = async (meal: PantryMeal) => {
+    const result = await logFood("lunch", {
+      name: meal.name,
+      calories: meal.calories,
+      protein: meal.protein,
+      carbs: meal.carbs ?? Math.round((meal.calories * 0.4) / 4),
+      fat: meal.fat ?? Math.round((meal.calories * 0.3) / 9),
+      fibre: Math.round(meal.calories / 100),
+      quantity: 1,
+    });
+
+    if (result.error) {
+      toast.error("Failed to add meal");
+    } else {
+      toast.success(`Added ${meal.name} to your log`);
+    }
+
+
   const handleCuisineSelect = (cuisine: CuisinePreference) => {
     setCuisinePreference(cuisine);
     setCuisineSheetOpen(false);
@@ -150,7 +171,30 @@ const Diet = () => {
           <p className="text-muted-foreground">Personalized suggestions based on your goals</p>
         </motion.div>
 
+        {/* Tabs */}
+        <div className="flex gap-2 p-1 rounded-2xl bg-muted mb-5">
+          <button
+            onClick={() => setActiveTab("ai")}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+              activeTab === "ai" ? "bg-card text-foreground shadow-card" : "text-muted-foreground"
+            }`}
+          >
+            AI Picks
+          </button>
+          <button
+            onClick={() => setActiveTab("pantry")}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+              activeTab === "pantry" ? "bg-card text-foreground shadow-card" : "text-muted-foreground"
+            }`}
+          >
+            My Kitchen
+          </button>
+        </div>
+
+        {activeTab === "ai" ? (
+        <>
         {/* Goal-Based Filters */}
+
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
