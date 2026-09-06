@@ -181,7 +181,9 @@ const Onboarding = () => {
       workout_time: values.workout_time || null,
       cooking_frequency: values.cooking_frequency || null,
       cooking_time: values.cooking_time || null,
-      eating_location: values.eating_location || null,
+      eating_location: Array.isArray(values.eating_location)
+        ? values.eating_location.join(", ") || null
+        : values.eating_location || null,
       eating_out_frequency: values.eating_out_frequency || null,
       protein_sources: values.protein_sources ?? [],
       protein_confidence: values.protein_confidence ?? 3,
