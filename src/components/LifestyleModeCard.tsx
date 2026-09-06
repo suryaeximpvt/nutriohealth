@@ -40,12 +40,17 @@ export const LifestyleModeCard = ({ delay = 0 }: { delay?: number }) => {
 
   const activeDef = getModeDef(activeMode?.mode_key);
 
+  const [confirmChange, setConfirmChange] = useState(false);
+
   const openPicker = () => {
     setSelected(null);
     setAnswers({});
     setDuration("today");
+    setConfirmChange(false);
     setOpen(true);
   };
+
+  const showConfirm = !!activeMode && !!activeDef && !confirmChange;
 
   const handleStart = async () => {
     if (!selected) return;
@@ -141,13 +146,56 @@ export const LifestyleModeCard = ({ delay = 0 }: { delay?: number }) => {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="bottom" className="rounded-t-3xl max-h-[88vh] overflow-y-auto">
           <SheetHeader className="text-left">
-            <SheetTitle>{selected ? selected.title : "What's happening?"}</SheetTitle>
+            <SheetTitle>
+              {showConfirm
+                ? `You're already in ${activeDef!.title} mode`
+                : selected
+                ? selected.title
+                : "What's happening?"}
+            </SheetTitle>
             <SheetDescription>
-              {selected ? selected.tagline : "Pick the mode that fits your next few days."}
+              {showConfirm
+                ? `Active until ${new Date(activeMode!.ends_on).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}. Keep it, or swap to a different one.`
+                : selected
+                ? selected.tagline
+                : "Pick the mode that fits your next few days."}
             </SheetDescription>
           </SheetHeader>
 
-          {!selected ? (
+          {showConfirm ? (
+            <div className="mt-4 space-y-4 pb-6">
+              <div className="flex items-center gap-3 rounded-2xl bg-muted/50 p-4">
+                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
+                  {activeDef!.emoji}
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">{activeDef!.title}</p>
+                  <p className="text-xs text-muted-foreground">{activeDef!.tagline}</p>
+                </div>
+              </div>
+              <Button className="w-full rounded-xl" onClick={() => setOpen(false)}>
+                Keep this mode
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full rounded-xl"
+                onClick={() => setConfirmChange(true)}
+              >
+                Choose a different mode
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full rounded-xl text-muted-foreground"
+                onClick={async () => {
+                  await endMode();
+                  setOpen(false);
+                  toast.success("Back to your normal routine.");
+                }}
+              >
+                End mode
+              </Button>
+            </div>
+          ) : !selected ? (
             <div className="grid grid-cols-2 gap-3 mt-4 pb-6">
               {LIFESTYLE_MODES.map((m) => (
                 <button

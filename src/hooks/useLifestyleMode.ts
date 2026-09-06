@@ -29,7 +29,6 @@ export const useLifestyleMode = () => {
       .select("*")
       .eq("user_id", user.id)
       .eq("status", "active")
-      .lte("starts_on", today)
       .gte("ends_on", today)
       .order("created_at", { ascending: false })
       .limit(1);
