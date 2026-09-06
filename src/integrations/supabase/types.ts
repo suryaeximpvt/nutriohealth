@@ -725,6 +725,90 @@ export type Database = {
           },
         ]
       }
+      recommendation_events: {
+        Row: {
+          created_at: string
+          event_timestamp: string
+          event_type: string
+          goal_context: string | null
+          id: string
+          lifestyle_mode_context: string | null
+          meal_type: string | null
+          recommendation_content: Json | null
+          recommendation_id: string | null
+          recommendation_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_timestamp?: string
+          event_type: string
+          goal_context?: string | null
+          id?: string
+          lifestyle_mode_context?: string | null
+          meal_type?: string | null
+          recommendation_content?: Json | null
+          recommendation_id?: string | null
+          recommendation_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_timestamp?: string
+          event_type?: string
+          goal_context?: string | null
+          id?: string
+          lifestyle_mode_context?: string | null
+          meal_type?: string | null
+          recommendation_content?: Json | null
+          recommendation_id?: string | null
+          recommendation_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recommendation_feedback: {
+        Row: {
+          created_at: string
+          id: string
+          lifestyle_mode_context: string | null
+          meal_type: string | null
+          note: string | null
+          rating: string
+          recommendation_content: Json | null
+          recommendation_id: string | null
+          recommendation_type: string | null
+          rejection_reason: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lifestyle_mode_context?: string | null
+          meal_type?: string | null
+          note?: string | null
+          rating: string
+          recommendation_content?: Json | null
+          recommendation_id?: string | null
+          recommendation_type?: string | null
+          rejection_reason?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lifestyle_mode_context?: string | null
+          meal_type?: string | null
+          note?: string | null
+          rating?: string
+          recommendation_content?: Json | null
+          recommendation_id?: string | null
+          recommendation_type?: string | null
+          rejection_reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       routine_schedule: {
         Row: {
           breakfast_time: string | null
@@ -848,6 +932,66 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_behaviour_profile: {
+        Row: {
+          calorie_target_consistency: number | null
+          common_rejection_reasons: string[] | null
+          computed_at: string
+          created_at: string
+          id: string
+          lifestyle_mode_usage: Json | null
+          meal_logging_consistency: number | null
+          preferred_food_types: string[] | null
+          preferred_recommendation_type: string | null
+          protein_target_consistency: number | null
+          recommendation_acceptance_rate: number | null
+          recommendation_follow_rate: number | null
+          rejected_food_types: string[] | null
+          routine_consistency: number | null
+          updated_at: string
+          user_id: string
+          weekly_behaviour: Json | null
+        }
+        Insert: {
+          calorie_target_consistency?: number | null
+          common_rejection_reasons?: string[] | null
+          computed_at?: string
+          created_at?: string
+          id?: string
+          lifestyle_mode_usage?: Json | null
+          meal_logging_consistency?: number | null
+          preferred_food_types?: string[] | null
+          preferred_recommendation_type?: string | null
+          protein_target_consistency?: number | null
+          recommendation_acceptance_rate?: number | null
+          recommendation_follow_rate?: number | null
+          rejected_food_types?: string[] | null
+          routine_consistency?: number | null
+          updated_at?: string
+          user_id: string
+          weekly_behaviour?: Json | null
+        }
+        Update: {
+          calorie_target_consistency?: number | null
+          common_rejection_reasons?: string[] | null
+          computed_at?: string
+          created_at?: string
+          id?: string
+          lifestyle_mode_usage?: Json | null
+          meal_logging_consistency?: number | null
+          preferred_food_types?: string[] | null
+          preferred_recommendation_type?: string | null
+          protein_target_consistency?: number | null
+          recommendation_acceptance_rate?: number | null
+          recommendation_follow_rate?: number | null
+          rejected_food_types?: string[] | null
+          routine_consistency?: number | null
+          updated_at?: string
+          user_id?: string
+          weekly_behaviour?: Json | null
         }
         Relationships: []
       }
