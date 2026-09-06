@@ -2,87 +2,8 @@ import { motion } from "framer-motion";
 import { ShoppingBag, Star, ExternalLink, Package } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
+import { NUTRIO_PRODUCTS } from "@/data/nutrioProducts";
 
-const NUTRIO_PRODUCTS = [
-  {
-    id: "protein-pancake-mix",
-    name: "Nutrio Protein Pancake Mix",
-    description: "High protein pancake mix - just add water",
-    category: "Breakfast",
-    calories: 280,
-    protein: 25,
-    price: 12.99,
-    rating: 4.8,
-    reviews: 234,
-    image: "🥞",
-    purchaseUrl: "#",
-  },
-  {
-    id: "breakfast-smoothie",
-    name: "Nutrio Breakfast Smoothie",
-    description: "Ready-blend protein smoothie powder",
-    category: "Breakfast",
-    calories: 220,
-    protein: 22,
-    price: 24.99,
-    rating: 4.7,
-    reviews: 189,
-    image: "🥤",
-    purchaseUrl: "#",
-  },
-  {
-    id: "overnight-oats",
-    name: "Nutrio Overnight Oats Cup",
-    description: "Protein-enriched overnight oats - ready to eat",
-    category: "Breakfast",
-    calories: 310,
-    protein: 20,
-    price: 3.49,
-    rating: 4.6,
-    reviews: 156,
-    image: "🥣",
-    purchaseUrl: "#",
-  },
-  {
-    id: "protein-bar",
-    name: "Nutrio Protein Bar",
-    description: "Chocolate & peanut butter protein bar",
-    category: "Snacks",
-    calories: 180,
-    protein: 15,
-    price: 2.49,
-    rating: 4.9,
-    reviews: 512,
-    image: "🍫",
-    purchaseUrl: "#",
-  },
-  {
-    id: "nut-mix",
-    name: "Nutrio Nut Mix",
-    description: "High protein nut and seed blend",
-    category: "Snacks",
-    calories: 160,
-    protein: 8,
-    price: 4.99,
-    rating: 4.5,
-    reviews: 98,
-    image: "🥜",
-    purchaseUrl: "#",
-  },
-  {
-    id: "shake-sachet",
-    name: "Nutrio Shake Sachet",
-    description: "On-the-go protein shake - just add water",
-    category: "Snacks",
-    calories: 150,
-    protein: 20,
-    price: 1.99,
-    rating: 4.7,
-    reviews: 267,
-    image: "🥤",
-    purchaseUrl: "#",
-  },
-];
 
 const Shop = () => {
   const breakfastProducts = NUTRIO_PRODUCTS.filter(p => p.category === "Breakfast");

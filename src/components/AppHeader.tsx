@@ -45,19 +45,24 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setMenuOpen(true)}
+            aria-label="Open profile and quick actions menu"
             className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-lg font-bold cursor-pointer"
           >
             {firstLetter}
           </motion.button>
           <div>
             <p className="text-sm text-muted-foreground">{getGreeting()}</p>
-            <h1 className="text-lg font-bold text-foreground">{userName}</h1>
+            <p className="text-lg font-bold text-foreground">{userName}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="w-10 h-10 rounded-full bg-nutrio-sage-light flex items-center justify-center">
+          <button
+            aria-label="Nutrio Premium"
+            className="w-10 h-10 rounded-full bg-nutrio-sage-light flex items-center justify-center"
+          >
             <Crown className="w-5 h-5 text-nutrio-amber" />
           </button>
+
           <button
             onClick={() => setNotificationsOpen(true)}
             aria-label="Notifications"

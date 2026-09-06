@@ -15,6 +15,7 @@ import AskAI from "./pages/AskAI";
 import Settings from "./pages/Settings";
 import StrictMode from "./pages/StrictMode";
 import NotFound from "./pages/NotFound";
+import { RouteSeo } from "./components/RouteSeo";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <RouteSeo />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
