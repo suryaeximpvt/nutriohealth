@@ -20,6 +20,8 @@ import { MealCheckIn } from "@/components/MealCheckIn";
 import { NonNegotiablesCard } from "@/components/NonNegotiablesCard";
 import { WeeklyInsightCard } from "@/components/WeeklyInsightCard";
 import { NextActionCard } from "@/components/NextActionCard";
+import { RecommendationsCard } from "@/components/RecommendationsCard";
+
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { useDailyAISuggestions } from "@/hooks/useDailyAISuggestions";
