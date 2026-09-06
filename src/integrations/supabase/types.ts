@@ -191,6 +191,96 @@ export type Database = {
         }
         Relationships: []
       }
+      health_connections: {
+        Row: {
+          access_token: string | null
+          connected: boolean
+          created_at: string
+          id: string
+          last_synced_at: string | null
+          provider: string
+          provider_user_id: string | null
+          refresh_token: string | null
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          connected?: boolean
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          provider: string
+          provider_user_id?: string | null
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          connected?: boolean
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          provider?: string
+          provider_user_id?: string | null
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      health_metrics: {
+        Row: {
+          active_calories: number | null
+          created_at: string
+          hrv_ms: number | null
+          id: string
+          metric_date: string
+          recovery_score: number | null
+          resting_heart_rate: number | null
+          sleep_hours: number | null
+          source: string
+          steps: number | null
+          strain: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_calories?: number | null
+          created_at?: string
+          hrv_ms?: number | null
+          id?: string
+          metric_date: string
+          recovery_score?: number | null
+          resting_heart_rate?: number | null
+          sleep_hours?: number | null
+          source: string
+          steps?: number | null
+          strain?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_calories?: number | null
+          created_at?: string
+          hrv_ms?: number | null
+          id?: string
+          metric_date?: string
+          recovery_score?: number | null
+          resting_heart_rate?: number | null
+          sleep_hours?: number | null
+          source?: string
+          steps?: number | null
+          strain?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       lifestyle_modes: {
         Row: {
           answers: Json | null
