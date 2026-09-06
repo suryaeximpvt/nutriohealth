@@ -366,7 +366,22 @@ const Diet = () => {
             })}
           </div>
         )}
+        </>
+        ) : (
+          <PantryFinder
+            calorieTarget={profile?.calorie_target || 2000}
+            caloriesRemaining={caloriesRemaining}
+            proteinGap={proteinGap}
+            dietPreference={profile?.diet_preference || "none"}
+            cuisinePreference={cuisinePreference}
+            allergies={profile?.allergies || []}
+            excludedFoods={profile?.excluded_foods || []}
+            goal={profile?.goal || "maintain"}
+            onLogMeal={handleAddPantryMeal}
+          />
+        )}
       </div>
+
 
       <BottomNav />
     </div>
