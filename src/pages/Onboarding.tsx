@@ -33,6 +33,7 @@ const GOAL_TO_PROFILE: Record<string, string> = {
   lose_weight: "fat_loss",
   maintain_weight: "maintenance",
   gain_muscle: "muscle_gain",
+  lose_weight_gain_muscle: "muscle_gain",
   eat_healthier: "maintenance",
   increase_protein: "muscle_gain",
   improve_energy: "endurance",
@@ -125,11 +126,12 @@ const Onboarding = () => {
     let tdee = bmr * (multipliers[values.activity_level] ?? 1.55);
     const goal = values.primary_goal;
     if (goal === "lose_weight") tdee -= 500;
+    if (goal === "lose_weight_gain_muscle") tdee -= 250;
     if (goal === "gain_muscle") tdee += 300;
     if (goal === "improve_energy") tdee += 150;
 
     const calorieTarget = Math.round(tdee);
-    const proteinTarget = Math.round(w * (goal === "gain_muscle" || goal === "increase_protein" ? 2 : 1.6));
+    const proteinTarget = Math.round(w * (goal === "gain_muscle" || goal === "increase_protein" || goal === "lose_weight_gain_muscle" ? 2 : 1.6));
     const fatTarget = Math.round((calorieTarget * 0.25) / 9);
     const carbsTarget = Math.round((calorieTarget - proteinTarget * 4 - fatTarget * 9) / 4);
     return { calorieTarget, proteinTarget, carbsTarget, fatTarget, age: a };
@@ -487,6 +489,11 @@ const Onboarding = () => {
             <Button variant="outline" onClick={handleBack} className="flex-1 h-12 rounded-xl">
               <ChevronLeft className="w-4 h-4 mr-1" />
               Back
+            </Button>
+          )}
+          {current.optional && step < total - 1 && (
+            <Button variant="ghost" onClick={handleNext} className="h-12 rounded-xl px-4 text-muted-foreground">
+              Skip
             </Button>
           )}
           <Button onClick={handleNext} disabled={!canProceed() || saving} className="flex-[2] h-12 rounded-xl">
