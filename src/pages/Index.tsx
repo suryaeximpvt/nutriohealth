@@ -18,6 +18,8 @@ import { DailyIntakeBreakdown } from "@/components/DailyIntakeBreakdown";
 import { LifestyleModeCard } from "@/components/LifestyleModeCard";
 import { MealCheckIn } from "@/components/MealCheckIn";
 import { NonNegotiablesCard } from "@/components/NonNegotiablesCard";
+import { WeeklyInsightCard } from "@/components/WeeklyInsightCard";
+import { NextActionCard } from "@/components/NextActionCard";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { useDailyAISuggestions } from "@/hooks/useDailyAISuggestions";
@@ -377,6 +379,25 @@ return (
             </div>
           </div>
         </motion.div>
+
+        {/* Next action (smart reminder) */}
+        <div className="mb-4">
+          <NextActionCard
+            delay={0.21}
+            waterGlasses={waterGlasses}
+            loggedCounts={{
+              breakfast: dailySummary.meals.breakfast?.length ?? 0,
+              lunch: dailySummary.meals.lunch?.length ?? 0,
+              snacks: dailySummary.meals.snacks?.length ?? 0,
+              dinner: dailySummary.meals.dinner?.length ?? 0,
+            }}
+          />
+        </div>
+
+        {/* Weekly Nutrio Insight */}
+        <div className="mb-4">
+          <WeeklyInsightCard delay={0.215} />
+        </div>
 
         {/* Lifestyle Mode */}
         <div className="mb-4">
