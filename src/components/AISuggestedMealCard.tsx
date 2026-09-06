@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw, Plus, Camera, Loader2, Sparkles, PenLine, ChevronDown, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MealOptions, AISuggestion } from "@/hooks/useDailyAISuggestions";
+import { useRecommendationTracking, type TrackPayload } from "@/hooks/useRecommendationTracking";
+import { RecommendationFeedback } from "@/components/RecommendationFeedback";
 
 interface AISuggestedMealCardProps {
   title: string;
@@ -35,6 +37,14 @@ export const AISuggestedMealCard = ({
 }: AISuggestedMealCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedOption, setSelectedOption] = useState<AISuggestion | null>(null);
+  const [ratedSuggestion, setRatedSuggestion] = useState<AISuggestion | null>(null);
+  const { track, trackShown, submitFeedback } = useRecommendationTracking();
+
+  const payloadFor = (s: AISuggestion): TrackPayload => ({
+    recommendationType: "meal",
+    mealType,
+    content: { name: s.name, calories: s.calories },
+  });
   
   const totalLogged = loggedFoods.reduce((sum, f) => sum + f.calories, 0);
   const hasLogged = loggedFoods.length > 0;
@@ -47,7 +57,25 @@ export const AISuggestedMealCard = ({
 
   const handleSelectOption = (option: AISuggestion) => {
     setSelectedOption(option);
+    void track("opened", payloadFor(option));
   };
+
+  const handleLog = (s: AISuggestion) => {
+    void track("accepted", payloadFor(s));
+    void track("followed", payloadFor(s));
+    setRatedSuggestion(s);
+    onLogMeal(s);
+  };
+
+  const handleRegenerate = () => {
+    if (currentSuggestion) void track("not_followed", payloadFor(currentSuggestion));
+    onRegenerate();
+  };
+
+  useEffect(() => {
+    if (isExpanded && currentSuggestion) trackShown(payloadFor(currentSuggestion));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isExpanded, currentSuggestion?.name]);
 
 return (
     <motion.div
@@ -153,7 +181,7 @@ return (
                       suggestion={currentSuggestion}
                       isSelected={true}
                       onSelect={() => {}}
-                      onLog={() => onLogMeal(currentSuggestion)}
+                      onLog={() => handleLog(currentSuggestion)}
                     />
 
                     {/* Other AI Options */}
@@ -170,11 +198,21 @@ return (
                               isSelected={selectedOption?.name === alt.name}
                               isCompact
                               onSelect={() => handleSelectOption(alt)}
-                              onLog={() => onLogMeal(alt)}
+                              onLog={() => handleLog(alt)}
                             />
                           ))}
                         </div>
                       </div>
+                    )}
+
+                    {ratedSuggestion && (
+                      <RecommendationFeedback
+                        compact
+                        payload={payloadFor(ratedSuggestion)}
+                        onRate={(rating, reason) =>
+                          submitFeedback(payloadFor(ratedSuggestion), rating, reason ?? null)
+                        }
+                      />
                     )}
 
                     {/* Action Buttons */}
@@ -182,7 +220,7 @@ return (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onLogMeal(currentSuggestion);
+                          handleLog(currentSuggestion);
                         }}
                         className="flex flex-col items-center justify-center gap-1 px-2 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors"
                       >
@@ -193,7 +231,7 @@ return (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onRegenerate();
+                          handleRegenerate();
                         }}
                         disabled={isLoading}
                         className="flex flex-col items-center justify-center gap-1 px-2 py-3 bg-muted rounded-xl font-medium hover:bg-muted/80 transition-colors disabled:opacity-50"
@@ -237,7 +275,7 @@ return (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onRegenerate();
+                          handleRegenerate();
                         }}
                         className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors"
                       >
