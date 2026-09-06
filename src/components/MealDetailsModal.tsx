@@ -111,6 +111,7 @@ export const MealDetailsModal = forwardRef<HTMLDivElement, MealDetailsModalProps
                 <h2 className="text-lg font-semibold text-foreground">{mealType}</h2>
                 <button
                   onClick={onClose}
+                  aria-label="Close meal details"
                   className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
                 >
                   <X className="w-4 h-4" />
@@ -226,12 +227,14 @@ export const MealDetailsModal = forwardRef<HTMLDivElement, MealDetailsModalProps
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => handleStartEdit(food)}
+                                aria-label={`Edit ${food.food_name}`}
                                 className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                               >
                                 <Edit2 className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handleDelete(food.id)}
+                                aria-label={`Delete ${food.food_name}`}
                                 disabled={deletingId === food.id}
                                 className="w-8 h-8 rounded-full hover:bg-destructive/10 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
                               >

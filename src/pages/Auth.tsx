@@ -103,7 +103,9 @@ const Auth = () => {
         {/* Title */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-foreground mb-2">
-            {isLogin ? "Welcome back" : "Create your account"}
+            {isLogin
+              ? "Nutrio — AI Nutrition and Fitness Tracking"
+              : "Join Nutrio — AI Nutrition and Fitness Tracking"}
           </h1>
           <p className="text-muted-foreground">
             {isLogin

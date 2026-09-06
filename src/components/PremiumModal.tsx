@@ -64,6 +64,7 @@ export const PremiumModal = ({ isOpen, onClose }: PremiumModalProps) => {
         <div className="relative bg-gradient-to-br from-primary via-primary/90 to-nutrio-amber p-6 text-primary-foreground">
           <button
             onClick={onClose}
+            aria-label="Close premium options"
             className="absolute top-4 right-4 w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
           >
             <X className="w-4 h-4" />
