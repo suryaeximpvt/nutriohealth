@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.ai-pantry-suggestions]
 verify_jwt = false
+
+[functions.weekly-insight]
+verify_jwt = false
