@@ -1,489 +1,505 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronRight, ChevronLeft, Target, User, Ruler, Activity, Utensils, AlertCircle, Loader2, TrendingDown, Dumbbell, Heart, Zap, Globe } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { ChevronRight, ChevronLeft, Loader2, X, Check } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
+import { usePersonalisation } from "@/hooks/usePersonalisation";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import onboardingArt from "@/assets/onboarding-art.jpg";
+import {
+  ONBOARDING_STEPS,
+  CULTURE_FOODS,
+  FREQUENCY_OPTIONS,
+  type StepField,
+  type Option,
+} from "@/lib/onboardingConfig";
 
-type Goal = "fat_loss" | "muscle_gain" | "maintenance" | "endurance";
-type Gender = "male" | "female" | "other";
-type ActivityLevel = "sedentary" | "light" | "moderate" | "active" | "very_active";
-type DietPreference = "none" | "vegetarian" | "vegan";
-type CuisinePreference = "global" | "indian" | "british" | "mediterranean" | "asian" | "american";
+type Values = Record<string, any>;
 
-const STEPS = [
-  { id: "goal", title: "What's your goal?", icon: Target },
-  { id: "basic", title: "Tell us about yourself", icon: User },
-  { id: "body", title: "Your measurements", icon: Ruler },
-  { id: "activity", title: "Activity level", icon: Activity },
-  { id: "diet", title: "Dietary preferences", icon: Utensils },
-  { id: "cuisine", title: "Cuisine preference", icon: Globe },
-  { id: "allergies", title: "Any allergies?", icon: AlertCircle },
-];
+const FREQ_TO_COUNT: Record<string, number> = {
+  daily: 7,
+  "5_per_week": 5,
+  "3_per_week": 3,
+  weekly: 1,
+};
 
-const GOAL_OPTIONS = [
-  { 
-    value: "fat_loss" as Goal, 
-    label: "Weight Loss", 
-    desc: "Burn fat and get leaner",
-    icon: TrendingDown,
-    color: "from-red-500/20 to-orange-500/20",
-    iconColor: "text-red-500"
-  },
-  { 
-    value: "muscle_gain" as Goal, 
-    label: "Muscle Gain", 
-    desc: "Build strength and size",
-    icon: Dumbbell,
-    color: "from-blue-500/20 to-indigo-500/20",
-    iconColor: "text-blue-500"
-  },
-  { 
-    value: "maintenance" as Goal, 
-    label: "Maintenance", 
-    desc: "Maintain current weight",
-    icon: Heart,
-    color: "from-green-500/20 to-emerald-500/20",
-    iconColor: "text-green-500"
-  },
-  { 
-    value: "endurance" as Goal, 
-    label: "Endurance / Fitness", 
-    desc: "Improve stamina & performance",
-    icon: Zap,
-    color: "from-purple-500/20 to-pink-500/20",
-    iconColor: "text-purple-500"
-  },
-];
-
-const CUISINE_OPTIONS = [
-  { value: "global" as CuisinePreference, label: "Global Mix", desc: "All cuisines welcome" },
-  { value: "indian" as CuisinePreference, label: "Indian", desc: "Traditional Indian cuisine" },
-  { value: "british" as CuisinePreference, label: "British", desc: "Classic British meals" },
-  { value: "mediterranean" as CuisinePreference, label: "Mediterranean", desc: "Fresh, healthy options" },
-  { value: "asian" as CuisinePreference, label: "Asian", desc: "Pan-Asian flavors" },
-  { value: "american" as CuisinePreference, label: "American", desc: "American-style meals" },
-];
+const GOAL_TO_PROFILE: Record<string, string> = {
+  lose_weight: "fat_loss",
+  maintain_weight: "maintenance",
+  gain_muscle: "muscle_gain",
+  eat_healthier: "maintenance",
+  increase_protein: "muscle_gain",
+  improve_energy: "endurance",
+  improve_routine: "maintenance",
+};
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { updateProfile } = useUserData();
+  const { savePersonalisation, saveRoutine, replaceNonNegotiables } = usePersonalisation();
+
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [values, setValues] = useState<Values>({
+    goal_importance: 3,
+    protein_confidence: 3,
+    wants_protein_help: true,
+    notifications_enabled: true,
+    support_style: "regular",
+    insight_frequency: "weekly",
+    meals_eaten: ["breakfast", "lunch", "dinner"],
+    timing_variability: "sometimes",
+    nn_frequency: {} as Record<string, string>,
+  });
 
-  // Form state
-  const [goal, setGoal] = useState<Goal | null>(null);
-  const [gender, setGender] = useState<Gender | null>(null);
-  const [age, setAge] = useState("");
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
-  const [activityLevel, setActivityLevel] = useState<ActivityLevel | null>(null);
-  const [dietPreference, setDietPreference] = useState<DietPreference>("none");
-  const [cuisinePreference, setCuisinePreference] = useState<CuisinePreference>("global");
-  const [allergies, setAllergies] = useState("");
+  const current = ONBOARDING_STEPS[step];
+  const total = ONBOARDING_STEPS.length;
 
-  const canProceed = () => {
-    switch (step) {
-      case 0: return goal !== null;
-      case 1: return gender !== null && age !== "";
-      case 2: return height !== "" && weight !== "";
-      case 3: return activityLevel !== null;
-      case 4: return true;
-      case 5: return true;
-      case 6: return true;
-      default: return false;
+  const set = (key: string, value: any) => setValues((v) => ({ ...v, [key]: value }));
+
+  const toggleMulti = (key: string, value: string, max?: number) => {
+    const list: string[] = values[key] ?? [];
+    if (list.includes(value)) {
+      set(key, list.filter((v) => v !== value));
+    } else {
+      if (max && list.length >= max) return;
+      set(key, [...list, value]);
     }
   };
 
+  // Comfort foods depend on the cultures chosen earlier
+  const comfortOptions: Option[] = useMemo(() => {
+    const cultures: string[] = values.food_cultures ?? [];
+    const picked = cultures.length > 0 ? cultures : ["other"];
+    const seen = new Set<string>();
+    const out: Option[] = [];
+    picked.forEach((c) => {
+      (CULTURE_FOODS[c] ?? []).forEach((o) => {
+        if (!seen.has(o.value)) {
+          seen.add(o.value);
+          out.push(o);
+        }
+      });
+    });
+    return out.length > 0 ? out : CULTURE_FOODS.other;
+  }, [values.food_cultures]);
+
+  const canProceed = () =>
+    (current.required ?? []).every((k) => {
+      const v = values[k];
+      return Array.isArray(v) ? v.length > 0 : v !== undefined && v !== null && v !== "";
+    });
+
   const handleNext = () => {
-    if (step < STEPS.length - 1) {
+    if (step < total - 1) {
       setStep(step + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       handleComplete();
     }
   };
 
-  const handleBack = () => {
-    if (step > 0) {
-      setStep(step - 1);
-    }
-  };
+  const handleBack = () => step > 0 && setStep(step - 1);
 
   const calculateTargets = () => {
-    const w = parseFloat(weight) || 70;
-    const h = parseFloat(height) || 170;
-    const a = parseInt(age) || 30;
-    
-    // BMR calculation (Mifflin-St Jeor)
-    let bmr = gender === "male"
-      ? 10 * w + 6.25 * h - 5 * a + 5
-      : 10 * w + 6.25 * h - 5 * a - 161;
-
-    // Activity multiplier
-    const multipliers: Record<ActivityLevel, number> = {
+    const w = parseFloat(values.weight_kg) || 70;
+    const h = parseFloat(values.height_cm) || 170;
+    const ageMap: Record<string, number> = { "18-24": 21, "25-34": 30, "35-44": 40, "45-54": 50, "55-64": 60, "65+": 68 };
+    const a = ageMap[values.age_range] ?? 32;
+    const bmr =
+      values.gender === "male" ? 10 * w + 6.25 * h - 5 * a + 5 : 10 * w + 6.25 * h - 5 * a - 161;
+    const multipliers: Record<string, number> = {
       sedentary: 1.2,
       light: 1.375,
       moderate: 1.55,
       active: 1.725,
       very_active: 1.9,
     };
-    
-    let tdee = bmr * (multipliers[activityLevel || "moderate"]);
-
-    // Adjust for goal
-    if (goal === "fat_loss") tdee -= 500;
-    if (goal === "muscle_gain") tdee += 300;
-    if (goal === "endurance") tdee += 200;
+    let tdee = bmr * (multipliers[values.activity_level] ?? 1.55);
+    const goal = values.primary_goal;
+    if (goal === "lose_weight") tdee -= 500;
+    if (goal === "gain_muscle") tdee += 300;
+    if (goal === "improve_energy") tdee += 150;
 
     const calorieTarget = Math.round(tdee);
-    const proteinTarget = Math.round(w * (goal === "muscle_gain" ? 2 : goal === "endurance" ? 1.8 : 1.6));
+    const proteinTarget = Math.round(w * (goal === "gain_muscle" || goal === "increase_protein" ? 2 : 1.6));
     const fatTarget = Math.round((calorieTarget * 0.25) / 9);
     const carbsTarget = Math.round((calorieTarget - proteinTarget * 4 - fatTarget * 9) / 4);
-
-    return { calorieTarget, proteinTarget, carbsTarget, fatTarget };
+    return { calorieTarget, proteinTarget, carbsTarget, fatTarget, age: a };
   };
 
   const handleComplete = async () => {
+    if (!user) {
+      toast.error("Please sign in first");
+      return;
+    }
     setSaving(true);
-    
-    const targets = calculateTargets();
-    const allergyList = allergies
-      .split(",")
-      .map(a => a.trim())
-      .filter(a => a.length > 0);
+    const t = calculateTargets();
 
-    // Include cuisine preference in diet_preference field
-    const fullDietPreference = cuisinePreference !== "global" 
-      ? `${dietPreference}|${cuisinePreference}` 
-      : dietPreference;
-
-    const { error } = await updateProfile({
-      goal: goal || "maintenance",
-      gender: gender || undefined,
-      age: parseInt(age) || undefined,
-      height_cm: parseInt(height) || undefined,
-      weight_kg: parseFloat(weight) || undefined,
-      activity_level: activityLevel || "moderate",
-      diet_preference: fullDietPreference,
-      allergies: allergyList.length > 0 ? allergyList : null,
-      calorie_target: targets.calorieTarget,
-      protein_target: targets.proteinTarget,
-      carbs_target: targets.carbsTarget,
-      fat_target: targets.fatTarget,
+    const profileResult = await updateProfile({
+      full_name: values.display_name || undefined,
+      goal: GOAL_TO_PROFILE[values.primary_goal] ?? "maintenance",
+      gender: values.gender || undefined,
+      age: t.age,
+      height_cm: parseInt(values.height_cm) || undefined,
+      weight_kg: parseFloat(values.weight_kg) || undefined,
+      activity_level: values.activity_level || "moderate",
+      excluded_foods: (values.avoided_foods ?? []).length > 0 ? values.avoided_foods : null,
+      allergies: (values.disliked_foods ?? []).length > 0 ? values.disliked_foods : null,
+      calorie_target: t.calorieTarget,
+      protein_target: t.proteinTarget,
+      carbs_target: t.carbsTarget,
+      fat_target: t.fatTarget,
     });
+
+    const personalResult = await savePersonalisation({
+      display_name: values.display_name || null,
+      age_range: values.age_range || null,
+      gender: values.gender || null,
+      residence_country: values.residence_country || null,
+      food_cultures: values.food_cultures ?? [],
+      comfort_foods: values.comfort_foods ?? [],
+      favourite_foods: values.favourite_foods ?? [],
+      disliked_foods: values.disliked_foods ?? [],
+      avoided_foods: values.avoided_foods ?? [],
+      cultural_food_frequency: values.cultural_food_frequency || null,
+      primary_goal: values.primary_goal || null,
+      goal_importance: values.goal_importance ?? 3,
+      success_definition: values.success_definition ?? [],
+      goal_weight_kg: values.goal_weight_kg ? parseFloat(values.goal_weight_kg) : null,
+      workout_frequency: values.workout_frequency || null,
+      workout_types: values.workout_types ?? [],
+      workout_time: values.workout_time || null,
+      cooking_frequency: values.cooking_frequency || null,
+      cooking_time: values.cooking_time || null,
+      eating_location: values.eating_location || null,
+      eating_out_frequency: values.eating_out_frequency || null,
+      protein_sources: values.protein_sources ?? [],
+      protein_confidence: values.protein_confidence ?? 3,
+      wants_protein_help: !!values.wants_protein_help,
+      challenges: values.challenges ?? [],
+      off_routine_times: values.off_routine_times ?? [],
+      support_style: values.support_style || "regular",
+      insight_frequency: values.insight_frequency || "weekly",
+      onboarding_completed: true,
+    });
+
+    await saveRoutine({
+      wake_time: values.wake_time || null,
+      sleep_time: values.sleep_time || null,
+      breakfast_time: values.breakfast_time || null,
+      lunch_time: values.lunch_time || null,
+      dinner_time: values.dinner_time || null,
+      workout_time: values.workout_time || null,
+      meals_eaten: values.meals_eaten ?? ["breakfast", "lunch", "dinner"],
+      timing_variability: values.timing_variability || "sometimes",
+    });
+
+    const chosen: string[] = values.non_negotiables ?? [];
+    await replaceNonNegotiables(
+      chosen.map((label) => {
+        const freq = values.nn_frequency?.[label] ?? "daily";
+        return {
+          label,
+          frequency_type: freq,
+          target_count: FREQ_TO_COUNT[freq] ?? 7,
+          category: label === "Exercise" ? "activity" : label === "Water goal" ? "hydration" : "food",
+        };
+      })
+    );
+
+    await supabase.from("notification_preferences").upsert(
+      {
+        user_id: user.id,
+        enabled: !!values.notifications_enabled,
+        intensity: values.support_style || "regular",
+        max_per_day: values.support_style === "gentle" ? 3 : values.support_style === "strong" ? 8 : 6,
+      } as never,
+      { onConflict: "user_id" }
+    );
 
     setSaving(false);
 
-    if (error) {
-      toast.error("Failed to save profile");
+    if (profileResult.error || personalResult.error) {
+      toast.error("We couldn't save everything. Please try again.");
       return;
     }
-
-    toast.success("Profile saved! Let's start tracking.");
+    toast.success(`Welcome${values.display_name ? `, ${values.display_name}` : ""}! Nutrio is set up for you.`);
     navigate("/");
   };
 
-  const StepIcon = STEPS[step].icon;
+  const renderField = (field: StepField) => {
+    switch (field.kind) {
+      case "text":
+        return (
+          <div key={field.key} className="space-y-2">
+            <Label>{field.label}</Label>
+            <Input
+              value={values[field.key] ?? ""}
+              placeholder={field.placeholder}
+              onChange={(e) => set(field.key, e.target.value)}
+              className="text-base h-12 rounded-xl"
+            />
+          </div>
+        );
+      case "number":
+        return (
+          <div key={field.key} className="space-y-2">
+            <Label>{field.label}</Label>
+            <Input
+              type="number"
+              inputMode="decimal"
+              value={values[field.key] ?? ""}
+              placeholder={field.placeholder}
+              onChange={(e) => set(field.key, e.target.value)}
+              className="text-base h-12 rounded-xl"
+            />
+          </div>
+        );
+      case "time":
+        return (
+          <div key={field.key} className="space-y-2">
+            <Label>{field.label}</Label>
+            <Input
+              type="time"
+              value={values[field.key] ?? ""}
+              onChange={(e) => set(field.key, e.target.value)}
+              className="text-base h-12 rounded-xl"
+            />
+          </div>
+        );
+      case "toggle":
+        return (
+          <div key={field.key} className="flex items-center justify-between rounded-2xl border border-border p-4">
+            <div className="pr-4">
+              <p className="font-semibold text-foreground">{field.label}</p>
+              {field.desc && <p className="text-sm text-muted-foreground">{field.desc}</p>}
+            </div>
+            <Switch checked={!!values[field.key]} onCheckedChange={(c) => set(field.key, c)} />
+          </div>
+        );
+      case "scale":
+        return (
+          <div key={field.key} className="space-y-3">
+            <Label>{field.label}</Label>
+            <div className="grid grid-cols-5 gap-2">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => set(field.key, n)}
+                  className={`h-12 rounded-xl border-2 font-semibold transition-all ${
+                    values[field.key] === n
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground hover:border-primary/50"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>{field.minLabel}</span>
+              <span>{field.maxLabel}</span>
+            </div>
+          </div>
+        );
+      case "tags": {
+        const list: string[] = values[field.key] ?? [];
+        return (
+          <div key={field.key} className="space-y-2">
+            <Label>{field.label}</Label>
+            <Input
+              placeholder={field.placeholder}
+              className="text-base h-12 rounded-xl"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const val = (e.target as HTMLInputElement).value.trim();
+                  if (val && !list.includes(val)) set(field.key, [...list, val]);
+                  (e.target as HTMLInputElement).value = "";
+                }
+              }}
+            />
+            {list.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-1">
+                {list.map((tag) => (
+                  <Badge key={tag} variant="secondary" className="pl-3 pr-1 py-1.5 rounded-full text-sm">
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => set(field.key, list.filter((t) => t !== tag))}
+                      className="ml-1 rounded-full p-0.5 hover:bg-background/60"
+                      aria-label={`Remove ${tag}`}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      }
+      case "single":
+      case "multi": {
+        const options =
+          field.kind === "multi" && field.key === "comfort_foods" ? comfortOptions : field.options;
+        const isMulti = field.kind === "multi";
+        const selected: string[] = isMulti ? values[field.key] ?? [] : [];
+        const cols = field.columns ?? 1;
+        return (
+          <div key={field.key} className="space-y-3">
+            {field.label && <Label>{field.label}</Label>}
+            <div className={`grid gap-2 ${cols === 3 ? "grid-cols-3" : cols === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
+              {options.map((option) => {
+                const active = isMulti ? selected.includes(option.value) : values[field.key] === option.value;
+                return (
+                  <motion.button
+                    key={option.value}
+                    type="button"
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() =>
+                      isMulti
+                        ? toggleMulti(field.key, option.value, (field as any).max)
+                        : set(field.key, option.value)
+                    }
+                    className={`relative p-4 rounded-2xl border-2 text-left transition-all ${
+                      active ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/40"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {option.emoji && <span className="text-xl">{option.emoji}</span>}
+                      <div className="min-w-0">
+                        <p className="font-semibold text-foreground text-sm leading-tight">{option.label}</p>
+                        {option.desc && <p className="text-xs text-muted-foreground mt-0.5">{option.desc}</p>}
+                      </div>
+                    </div>
+                    {active && (
+                      <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                        <Check className="w-3 h-3 text-primary-foreground" />
+                      </span>
+                    )}
+                  </motion.button>
+                );
+              })}
+            </div>
+            {isMulti && (field as any).max && (
+              <p className="text-xs text-muted-foreground">Choose up to {(field as any).max}</p>
+            )}
+          </div>
+        );
+      }
+      default:
+        return null;
+    }
+  };
+
+  const selectedNonNegotiables: string[] = values.non_negotiables ?? [];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Progress bar */}
-      <div className="w-full h-1 bg-muted">
+      <div className="w-full h-1.5 bg-muted">
         <motion.div
-          className="h-full bg-primary"
+          className="h-full bg-primary rounded-r-full"
           initial={{ width: 0 }}
-          animate={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
-          transition={{ duration: 0.3 }}
+          animate={{ width: `${((step + 1) / total) * 100}%` }}
+          transition={{ duration: 0.35 }}
         />
       </div>
 
-      <div className="flex-1 container max-w-lg mx-auto px-4 py-8 flex flex-col">
-        {/* Header */}
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <StepIcon className="w-6 h-6 text-primary" />
-          </div>
-          <h1 className="text-2xl font-bold text-foreground">{STEPS[step].title}</h1>
-          <p className="text-muted-foreground mt-1">Step {step + 1} of {STEPS.length}</p>
-        </motion.div>
+      <div className="flex-1 container max-w-lg mx-auto px-4 py-6 flex flex-col">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current.id}
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -24 }}
+            transition={{ duration: 0.22 }}
+            className="flex-1 flex flex-col"
+          >
+            {/* Question-specific illustration */}
+            <div className="rounded-3xl bg-primary/5 border border-border overflow-hidden mb-5">
+              <img
+                src={current.image}
+                alt={current.imageAlt}
+                width={768}
+                height={512}
+                loading="lazy"
+                className="w-full h-40 object-contain"
+              />
+            </div>
 
-        {/* Content */}
-        <div className="flex-1">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-4"
-            >
-              {/* Step 0: Goal Selection with Icon Cards */}
-              {step === 0 && (
-                <div className="grid grid-cols-2 gap-4">
-                  {GOAL_OPTIONS.map((option) => {
-                    const Icon = option.icon;
-                    const isSelected = goal === option.value;
-                    return (
-                      <motion.button
-                        key={option.value}
-                        onClick={() => setGoal(option.value)}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className={`relative p-6 rounded-2xl border-2 text-left transition-all overflow-hidden ${
-                          isSelected
-                            ? "border-primary bg-primary/5 shadow-lg"
-                            : "border-border hover:border-primary/50 bg-card"
-                        }`}
-                      >
-                        {/* Background gradient */}
-                        <div className={`absolute inset-0 bg-gradient-to-br ${option.color} opacity-50`} />
-                        
-                        <div className="relative z-10">
-                          {/* Icon */}
-                          <div className={`w-14 h-14 rounded-2xl bg-background/80 flex items-center justify-center mb-4 ${isSelected ? 'shadow-md' : ''}`}>
-                            <Icon className={`w-7 h-7 ${option.iconColor}`} />
-                          </div>
-                          
-                          {/* Label */}
-                          <p className="font-bold text-foreground text-lg mb-1">{option.label}</p>
-                          <p className="text-sm text-muted-foreground leading-tight">{option.desc}</p>
-                          
-                          {/* Selected indicator */}
-                          {isSelected && (
-                            <motion.div 
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center"
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+              {current.section} · Step {step + 1} of {total}
+            </p>
+            <h1 className="text-2xl font-bold text-foreground mt-1">{current.title}</h1>
+            {current.subtitle && <p className="text-muted-foreground mt-1.5">{current.subtitle}</p>}
+
+            <div className="space-y-6 mt-6">
+              {current.fields.map(renderField)}
+
+              {/* Frequency picker for each chosen non-negotiable */}
+              {current.id === "non_negotiables" && selectedNonNegotiables.length > 0 && (
+                <div className="space-y-3">
+                  <Label>How often would you like each one?</Label>
+                  {selectedNonNegotiables.map((label) => (
+                    <div key={label} className="rounded-2xl border border-border p-3">
+                      <p className="font-semibold text-foreground text-sm mb-2">{label}</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {FREQUENCY_OPTIONS.map((f) => {
+                          const active = (values.nn_frequency?.[label] ?? "daily") === f.value;
+                          return (
+                            <button
+                              key={f.value}
+                              type="button"
+                              onClick={() =>
+                                set("nn_frequency", { ...(values.nn_frequency ?? {}), [label]: f.value })
+                              }
+                              className={`py-2 rounded-lg text-xs font-medium border transition-all ${
+                                active
+                                  ? "border-primary bg-primary/10 text-primary"
+                                  : "border-border text-muted-foreground"
+                              }`}
                             >
-                              <svg className="w-4 h-4 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                              </svg>
-                            </motion.div>
-                          )}
-                        </div>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Step 1: Gender & Age */}
-              {step === 1 && (
-                <div className="space-y-6">
-                  <div className="space-y-3">
-                    <Label>Gender</Label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { value: "male", label: "Male", icon: "👨" },
-                        { value: "female", label: "Female", icon: "👩" },
-                        { value: "other", label: "Other", icon: "🧑" },
-                      ].map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() => setGender(option.value as Gender)}
-                          className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
-                            gender === option.value
-                              ? "border-primary bg-primary/5"
-                              : "border-border hover:border-primary/50"
-                          }`}
-                        >
-                          <span className="text-2xl">{option.icon}</span>
-                          <p className="font-medium text-foreground">{option.label}</p>
-                        </button>
-                      ))}
+                              {f.label}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="age">Age</Label>
-                    <Input
-                      id="age"
-                      type="number"
-                      placeholder="e.g. 30"
-                      value={age}
-                      onChange={(e) => setAge(e.target.value)}
-                      className="text-lg"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Step 2: Height & Weight */}
-              {step === 2 && (
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="height">Height (cm)</Label>
-                    <Input
-                      id="height"
-                      type="number"
-                      placeholder="e.g. 175"
-                      value={height}
-                      onChange={(e) => setHeight(e.target.value)}
-                      className="text-lg"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="weight">Weight (kg)</Label>
-                    <Input
-                      id="weight"
-                      type="number"
-                      step="0.1"
-                      placeholder="e.g. 70"
-                      value={weight}
-                      onChange={(e) => setWeight(e.target.value)}
-                      className="text-lg"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Step 3: Activity Level with Icons */}
-              {step === 3 && (
-                <div className="space-y-3">
-                  {[
-                    { value: "sedentary", label: "Sedentary", desc: "Little or no exercise", icon: "🛋️" },
-                    { value: "light", label: "Lightly Active", desc: "1-3 workouts per week", icon: "🚶" },
-                    { value: "moderate", label: "Moderately Active", desc: "3-5 workouts per week", icon: "🏃" },
-                    { value: "active", label: "Very Active", desc: "6-7 workouts per week", icon: "💪" },
-                    { value: "very_active", label: "Extremely Active", desc: "Athlete or physical job", icon: "🏆" },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => setActivityLevel(option.value as ActivityLevel)}
-                      className={`w-full p-4 rounded-xl border-2 text-left transition-all flex items-center gap-4 ${
-                        activityLevel === option.value
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
-                      }`}
-                    >
-                      <span className="text-2xl">{option.icon}</span>
-                      <div>
-                        <p className="font-semibold text-foreground">{option.label}</p>
-                        <p className="text-sm text-muted-foreground">{option.desc}</p>
-                      </div>
-                    </button>
                   ))}
                 </div>
               )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
 
-              {/* Step 4: Diet Preference */}
-              {step === 4 && (
-                <div className="space-y-3">
-                  {[
-                    { value: "none", label: "No Preference", desc: "I eat everything", icon: "🍽️" },
-                    { value: "vegetarian", label: "Vegetarian", desc: "No meat or fish", icon: "🥗" },
-                    { value: "vegan", label: "Vegan", desc: "No animal products", icon: "🌱" },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => setDietPreference(option.value as DietPreference)}
-                      className={`w-full p-4 rounded-xl border-2 text-left transition-all flex items-center gap-4 ${
-                        dietPreference === option.value
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
-                      }`}
-                    >
-                      <span className="text-2xl">{option.icon}</span>
-                      <div>
-                        <p className="font-semibold text-foreground">{option.label}</p>
-                        <p className="text-sm text-muted-foreground">{option.desc}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Step 5: Cuisine Preference */}
-              {step === 5 && (
-                <div className="space-y-3">
-                  <p className="text-muted-foreground mb-4">
-                    Choose your preferred cuisine style for meal suggestions
-                  </p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {CUISINE_OPTIONS.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => setCuisinePreference(option.value)}
-                        className={`p-4 rounded-xl border-2 text-left transition-all ${
-                          cuisinePreference === option.value
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-primary/50"
-                        }`}
-                      >
-                        <p className="font-semibold text-foreground">{option.label}</p>
-                        <p className="text-xs text-muted-foreground">{option.desc}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Step 6: Allergies */}
-              {step === 6 && (
-                <div className="space-y-4">
-                  <p className="text-muted-foreground">
-                    List any foods you're allergic to or want to avoid (comma separated)
-                  </p>
-                  <Input
-                    placeholder="e.g. nuts, shellfish, gluten"
-                    value={allergies}
-                    onChange={(e) => setAllergies(e.target.value)}
-                    className="text-lg"
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Leave empty if you have no allergies or exclusions
-                  </p>
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Decorative art fills the empty space */}
-        <div className="mt-8 rounded-3xl bg-primary/5 border border-border overflow-hidden">
-          <img
-            src={onboardingArt}
-            alt="Person preparing a healthy meal with fresh vegetables"
-            width={1024}
-            height={640}
-            loading="lazy"
-            className="w-full h-36 object-contain"
-          />
-        </div>
-
-        {/* Navigation buttons */}
-        <div className="sticky bottom-0 flex gap-3 mt-6 pt-4 border-t border-border bg-background">
-
+        <div className="sticky bottom-0 flex gap-3 mt-8 pt-4 pb-2 border-t border-border bg-background">
           {step > 0 && (
-            <Button variant="outline" onClick={handleBack} className="flex-1">
+            <Button variant="outline" onClick={handleBack} className="flex-1 h-12 rounded-xl">
               <ChevronLeft className="w-4 h-4 mr-1" />
               Back
             </Button>
           )}
-          <Button
-            onClick={handleNext}
-            disabled={!canProceed() || saving}
-            className="flex-1"
-          >
+          <Button onClick={handleNext} disabled={!canProceed() || saving} className="flex-[2] h-12 rounded-xl">
             {saving ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Saving...
+                Setting up…
               </>
-            ) : step === STEPS.length - 1 ? (
-              "Complete"
+            ) : step === total - 1 ? (
+              "Finish setup"
             ) : (
               <>
-                Next
+                Continue
                 <ChevronRight className="w-4 h-4 ml-1" />
               </>
             )}
