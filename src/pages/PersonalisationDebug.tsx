@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useBehaviourProfile } from "@/hooks/useBehaviourProfile";
 import { useLifestyleMode } from "@/hooks/useLifestyleMode";
-import { Seo } from "@/components/Seo";
+import { Helmet } from "react-helmet-async";
 
 interface EventRow {
   id: string;
@@ -79,11 +79,10 @@ const PersonalisationDebug = () => {
 
   return (
     <div className="min-h-screen bg-background pb-16">
-      <Seo
-        title="Personalisation engine — Nutrio developer view"
-        description="Development view of Nutrio's adaptive personalisation inputs, recommendation events and behaviour scores."
-        noIndex
-      />
+      <Helmet>
+        <title>Personalisation engine — Nutrio developer view</title>
+        <meta name="robots" content="noindex" />
+      </Helmet>
       <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-card px-4 py-3">
         <button onClick={() => navigate(-1)} aria-label="Go back" className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-5 h-5" />
