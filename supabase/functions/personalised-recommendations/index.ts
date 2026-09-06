@@ -1,12 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-const iso = (d: Date) => d.toISOString().split("T")[0];
+import { buildUserContext, clientFor, contextPrompt, corsHeaders } from "../_shared/userContext.ts";
 
 interface Rec {
   kind: string;
@@ -22,13 +15,7 @@ serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get("Authorization") ?? "";
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } },
-    );
-
+    const supabase = clientFor(req);
     const { data: userData } = await supabase.auth.getUser();
     const user = userData?.user;
     if (!user) {
@@ -38,106 +25,25 @@ serve(async (req) => {
       });
     }
 
-    const now = new Date();
-    const today = iso(now);
-    const sevenDaysAgo = iso(new Date(now.getTime() - 6 * 86400000));
-    const hour = Number(
-      new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: "Europe/London" })
-        .format(now),
-    );
-
-    const [profileRes, personalRes, foodRes, todayFoodRes, workoutRes, waterRes, modeRes, nnRes, nnProgRes, feedbackRes, summaryRes] =
-      await Promise.all([
-        supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle(),
-        supabase.from("user_personalisation").select("*").eq("user_id", user.id).maybeSingle(),
-        supabase.from("food_logs").select("calories,protein,logged_at,meal_type,food_name").eq("user_id", user.id).gte("logged_at", sevenDaysAgo),
-        supabase.from("food_logs").select("calories,protein,meal_type,food_name").eq("user_id", user.id).eq("logged_at", today),
-        supabase.from("workout_logs").select("logged_at,exercise_type").eq("user_id", user.id).gte("logged_at", sevenDaysAgo),
-        supabase.from("water_logs").select("glasses").eq("user_id", user.id).eq("logged_at", today),
-        supabase.from("lifestyle_modes").select("mode_key,answers,ends_on").eq("user_id", user.id).eq("status", "active").lte("starts_on", today).gte("ends_on", today).limit(1),
-        supabase.from("non_negotiables").select("id,label,target_count,frequency_type").eq("user_id", user.id).eq("active", true),
-        supabase.from("non_negotiable_progress").select("non_negotiable_id,completed_on").eq("user_id", user.id).gte("completed_on", sevenDaysAgo),
-        supabase.from("user_feedback").select("context,sentiment,message").eq("user_id", user.id).order("created_at", { ascending: false }).limit(10),
-        supabase.from("weekly_nutrition_summary").select("status,insight").eq("user_id", user.id).order("week_start", { ascending: false }).limit(1),
-      ]);
-
-    const profile = (profileRes.data ?? {}) as Record<string, unknown>;
-    const personal = (personalRes.data ?? {}) as Record<string, unknown>;
-    const foods = (foodRes.data ?? []) as Record<string, string | number>[];
-    const todayFoods = (todayFoodRes.data ?? []) as Record<string, string | number>[];
-    const workouts = (workoutRes.data ?? []) as Record<string, string>[];
-    const water = (waterRes.data ?? []) as { glasses: number }[];
-    const mode = (modeRes.data ?? [])[0] as { mode_key: string; ends_on: string } | undefined;
-    const nns = (nnRes.data ?? []) as { id: string; label: string; target_count: number }[];
-    const nnProg = (nnProgRes.data ?? []) as { non_negotiable_id: string }[];
-    const feedback = (feedbackRes.data ?? []) as { context: string; sentiment: string; message: string }[];
-    const lastSummary = (summaryRes.data ?? [])[0] as { status: string; insight: Record<string, string> } | undefined;
-
-    const calorieTarget = Number(profile.calorie_target) || 2000;
-    const proteinTarget = Number(profile.protein_target) || 120;
-    const eatenToday = todayFoods.reduce((s, f) => s + (Number(f.calories) || 0), 0);
-    const proteinToday = todayFoods.reduce((s, f) => s + (Number(f.protein) || 0), 0);
-    const remaining = Math.max(0, Math.round(calorieTarget - eatenToday));
-    const glasses = water.reduce((s, w) => s + (Number(w.glasses) || 0), 0);
-
-    const dayKeys = new Set(foods.map((f) => String(f.logged_at)));
-    const avgCalories = dayKeys.size
-      ? Math.round(foods.reduce((s, f) => s + (Number(f.calories) || 0), 0) / dayKeys.size)
-      : 0;
-    const avgProtein = dayKeys.size
-      ? Math.round(foods.reduce((s, f) => s + (Number(f.protein) || 0), 0) / dayKeys.size)
-      : 0;
-
-    const nnStatus = nns
-      .map((n) => `${n.label} ${nnProg.filter((p) => p.non_negotiable_id === n.id).length}/${n.target_count}`)
-      .join(", ");
-
-    const mealsToday = [...new Set(todayFoods.map((f) => String(f.meal_type)))].join(", ") || "none yet";
-
-    const arr = (v: unknown) => (Array.isArray(v) ? v.join(", ") : "");
+    const ctx = await buildUserContext(supabase, user.id);
+    const today = ctx.today;
+    const { remaining, glasses } = ctx.today_totals;
 
     const prompt = `Create today's personalised Nutrio recommendations.
 
-TIME: ${hour}:00 (UK), date ${today}
-
-USER
-- Name: ${personal.display_name ?? profile.full_name ?? "there"}
-- Goal: ${personal.primary_goal ?? profile.goal ?? "maintenance"} (importance ${personal.goal_importance ?? "n/a"}/5)
-- Cultures: ${arr(personal.food_cultures) || "not set"}
-- Favourite foods: ${arr(personal.favourite_foods) || "not set"}
-- Dislikes: ${arr(personal.disliked_foods) || "none"} | Avoids: ${arr(personal.avoided_foods) || "none"}
-- Diet preference: ${profile.diet_preference ?? "none"} | Allergies: ${arr(profile.allergies) || "none"}
-- Cooking: ${personal.cooking_frequency ?? "n/a"}, time ${personal.cooking_time ?? "n/a"}; eats out ${personal.eating_out_frequency ?? "n/a"}
-- Protein sources: ${arr(personal.protein_sources) || "not set"}
-- Challenges: ${arr(personal.challenges) || "none stated"}; off-routine times: ${arr(personal.off_routine_times) || "none"}
-- Support style: ${personal.support_style ?? "balanced"}
-
-TODAY
-- Eaten: ${Math.round(eatenToday)} kcal of ${calorieTarget}; ${remaining} kcal remaining
-- Protein: ${Math.round(proteinToday)}g of ${proteinTarget}g
-- Meals logged so far: ${mealsToday}
-- Water: ${glasses}/8 glasses
-- Lifestyle mode: ${mode?.mode_key ?? "none"}${mode ? ` (until ${mode.ends_on})` : ""}
-
-LAST 7 DAYS
-- Average ${avgCalories} kcal, ${avgProtein}g protein across ${dayKeys.size} logged days
-- Workouts: ${workouts.length}
-- Non-negotiables: ${nnStatus || "none set"}
-- Last weekly status: ${lastSummary?.status ?? "n/a"} — ${lastSummary?.insight?.focus ?? ""}
-
-RECENT USER FEEDBACK (learn from it, do not repeat what they disliked)
-${feedback.map((f) => `- ${f.context}: ${f.sentiment ?? ""} ${f.message ?? ""}`).join("\n") || "- none yet"}
+${contextPrompt(ctx)}
 
 RULES
 - Produce 3 recommendations, each a different kind from: ${KINDS.join(", ")}.
-- Be specific to the numbers, the time of day, and their food culture and preferences. Never generic advice.
-- Never shame, never restrict aggressively, never give medical advice. No calorie cutting below target.
-- If a lifestyle mode is active, adapt to it (travel, busy, social, low energy, fasting...).
+- Apply the RANKING RULES and WEEKLY ADAPTATION RULE above before choosing anything.
+- Be specific to the numbers, the time of day, their routine, culture and preferences. Never generic advice.
+- Never shame, never restrict aggressively, never give medical advice.
 - British English. Warm, direct, practical. Body max 2 short sentences.
 
 Return ONLY JSON:
 {"recommendations":[{"kind":"meal","title":"short actionable title","body":"1-2 sentences"}]}`;
 
+    const nnStatus = ctx.nonNegotiableStatus;
     const fallback: Rec[] = [
       {
         kind: "meal",
@@ -154,8 +60,8 @@ Return ONLY JSON:
       },
       {
         kind: "habit",
-        title: nns.length ? "Tick off a non-negotiable" : "Log one more meal today",
-        body: nns.length
+        title: ctx.nonNegotiables.length ? "Tick off a non-negotiable" : "Log one more meal today",
+        body: ctx.nonNegotiables.length
           ? `Your habits this week: ${nnStatus}.`
           : "The more you log, the sharper Nutrio's suggestions get.",
       },
@@ -171,7 +77,7 @@ Return ONLY JSON:
         body: JSON.stringify({
           model: "google/gemini-2.5-flash",
           messages: [
-            { role: "system", content: "You are Nutrio's personalisation engine. Reply with valid JSON only." },
+            { role: "system", content: "You are Nutrio's adaptive personalisation engine. Reply with valid JSON only." },
             { role: "user", content: prompt },
           ],
         }),
@@ -216,7 +122,14 @@ Return ONLY JSON:
       kind: r.kind,
       title: r.title,
       body: r.body,
-      payload: { remaining, glasses, mode: mode?.mode_key ?? null },
+      payload: {
+        remaining,
+        glasses,
+        mode: ctx.mode?.mode_key ?? null,
+        ranking_boost: ctx.ranking.boost,
+        ranking_avoid: ctx.ranking.avoid,
+        acceptance_rate: ctx.behaviour.recommendation_acceptance_rate,
+      },
       valid_for: today,
       dismissed: false,
     }));
@@ -226,6 +139,16 @@ Return ONLY JSON:
       .insert(rows)
       .select();
     if (error) console.error("insert error", error.message);
+
+    // Keep the stored behaviour profile fresh for the debug view.
+    await supabase.from("user_behaviour_profile").upsert(
+      {
+        user_id: user.id,
+        ...ctx.behaviour,
+        computed_at: new Date().toISOString(),
+      } as never,
+      { onConflict: "user_id" },
+    );
 
     return new Response(JSON.stringify({ recommendations: inserted ?? rows }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -26,3 +26,9 @@ verify_jwt = false
 
 [functions.weekly-insight]
 verify_jwt = false
+
+[functions.personalised-recommendations]
+verify_jwt = false
+
+[functions.behaviour-analysis]
+verify_jwt = false
