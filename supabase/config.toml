@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.strict-mode-meal-analyze]
 verify_jwt = false
+
+[functions.ai-pantry-suggestions]
+verify_jwt = false

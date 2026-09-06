@@ -28,7 +28,7 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
       <motion.header
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between py-4"
+        className="sticky top-0 z-40 -mx-4 px-4 py-3 mb-4 flex items-center justify-between bg-background/95 backdrop-blur border-b border-border"
       >
         <div className="flex items-center gap-3">
           <motion.button

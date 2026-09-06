@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { ChevronRight, ChevronLeft, Target, User, Ruler, Activity, Utensils, AlertCircle, Loader2, TrendingDown, Dumbbell, Heart, Zap, Globe } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { toast } from "sonner";
+import onboardingArt from "@/assets/onboarding-art.jpg";
 
 type Goal = "fat_loss" | "muscle_gain" | "maintenance" | "endurance";
 type Gender = "male" | "female" | "other";
@@ -447,8 +448,21 @@ const Onboarding = () => {
           </AnimatePresence>
         </div>
 
+        {/* Decorative art fills the empty space */}
+        <div className="mt-8 rounded-3xl bg-primary/5 border border-border overflow-hidden">
+          <img
+            src={onboardingArt}
+            alt="Person preparing a healthy meal with fresh vegetables"
+            width={1024}
+            height={640}
+            loading="lazy"
+            className="w-full h-36 object-contain"
+          />
+        </div>
+
         {/* Navigation buttons */}
-        <div className="flex gap-3 mt-8">
+        <div className="sticky bottom-0 flex gap-3 mt-6 pt-4 border-t border-border bg-background">
+
           {step > 0 && (
             <Button variant="outline" onClick={handleBack} className="flex-1">
               <ChevronLeft className="w-4 h-4 mr-1" />

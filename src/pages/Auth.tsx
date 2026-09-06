@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import authArt from "@/assets/auth-art.jpg";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -73,19 +74,31 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-10">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-sm"
       >
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-8">
+        <div className="flex items-center justify-center gap-2 mb-6">
           <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
             <Leaf className="w-6 h-6 text-primary" />
           </div>
           <span className="text-2xl font-bold text-foreground">Nutrio</span>
         </div>
+
+        {/* Illustration */}
+        <div className="mb-6 rounded-3xl bg-primary/5 border border-border overflow-hidden">
+          <img
+            src={authArt}
+            alt="Healthy bowl of greens, avocado, berries, water and a dumbbell"
+            width={1024}
+            height={640}
+            className="w-full h-40 object-contain"
+          />
+        </div>
+
 
         {/* Title */}
         <div className="text-center mb-8">

@@ -17,7 +17,7 @@ const BottomNav = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur border-t border-border shadow-elevated safe-area-bottom">
       <div className="container max-w-lg mx-auto">
         <div className="flex items-center justify-around py-2">
           {navItems.map((item) => {
