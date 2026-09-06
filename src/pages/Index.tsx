@@ -375,6 +375,31 @@ return (
           </div>
         </motion.div>
 
+        {/* Lifestyle Mode */}
+        <div className="mb-4">
+          <LifestyleModeCard delay={0.22} />
+        </div>
+
+        {/* Today's meal check-in */}
+        <div className="mb-4">
+          <MealCheckIn
+            delay={0.24}
+            loggedCounts={{
+              breakfast: dailySummary.meals.breakfast?.length ?? 0,
+              lunch: dailySummary.meals.lunch?.length ?? 0,
+              snacks: dailySummary.meals.snacks?.length ?? 0,
+              dinner: dailySummary.meals.dinner?.length ?? 0,
+            }}
+          />
+        </div>
+
+        {/* Non-negotiables */}
+        <div className="mb-4">
+          <NonNegotiablesCard delay={0.26} />
+        </div>
+
+
+
         {/* Macronutrients Card */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
