@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Bell, Crown } from "lucide-react";
 import { QuickActionMenu } from "./QuickActionMenu";
+import { NotificationsSheet } from "./NotificationsSheet";
+import { useSmartReminders } from "@/hooks/useSmartReminders";
 import { WaterIntakeModal } from "./WaterIntakeModal";
 import { useUserData } from "@/hooks/useUserData";
 
@@ -12,7 +14,15 @@ interface AppHeaderProps {
 export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [waterModalOpen, setWaterModalOpen] = useState(false);
-  const { waterGlasses, updateWater } = useUserData();
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const { waterGlasses, updateWater, dailySummary } = useUserData();
+  const loggedCounts = {
+    breakfast: dailySummary.meals.breakfast?.length ?? 0,
+    lunch: dailySummary.meals.lunch?.length ?? 0,
+    snacks: dailySummary.meals.snacks?.length ?? 0,
+    dinner: dailySummary.meals.dinner?.length ?? 0,
+  };
+  const { reminders } = useSmartReminders({ loggedCounts, waterGlasses });
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -48,9 +58,17 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
           <button className="w-10 h-10 rounded-full bg-nutrio-sage-light flex items-center justify-center">
             <Crown className="w-5 h-5 text-nutrio-amber" />
           </button>
-          <button className="w-10 h-10 rounded-full bg-nutrio-sage-light flex items-center justify-center relative">
+          <button
+            onClick={() => setNotificationsOpen(true)}
+            aria-label="Notifications"
+            className="w-10 h-10 rounded-full bg-nutrio-sage-light flex items-center justify-center relative"
+          >
             <Bell className="w-5 h-5 text-muted-foreground" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full" />
+            {reminders.length > 0 && (
+              <span className="absolute top-1.5 right-1.5 min-w-[1rem] h-4 px-1 rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground flex items-center justify-center">
+                {reminders.length}
+              </span>
+            )}
           </button>
         </div>
       </motion.header>
@@ -59,6 +77,13 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
         isOpen={menuOpen} 
         onClose={() => setMenuOpen(false)} 
         onOpenWaterTracker={() => setWaterModalOpen(true)}
+      />
+
+      <NotificationsSheet
+        isOpen={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+        loggedCounts={loggedCounts}
+        waterGlasses={waterGlasses}
       />
 
       <WaterIntakeModal

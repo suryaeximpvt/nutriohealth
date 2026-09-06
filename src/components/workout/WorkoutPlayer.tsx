@@ -163,7 +163,7 @@ export const WorkoutPlayer = ({ workout, onClose, onComplete }: WorkoutPlayerPro
       <Progress value={progress} className="h-1 rounded-none" />
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4 overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 overflow-y-auto">
         <AnimatePresence mode="wait">
           {phase === 'countdown' && (
             <motion.div

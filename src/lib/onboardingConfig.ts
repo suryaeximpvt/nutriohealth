@@ -230,7 +230,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     imageAlt: "Illustration of a heart-shaped plate filled with favourite foods",
     optional: true,
     fields: [
-      { kind: "multi", key: "comfort_foods", label: "I enjoy these most", options: [], max: 5, columns: 2 },
+      { kind: "multi", key: "comfort_foods", label: "I enjoy these most (pick as many as you like)", options: [], columns: 2 },
       { kind: "tags", key: "favourite_foods", label: "Your top 3 favourite foods", placeholder: "Type a food and press Enter" },
     ],
   },
@@ -254,7 +254,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     subtitle: "You can change this whenever life changes.",
     image: goalArt,
     imageAlt: "Illustration of a target with an arrow and a rising chart",
-    required: ["primary_goal", "success_definition"],
+    required: ["primary_goal", "success_definition", "goal_importance"],
     fields: [
       {
         kind: "single",
@@ -317,10 +317,10 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     id: "workout",
     section: "Body & activity",
     title: "How do you like to train?",
-    subtitle: "Skip anything that doesn't apply.",
+    subtitle: "Tell us how you like to move.",
     image: bodyActivityArt,
     imageAlt: "Illustration of training equipment",
-    required: ["workout_types", "workout_frequency"],
+    required: ["workout_types", "workout_frequency", "workout_time"],
     fields: [
       {
         kind: "multi",
@@ -437,9 +437,9 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     required: ["eating_location", "eating_out_frequency"],
     fields: [
       {
-        kind: "single",
+        kind: "multi",
         key: "eating_location",
-        label: "Most meals are eaten",
+        label: "Most meals are eaten (choose all that apply)",
         columns: 2,
         options: [
           { value: "home", label: "At home", emoji: "🏠" },
@@ -469,7 +469,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     title: "Where does your protein come from?",
     image: proteinArt,
     imageAlt: "Illustration of eggs, chicken, fish, lentils and yogurt",
-    required: ["protein_sources"],
+    required: ["protein_sources", "protein_confidence"],
     fields: [
       {
         kind: "multi",

@@ -13,13 +13,11 @@ import { PhotoUploadModal } from "@/components/PhotoUploadModal";
 import { MealTypeSelector } from "@/components/MealTypeSelector";
 import { PremiumModal } from "@/components/PremiumModal";
 import { WaterTracker } from "@/components/WaterTracker";
-import { WaterHydrationPrompt } from "@/components/WaterHydrationPrompt";
 import { DailyIntakeBreakdown } from "@/components/DailyIntakeBreakdown";
 import { LifestyleModeCard } from "@/components/LifestyleModeCard";
 import { MealCheckIn } from "@/components/MealCheckIn";
 import { NonNegotiablesCard } from "@/components/NonNegotiablesCard";
 import { WeeklyInsightCard } from "@/components/WeeklyInsightCard";
-import { NextActionCard } from "@/components/NextActionCard";
 import { RecommendationsCard } from "@/components/RecommendationsCard";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -244,17 +242,6 @@ const handleLogAIMeal = async (mealType: typeof selectedMealType, suggestion: AI
 
 return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Water Hydration Prompt */}
-      <WaterHydrationPrompt
-        lastWaterLogTime={lastWaterLogTime}
-        waterGlasses={waterGlasses}
-        waterTarget={8}
-        proteinConsumed={dailySummary.totalProtein}
-        activityLevel={profile?.activity_level || "moderate"}
-        onAddWater={(glasses) => updateWater(waterGlasses + glasses)}
-        onDismiss={() => {}}
-      />
-
       <div className="container max-w-lg mx-auto px-4">
         <AppHeader userName={userName} />
 
@@ -381,20 +368,6 @@ return (
             </div>
           </div>
         </motion.div>
-
-        {/* Next action (smart reminder) */}
-        <div className="mb-4">
-          <NextActionCard
-            delay={0.21}
-            waterGlasses={waterGlasses}
-            loggedCounts={{
-              breakfast: dailySummary.meals.breakfast?.length ?? 0,
-              lunch: dailySummary.meals.lunch?.length ?? 0,
-              snacks: dailySummary.meals.snacks?.length ?? 0,
-              dinner: dailySummary.meals.dinner?.length ?? 0,
-            }}
-          />
-        </div>
 
         {/* Personalised AI recommendations */}
         <div className="mb-4">
