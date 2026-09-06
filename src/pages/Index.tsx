@@ -6,7 +6,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { ProgressRing } from "@/components/ProgressRing";
 import { MacroBar } from "@/components/MacroBar";
 import { BottomNav } from "@/components/BottomNav";
-import { HealthStats } from "@/components/HealthStats";
+import { HealthTrackingCard } from "@/components/HealthTrackingCard";
 import { AISuggestedMealCard } from "@/components/AISuggestedMealCard";
 import { FoodLogModal } from "@/components/FoodLogModal";
 import { PhotoUploadModal } from "@/components/PhotoUploadModal";
@@ -496,7 +496,7 @@ return (
           transition={{ delay: 0.35 }}
           className="mb-4"
         >
-          <HealthStats isConnected={false} />
+          <HealthTrackingCard delay={0.2} />
         </motion.div>
 
         {/* AI-Powered Meal Suggestions */}
