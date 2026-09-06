@@ -131,6 +131,9 @@ const Diet = () => {
     } else {
       toast.success(`Added ${meal.name} to your log`);
     }
+  };
+
+
 
 
   const handleCuisineSelect = (cuisine: CuisinePreference) => {
