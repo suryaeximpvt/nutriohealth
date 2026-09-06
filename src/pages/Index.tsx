@@ -417,6 +417,7 @@ return (
         <div className="mb-4">
           <MealCheckIn
             delay={0.24}
+            onAddPhoto={handleAddPhoto}
             loggedCounts={{
               breakfast: dailySummary.meals.breakfast?.length ?? 0,
               lunch: dailySummary.meals.lunch?.length ?? 0,

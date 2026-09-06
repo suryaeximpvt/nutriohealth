@@ -1,7 +1,19 @@
-import { motion } from "framer-motion";
-import { Clock } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Clock, Camera, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { useMealStatus, type MealStatusValue } from "@/hooks/useMealStatus";
 import { usePersonalisation } from "@/hooks/usePersonalisation";
+import { useUserData } from "@/hooks/useUserData";
+
+const PORTIONS: { label: string; desc: string; calories: number }[] = [
+  { label: "Light", desc: "~300 kcal", calories: 300 },
+  { label: "Normal", desc: "~500 kcal", calories: 500 },
+  { label: "Large", desc: "~750 kcal", calories: 750 },
+  { label: "Very large", desc: "~1000 kcal", calories: 1000 },
+];
 
 const MEALS: { key: string; label: string; emoji: string; timeKey: string }[] = [
   { key: "breakfast", label: "Breakfast", emoji: "🌅", timeKey: "breakfast_time" },
@@ -31,12 +43,40 @@ const fmt = (t?: string | null) => (t ? t.slice(0, 5) : null);
 export const MealCheckIn = ({
   delay = 0,
   loggedCounts,
+  onAddPhoto,
 }: {
   delay?: number;
   loggedCounts?: Record<string, number>;
+  onAddPhoto?: (mealType: "breakfast" | "lunch" | "snacks" | "dinner") => void;
 }) => {
   const { statuses, setStatus } = useMealStatus();
   const { routine } = usePersonalisation();
+  const { logFood } = useUserData();
+  const [askingFor, setAskingFor] = useState<string | null>(null);
+  const [customKcal, setCustomKcal] = useState("");
+  const [savingMeal, setSavingMeal] = useState(false);
+
+  const saveEstimate = async (mealKey: string, label: string, calories: number) => {
+    setSavingMeal(true);
+    const result = await logFood(mealKey, {
+      name: `${label} portion (estimated)`,
+      calories,
+      protein: Math.round((calories * 0.2) / 4),
+      carbs: Math.round((calories * 0.5) / 4),
+      fat: Math.round((calories * 0.3) / 9),
+      fibre: 3,
+      quantity: 1,
+    });
+    setSavingMeal(false);
+    if (result?.error) {
+      toast.error("We couldn't save that. Please try again.");
+      return;
+    }
+    await setStatus(mealKey, "logged", `${label} portion ~${calories} kcal`);
+    setAskingFor(null);
+    setCustomKcal("");
+    toast.success("Thanks — added to today's total.");
+  };
 
   const mealsEaten = routine?.meals_eaten ?? ["breakfast", "lunch", "dinner", "snacks"];
   const visible = MEALS.filter((m) => mealsEaten.includes(m.key) || m.key === "snacks");
@@ -90,9 +130,17 @@ export const MealCheckIn = ({
                   {CHOICES.map((c) => (
                     <button
                       key={c.value}
-                      onClick={() => setStatus(m.key, c.value)}
+                      onClick={() => {
+                        if (c.value === "logged") {
+                          setAskingFor(m.key);
+                          setCustomKcal("");
+                          return;
+                        }
+                        setAskingFor(null);
+                        setStatus(m.key, c.value);
+                      }}
                       className={`px-3 h-8 rounded-lg border text-xs font-medium transition-all ${
-                        statuses[m.key] === c.value
+                        (c.value === "logged" && askingFor === m.key) || statuses[m.key] === c.value
                           ? "border-primary bg-primary/10 text-primary"
                           : "border-border text-muted-foreground hover:border-primary/50"
                       }`}
@@ -102,6 +150,65 @@ export const MealCheckIn = ({
                   ))}
                 </div>
               )}
+
+              <AnimatePresence>
+                {!hasLogged && askingFor === m.key && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mt-3 rounded-xl bg-muted/50 p-3 space-y-3">
+                      <p className="text-xs font-semibold text-foreground">
+                        Roughly how much was it? A quick estimate keeps your day accurate.
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {PORTIONS.map((pOpt) => (
+                          <button
+                            key={pOpt.label}
+                            disabled={savingMeal}
+                            onClick={() => saveEstimate(m.key, pOpt.label, pOpt.calories)}
+                            className="rounded-lg border border-border bg-card px-3 py-2 text-left hover:border-primary/50 transition-all disabled:opacity-60"
+                          >
+                            <p className="text-xs font-semibold text-foreground">{pOpt.label}</p>
+                            <p className="text-[11px] text-muted-foreground">{pOpt.desc}</p>
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          type="number"
+                          inputMode="numeric"
+                          value={customKcal}
+                          onChange={(e) => setCustomKcal(e.target.value)}
+                          placeholder="Exact kcal"
+                          className="h-9 text-sm rounded-lg"
+                        />
+                        <Button
+                          size="sm"
+                          className="h-9 rounded-lg"
+                          disabled={!customKcal || savingMeal}
+                          onClick={() => saveEstimate(m.key, "Custom", parseInt(customKcal) || 0)}
+                        >
+                          {savingMeal ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save"}
+                        </Button>
+                      </div>
+                      {onAddPhoto && (
+                        <button
+                          onClick={() =>
+                            onAddPhoto(m.key as "breakfast" | "lunch" | "snacks" | "dinner")
+                          }
+                          className="flex items-center gap-2 text-xs font-semibold text-primary"
+                        >
+                          <Camera className="w-4 h-4" />
+                          Add a photo instead — we'll work out the calories
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         })}
