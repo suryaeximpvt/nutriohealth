@@ -25,7 +25,7 @@ export default defineTool({
     const [profileRes, foodRes, waterRes, workoutRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("calorie_target, protein_target, carbs_target, fat_target, fibre_target, water_target_glasses")
+        .select("calorie_target, protein_target, carbs_target, fat_target, fibre_target")
         .maybeSingle(),
       supabase
         .from("food_logs")
