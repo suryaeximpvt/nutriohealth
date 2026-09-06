@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX IF NOT EXISTS meal_status_user_meal_date_key ON public.meal_status (user_id, meal_type, status_date);
+CREATE UNIQUE INDEX IF NOT EXISTS non_negotiable_progress_unique_day ON public.non_negotiable_progress (user_id, non_negotiable_id, completed_on);
