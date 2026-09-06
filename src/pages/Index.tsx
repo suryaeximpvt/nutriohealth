@@ -378,6 +378,25 @@ return (
           </div>
         </motion.div>
 
+        {/* Next action (smart reminder) */}
+        <div className="mb-4">
+          <NextActionCard
+            delay={0.21}
+            waterGlasses={waterGlasses}
+            loggedCounts={{
+              breakfast: dailySummary.meals.breakfast?.length ?? 0,
+              lunch: dailySummary.meals.lunch?.length ?? 0,
+              snacks: dailySummary.meals.snacks?.length ?? 0,
+              dinner: dailySummary.meals.dinner?.length ?? 0,
+            }}
+          />
+        </div>
+
+        {/* Weekly Nutrio Insight */}
+        <div className="mb-4">
+          <WeeklyInsightCard delay={0.215} />
+        </div>
+
         {/* Lifestyle Mode */}
         <div className="mb-4">
           <LifestyleModeCard delay={0.22} />
