@@ -296,6 +296,11 @@ return (
           View your food history
         </button>
 
+        <div className="mb-4">
+          <FoodRealityCard score={realityScore} patterns={foodPatterns} delay={0.15} />
+        </div>
+
+
 
         {/* Go Premium Card - Only show if not premium */}
         {!isPremium && (
