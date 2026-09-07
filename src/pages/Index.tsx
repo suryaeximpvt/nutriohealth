@@ -24,6 +24,8 @@ import { TodaysFoodJourney } from "@/components/foodsnap/TodaysFoodJourney";
 import { MissedMealPrompt } from "@/components/foodsnap/MissedMealPrompt";
 import { useFoodCaptures } from "@/hooks/useFoodCaptures";
 import { guessMealType, type MealType } from "@/lib/foodSnap";
+import { FoodRealityCard } from "@/components/foodsnap/FoodRealityCard";
+import { useFoodBehaviour } from "@/hooks/useFoodBehaviour";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
@@ -61,6 +63,7 @@ const Index = () => {
   const [snapOpen, setSnapOpen] = useState(false);
   const [snapMealType, setSnapMealType] = useState<MealType>(guessMealType());
   const { todays: todaysCaptures, refresh: refreshCaptures } = useFoodCaptures();
+  const { score: realityScore, patterns: foodPatterns, analyse: analyseBehaviour } = useFoodBehaviour();
 
   const openSnap = (meal?: MealType) => {
     setSnapMealType(meal ?? guessMealType());
@@ -292,6 +295,11 @@ return (
         >
           View your food history
         </button>
+
+        <div className="mb-4">
+          <FoodRealityCard score={realityScore} patterns={foodPatterns} delay={0.15} />
+        </div>
+
 
 
         {/* Go Premium Card - Only show if not premium */}
@@ -617,6 +625,7 @@ return (
         onSaved={() => {
           void refreshCaptures();
           void refreshData();
+          void analyseBehaviour();
         }}
       />
     </div>
