@@ -43,7 +43,7 @@ const MEAL_CONFIG = [
 const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { profile, dailySummary, loading: dataLoading, logFood, deleteFood, waterGlasses, lastWaterLogTime, updateWater } = useUserData();
+  const { profile, dailySummary, loading: dataLoading, logFood, deleteFood, waterGlasses, lastWaterLogTime, updateWater, refreshData } = useUserData();
   const { loading: aiLoading, suggestions, fetchDailySuggestions, regenerateMeal } = useDailyAISuggestions();
 
   const { isPremium, canUseAI, getAISuggestionsRemaining, incrementAIUsage } = usePremium();
