@@ -625,6 +625,7 @@ return (
         onSaved={() => {
           void refreshCaptures();
           void refreshData();
+          void analyseBehaviour();
         }}
       />
     </div>
