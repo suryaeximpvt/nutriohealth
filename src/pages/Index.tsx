@@ -58,6 +58,15 @@ const Index = () => {
   const [intakeBreakdownOpen, setIntakeBreakdownOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<"breakfast" | "lunch" | "snacks" | "dinner">("breakfast");
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
+  const [snapOpen, setSnapOpen] = useState(false);
+  const [snapMealType, setSnapMealType] = useState<MealType>(guessMealType());
+  const { todays: todaysCaptures, refresh: refreshCaptures } = useFoodCaptures();
+
+  const openSnap = (meal?: MealType) => {
+    setSnapMealType(meal ?? guessMealType());
+    setSnapOpen(true);
+  };
+
 
   useEffect(() => {
     if (!authLoading && !user) {
