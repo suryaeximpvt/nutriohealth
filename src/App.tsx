@@ -17,6 +17,7 @@ import StrictMode from "./pages/StrictMode";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
 import PersonalisationDebug from "./pages/PersonalisationDebug";
+import FoodHistory from "./pages/FoodHistory";
 import { RouteSeo } from "./components/RouteSeo";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/ask-ai" element={<AskAI />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/strict-mode" element={<StrictMode />} />
+          <Route path="/food-history" element={<FoodHistory />} />
           <Route path="/personalisation-debug" element={<PersonalisationDebug />} />
           <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

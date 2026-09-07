@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.behaviour-analysis]
 verify_jwt = false
+
+[functions.analyze-food-snap]
+verify_jwt = false

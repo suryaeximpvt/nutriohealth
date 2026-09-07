@@ -19,6 +19,11 @@ import { MealCheckIn } from "@/components/MealCheckIn";
 import { NonNegotiablesCard } from "@/components/NonNegotiablesCard";
 import { WeeklyInsightCard } from "@/components/WeeklyInsightCard";
 import { RecommendationsCard } from "@/components/RecommendationsCard";
+import { FoodSnapFlow } from "@/components/foodsnap/FoodSnapFlow";
+import { TodaysFoodJourney } from "@/components/foodsnap/TodaysFoodJourney";
+import { MissedMealPrompt } from "@/components/foodsnap/MissedMealPrompt";
+import { useFoodCaptures } from "@/hooks/useFoodCaptures";
+import { guessMealType, type MealType } from "@/lib/foodSnap";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
@@ -38,7 +43,7 @@ const MEAL_CONFIG = [
 const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { profile, dailySummary, loading: dataLoading, logFood, deleteFood, waterGlasses, lastWaterLogTime, updateWater } = useUserData();
+  const { profile, dailySummary, loading: dataLoading, logFood, deleteFood, waterGlasses, lastWaterLogTime, updateWater, refreshData } = useUserData();
   const { loading: aiLoading, suggestions, fetchDailySuggestions, regenerateMeal } = useDailyAISuggestions();
 
   const { isPremium, canUseAI, getAISuggestionsRemaining, incrementAIUsage } = usePremium();
@@ -53,6 +58,15 @@ const Index = () => {
   const [intakeBreakdownOpen, setIntakeBreakdownOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<"breakfast" | "lunch" | "snacks" | "dinner">("breakfast");
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
+  const [snapOpen, setSnapOpen] = useState(false);
+  const [snapMealType, setSnapMealType] = useState<MealType>(guessMealType());
+  const { todays: todaysCaptures, refresh: refreshCaptures } = useFoodCaptures();
+
+  const openSnap = (meal?: MealType) => {
+    setSnapMealType(meal ?? guessMealType());
+    setSnapOpen(true);
+  };
+
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -245,22 +259,40 @@ return (
       <div className="container max-w-lg mx-auto px-4">
         <AppHeader userName={userName} />
 
-        {/* Scan Food Card */}
+        {/* Primary action: snap what you ate */}
         <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          onClick={handleQuickScan}
-          className="w-full bg-gradient-to-r from-primary to-primary/80 rounded-2xl p-5 flex items-center gap-4 mb-3"
+          transition={{ delay: 0.05 }}
+          onClick={() => openSnap()}
+          className="w-full bg-gradient-to-r from-primary to-primary/80 rounded-3xl p-6 flex flex-col items-center gap-2 mb-3 shadow-card"
         >
-          <div className="w-12 h-12 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
-            <Camera className="w-6 h-6 text-primary-foreground" />
+          <div className="w-14 h-14 rounded-2xl bg-primary-foreground/20 flex items-center justify-center">
+            <Camera className="w-7 h-7 text-primary-foreground" />
           </div>
-          <div className="text-left">
-            <h3 className="font-semibold text-primary-foreground text-lg">Scan Food</h3>
-            <p className="text-primary-foreground/80 text-sm">Take a photo to track calories</p>
-          </div>
+          <h2 className="font-bold text-primary-foreground text-xl">Snap what you ate</h2>
+          <p className="text-primary-foreground/80 text-sm">
+            Nutrio learns from your real meals — no searching required
+          </p>
         </motion.button>
+
+        {/* Gentle nudge when a usual meal hasn't been seen */}
+        <div className="mb-3">
+          <MissedMealPrompt captures={todaysCaptures} onSnap={(m) => openSnap(m)} />
+        </div>
+
+        {/* Today's food journey */}
+        <div className="mb-3">
+          <TodaysFoodJourney captures={todaysCaptures} onSnap={(m) => openSnap(m)} delay={0.1} />
+        </div>
+
+        <button
+          onClick={() => navigate("/food-history")}
+          className="w-full text-sm text-primary font-medium mb-4"
+        >
+          View your food history
+        </button>
+
 
         {/* Go Premium Card - Only show if not premium */}
         {!isPremium && (
@@ -576,6 +608,16 @@ return (
         caloriesRemaining={caloriesRemaining}
         calorieTarget={calorieTarget}
         onDeleteFood={deleteFood}
+      />
+
+      <FoodSnapFlow
+        open={snapOpen}
+        onClose={() => setSnapOpen(false)}
+        defaultMealType={snapMealType}
+        onSaved={() => {
+          void refreshCaptures();
+          void refreshData();
+        }}
       />
     </div>
   );
