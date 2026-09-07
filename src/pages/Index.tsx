@@ -24,6 +24,8 @@ import { TodaysFoodJourney } from "@/components/foodsnap/TodaysFoodJourney";
 import { MissedMealPrompt } from "@/components/foodsnap/MissedMealPrompt";
 import { useFoodCaptures } from "@/hooks/useFoodCaptures";
 import { guessMealType, type MealType } from "@/lib/foodSnap";
+import { FoodRealityCard } from "@/components/foodsnap/FoodRealityCard";
+import { useFoodBehaviour } from "@/hooks/useFoodBehaviour";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
