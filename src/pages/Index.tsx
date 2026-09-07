@@ -26,6 +26,8 @@ import { useFoodCaptures } from "@/hooks/useFoodCaptures";
 import { guessMealType, type MealType } from "@/lib/foodSnap";
 import { FoodRealityCard } from "@/components/foodsnap/FoodRealityCard";
 import { useFoodBehaviour } from "@/hooks/useFoodBehaviour";
+import { SmallestChangeCard } from "@/components/foodsnap/SmallestChangeCard";
+import { useMinimumChange } from "@/hooks/useMinimumChange";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
@@ -64,6 +66,14 @@ const Index = () => {
   const [snapMealType, setSnapMealType] = useState<MealType>(guessMealType());
   const { todays: todaysCaptures, refresh: refreshCaptures } = useFoodCaptures();
   const { score: realityScore, patterns: foodPatterns, analyse: analyseBehaviour } = useFoodBehaviour();
+  const {
+    friction,
+    change: smallestChange,
+    loading: changeLoading,
+    answered: changeAnswered,
+    compute: computeChange,
+    respond: respondChange,
+  } = useMinimumChange();
 
   const openSnap = (meal?: MealType) => {
     setSnapMealType(meal ?? guessMealType());
@@ -298,6 +308,18 @@ return (
 
         <div className="mb-4">
           <FoodRealityCard score={realityScore} patterns={foodPatterns} delay={0.15} />
+        </div>
+
+        <div className="mb-4">
+          <SmallestChangeCard
+            friction={friction}
+            change={smallestChange}
+            loading={changeLoading}
+            answered={changeAnswered}
+            onRefresh={computeChange}
+            onRespond={respondChange}
+            delay={0.2}
+          />
         </div>
 
 

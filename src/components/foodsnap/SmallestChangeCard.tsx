@@ -2,7 +2,14 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, RefreshCw, Check, X, ChevronDown } from "lucide-react";
 import { FrictionItem, MinimumChange } from "@/hooks/useMinimumChange";
-import { MISS_REASONS } from "@/lib/foodSnap";
+
+const NOT_REALISTIC_REASONS = [
+  { value: "no_time", label: "No time" },
+  { value: "dont_like", label: "Don't like it" },
+  { value: "too_expensive", label: "Too expensive" },
+  { value: "not_available", label: "Can't get it easily" },
+  { value: "other", label: "Something else" },
+];
 
 const FRICTION_LABELS: Record<string, string> = {
   eating_away_from_home: "Eating out or on the go",
@@ -91,7 +98,7 @@ export const SmallestChangeCard = ({
             <p className="text-xs text-muted-foreground">Thanks — Nutrio will remember that.</p>
           ) : askReason ? (
             <div className="flex flex-wrap gap-2">
-              {MISS_REASONS.map((r) => (
+              {NOT_REALISTIC_REASONS.map((r) => (
                 <button
                   key={r.value}
                   onClick={() => onRespond("no", r.value)}
