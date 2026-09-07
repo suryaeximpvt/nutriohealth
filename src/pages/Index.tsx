@@ -19,6 +19,11 @@ import { MealCheckIn } from "@/components/MealCheckIn";
 import { NonNegotiablesCard } from "@/components/NonNegotiablesCard";
 import { WeeklyInsightCard } from "@/components/WeeklyInsightCard";
 import { RecommendationsCard } from "@/components/RecommendationsCard";
+import { FoodSnapFlow } from "@/components/foodsnap/FoodSnapFlow";
+import { TodaysFoodJourney } from "@/components/foodsnap/TodaysFoodJourney";
+import { MissedMealPrompt } from "@/components/foodsnap/MissedMealPrompt";
+import { useFoodCaptures } from "@/hooks/useFoodCaptures";
+import { guessMealType, type MealType } from "@/lib/foodSnap";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
