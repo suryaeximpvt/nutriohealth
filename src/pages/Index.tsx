@@ -609,6 +609,16 @@ return (
         calorieTarget={calorieTarget}
         onDeleteFood={deleteFood}
       />
+
+      <FoodSnapFlow
+        open={snapOpen}
+        onClose={() => setSnapOpen(false)}
+        defaultMealType={snapMealType}
+        onSaved={() => {
+          void refreshCaptures();
+          void refreshData();
+        }}
+      />
     </div>
   );
 };
