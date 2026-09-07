@@ -17,6 +17,7 @@ import StrictMode from "./pages/StrictMode";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
 import PersonalisationDebug from "./pages/PersonalisationDebug";
+import FoodHistory from "./pages/FoodHistory";
 import { RouteSeo } from "./components/RouteSeo";
 
 const queryClient = new QueryClient();
