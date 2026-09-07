@@ -63,6 +63,7 @@ const Index = () => {
   const [snapOpen, setSnapOpen] = useState(false);
   const [snapMealType, setSnapMealType] = useState<MealType>(guessMealType());
   const { todays: todaysCaptures, refresh: refreshCaptures } = useFoodCaptures();
+  const { score: realityScore, patterns: foodPatterns, analyse: analyseBehaviour } = useFoodBehaviour();
 
   const openSnap = (meal?: MealType) => {
     setSnapMealType(meal ?? guessMealType());
