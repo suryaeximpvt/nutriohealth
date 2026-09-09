@@ -244,6 +244,8 @@ const StrictMode = () => {
           </DialogContent>
         </Dialog>
 
+        <PremiumModal isOpen={premiumModalOpen} onClose={() => setPremiumModalOpen(false)} />
+
         <BottomNav />
       </div>
     );
