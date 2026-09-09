@@ -18,6 +18,7 @@ import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
 import PersonalisationDebug from "./pages/PersonalisationDebug";
 import FoodHistory from "./pages/FoodHistory";
+import CheckoutReturn from "./pages/CheckoutReturn";
 import { RouteSeo } from "./components/RouteSeo";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/settings" element={<Settings />} />
           <Route path="/strict-mode" element={<StrictMode />} />
           <Route path="/food-history" element={<FoodHistory />} />
+          <Route path="/checkout/return" element={<CheckoutReturn />} />
           <Route path="/personalisation-debug" element={<PersonalisationDebug />} />
           <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
