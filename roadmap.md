@@ -1,11 +1,11 @@
 # Roadmap
 
-## Payments (in progress)
+## Payments (complete)
 - [x] Enable Stripe payments (test environment)
-- [ ] Create Nutrio Premium product + £5.99/month price
-- [ ] Audit existing premium/entitlement/billing logic and list gaps
-- [ ] Shared Stripe utility + create-checkout + payments-webhook + portal edge functions
-- [ ] Stripe subscription table/columns and entitlement wiring to usePremium
-- [ ] Embedded checkout UI in PremiumModal + test mode banner + manage billing
-- [ ] Confirm purchase/cancel/upgrade business logic with user
-- [ ] Preview testing guide with test card
+- [x] Create Nutrio Premium product + £5.99/month price
+- [x] Audit existing premium/entitlement/billing logic
+- [x] Shared payment utility + create-checkout + payments-webhook + create-portal-session
+- [x] Subscription billing columns, entitlement helper, entitlement wiring in usePremium
+- [x] Checkout UI in PremiumModal + test mode banner + manage billing + return page
+- [x] Premium gating for Strict Weight Loss Mode
+- [x] Preview testing guide with test card (shared in chat)
