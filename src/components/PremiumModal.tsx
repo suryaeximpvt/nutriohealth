@@ -1,8 +1,12 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { Crown, Check, Sparkles, X, Zap, Brain, Calendar, TrendingUp } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { motion } from "framer-motion";
+import { Crown, Check, Sparkles, X, Shield, Brain, Calendar, TrendingUp } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { usePremium } from "@/hooks/usePremium";
+import { useAuth } from "@/hooks/useAuth";
+import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { PREMIUM_PRICE_ID, PREMIUM_PRICE_LABEL, PREMIUM_TRIAL_DAYS } from "@/lib/stripe";
 import { toast } from "sonner";
 import { useState } from "react";
 
@@ -14,56 +18,72 @@ interface PremiumModalProps {
 const PREMIUM_FEATURES = [
   {
     icon: Brain,
-    title: "Unlimited AI Meals",
-    description: "Get personalized meal suggestions all day, every day",
-  },
-  {
-    icon: Sparkles,
-    title: "AI Coach",
-    description: "Personal nutrition coaching powered by AI",
+    title: "Unlimited AI suggestions",
+    description: "Meal and coaching suggestions all day, every day",
   },
   {
     icon: Calendar,
-    title: "Weekly Summaries",
-    description: "Detailed AI-powered weekly progress reports",
+    title: "Weekly insights",
+    description: "Your week reviewed, with the one change worth making",
   },
   {
     icon: TrendingUp,
-    title: "Advanced Analytics",
-    description: "Deep insights into your nutrition patterns",
+    title: "Advanced analytics",
+    description: "Deep insights into your real food patterns",
   },
   {
-    icon: Zap,
-    title: "Priority Support",
-    description: "Get help faster when you need it",
+    icon: Shield,
+    title: "Strict Weight Loss Mode",
+    description: "Full accountability programme with photo proof",
   },
 ];
 
+const formatDate = (value: string | null) =>
+  value ? new Date(value).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : "";
+
 export const PremiumModal = ({ isOpen, onClose }: PremiumModalProps) => {
-  const { isPremium, upgradeToPremium, getAISuggestionsRemaining } = usePremium();
-  const [upgrading, setUpgrading] = useState(false);
+  const { user } = useAuth();
+  const {
+    isPremium,
+    isTrialing,
+    cancelAtPeriodEnd,
+    paymentIssue,
+    periodEnd,
+    getAISuggestionsRemaining,
+    openBillingPortal,
+  } = usePremium();
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [busy, setBusy] = useState(false);
   const suggestionsRemaining = getAISuggestionsRemaining();
 
-  const handleUpgrade = async () => {
-    setUpgrading(true);
-    const { error } = await upgradeToPremium();
-    setUpgrading(false);
+  const handleClose = () => {
+    setShowCheckout(false);
+    onClose();
+  };
 
-    if (error) {
-      toast.error("Failed to upgrade. Please try again.");
-    } else {
-      toast.success("Welcome to Nutrio Premium! 🎉");
-      onClose();
+  const handleStart = () => {
+    if (!user) {
+      toast.error("Please sign in first to start your trial.");
+      return;
     }
+    setShowCheckout(true);
+  };
+
+  const handleManage = async () => {
+    setBusy(true);
+    const { error } = await openBillingPortal();
+    setBusy(false);
+    if (error) toast.error("Couldn't open your billing page. Please try again.");
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md p-0 overflow-hidden bg-background border-border">
-        {/* Premium Header */}
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-md p-0 overflow-hidden bg-background border-border max-h-[90vh] overflow-y-auto">
+        <PaymentTestModeBanner />
+
         <div className="relative bg-gradient-to-br from-primary via-primary/90 to-nutrio-amber p-6 text-primary-foreground">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Close premium options"
             className="absolute top-4 right-4 w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
           >
@@ -84,37 +104,65 @@ export const PremiumModal = ({ isOpen, onClose }: PremiumModalProps) => {
             </div>
           </motion.div>
 
-          {!isPremium && (
+          {!isPremium && !showCheckout && (
             <div className="bg-primary-foreground/10 rounded-xl p-3 backdrop-blur-sm">
               <p className="text-sm">
                 <span className="font-semibold">{suggestionsRemaining}</span> AI suggestions remaining today
               </p>
               <p className="text-xs text-primary-foreground/70 mt-1">
-                Free users get 3 AI meal suggestions per day
+                Free members get 3 AI suggestions per day
               </p>
             </div>
           )}
         </div>
 
-        {/* Features List */}
         <div className="p-6">
           {isPremium ? (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center py-6"
+              className="text-center py-2"
             >
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Check className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">You're a Premium Member!</h3>
-              <p className="text-muted-foreground">
-                Enjoy unlimited access to all Nutrio AI features
+              <h3 className="text-xl font-bold text-foreground mb-2">
+                {isTrialing ? "Your free trial is active" : "You're a Premium member"}
+              </h3>
+              <p className="text-muted-foreground text-sm mb-1">
+                {cancelAtPeriodEnd
+                  ? `Premium stays on until ${formatDate(periodEnd)}, then your plan ends.`
+                  : isTrialing
+                    ? `Free until ${formatDate(periodEnd)}, then ${PREMIUM_PRICE_LABEL} a month.`
+                    : `Next payment ${formatDate(periodEnd)} — ${PREMIUM_PRICE_LABEL} a month.`}
+              </p>
+              {paymentIssue && (
+                <p className="text-sm text-destructive mt-3">
+                  We couldn't take your last payment. Update your card to keep Premium.
+                </p>
+              )}
+              <Button
+                onClick={handleManage}
+                disabled={busy}
+                variant="outline"
+                className="w-full h-12 mt-5"
+              >
+                {busy ? "Opening..." : "Manage billing"}
+              </Button>
+              <p className="text-center text-xs text-muted-foreground mt-3">
+                Change your card, view receipts or cancel at any time.
               </p>
             </motion.div>
+          ) : showCheckout ? (
+            <StripeEmbeddedCheckout
+              priceId={PREMIUM_PRICE_ID}
+              customerEmail={user?.email ?? undefined}
+              userId={user?.id}
+              returnUrl={`${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`}
+            />
           ) : (
             <>
-              <h3 className="font-semibold text-foreground mb-4">Premium Features</h3>
+              <h3 className="font-semibold text-foreground mb-4">What you get</h3>
               <div className="space-y-3 mb-6">
                 {PREMIUM_FEATURES.map((feature, index) => (
                   <motion.div
@@ -135,37 +183,28 @@ export const PremiumModal = ({ isOpen, onClose }: PremiumModalProps) => {
                 ))}
               </div>
 
-              {/* Pricing */}
               <div className="bg-muted/50 rounded-2xl p-4 mb-4">
                 <div className="flex items-baseline justify-center gap-1 mb-1">
-                  <span className="text-3xl font-bold text-foreground">£9.99</span>
+                  <span className="text-3xl font-bold text-foreground">{PREMIUM_PRICE_LABEL}</span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
                 <p className="text-center text-sm text-muted-foreground">
-                  Cancel anytime • 7-day free trial
+                  {PREMIUM_TRIAL_DAYS}-day free trial • Cancel anytime
                 </p>
               </div>
 
               <Button
-                onClick={handleUpgrade}
-                disabled={upgrading}
+                onClick={handleStart}
                 className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-nutrio-amber hover:opacity-90 transition-opacity"
               >
-                {upgrading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    Upgrading...
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Crown className="w-5 h-5" />
-                    Start Free Trial
-                  </div>
-                )}
+                <span className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  Start {PREMIUM_TRIAL_DAYS}-day free trial
+                </span>
               </Button>
 
               <p className="text-center text-xs text-muted-foreground mt-3">
-                By subscribing, you agree to our Terms of Service
+                Your card is saved now and charged {PREMIUM_PRICE_LABEL} after the trial unless you cancel.
               </p>
             </>
           )}
