@@ -16,9 +16,14 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { AppHeader } from "@/components/AppHeader";
+import { Crown } from "lucide-react";
+import { usePremium } from "@/hooks/usePremium";
+import { PremiumModal } from "@/components/PremiumModal";
 
 const StrictMode = () => {
   const { user } = useAuth();
+  const { isPremium } = usePremium();
+  const [premiumModalOpen, setPremiumModalOpen] = useState(false);
   const { profile } = useUserData();
   const { toast } = useToast();
   const {
@@ -198,9 +203,21 @@ const StrictMode = () => {
             </CardContent>
           </Card>
 
-          <Button onClick={() => setShowEnrollDialog(true)} className="w-full" size="lg" variant="destructive">
-            Start Strict Mode
-          </Button>
+          {isPremium ? (
+            <Button onClick={() => setShowEnrollDialog(true)} className="w-full" size="lg" variant="destructive">
+              Start Strict Mode
+            </Button>
+          ) : (
+            <div className="space-y-2">
+              <Button onClick={() => setPremiumModalOpen(true)} className="w-full" size="lg">
+                <Crown className="w-5 h-5 mr-2" />
+                Unlock with Premium
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                Strict Mode is part of Nutrio Premium — start with a 7-day free trial.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Enroll Dialog */}
