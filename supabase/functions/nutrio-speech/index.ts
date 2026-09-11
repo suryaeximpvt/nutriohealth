@@ -19,6 +19,9 @@ serve(async (req) => {
 
     const body = await req.json().catch(() => null);
     const text = typeof body?.text === "string" ? body.text.trim() : "";
+    // "mp3" returns one complete audio file (most reliable in mobile browsers).
+    // "pcm" keeps the low-latency streaming path for desktop.
+    const format = body?.format === "pcm" ? "pcm" : "mp3";
     if (!text) return json({ error: "There is nothing for Nutrio to say." }, 400);
     if (text.length > MAX_TEXT_LENGTH) return json({ error: "That reply is too long to read aloud." }, 400);
 
@@ -36,8 +39,9 @@ serve(async (req) => {
         input: text,
         voice: "alloy",
         instructions: "Warm, concise British nutrition coach. Friendly, natural, supportive and never judgemental.",
-        stream_format: "sse",
-        response_format: "pcm",
+        ...(format === "pcm"
+          ? { stream_format: "sse", response_format: "pcm" }
+          : { stream_format: "audio", response_format: "mp3" }),
       }),
     });
 
@@ -49,6 +53,14 @@ serve(async (req) => {
       if (upstream.status === 403) message = "Nutrio voice is currently disabled for this workspace.";
       if (upstream.status === 429) message = "Nutrio voice is busy. Please wait a moment and try again.";
       return json({ error: message, details }, upstream.status);
+    }
+
+    if (format === "mp3") {
+      const audio = await upstream.arrayBuffer();
+      console.log("nutrio-speech mp3 bytes", audio.byteLength);
+      return new Response(audio, {
+        headers: { ...corsHeaders, "Content-Type": "audio/mpeg", "Cache-Control": "no-cache" },
+      });
     }
 
     return new Response(upstream.body, {
