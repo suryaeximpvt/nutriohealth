@@ -73,7 +73,7 @@ export const useTellNutrio = () => {
         }
       } else if (reply.intent === "skip_meal") {
         const mealType = (d?.meal_type ?? guessMealType()) as MealType;
-        await setStatus(mealType, "skipped", history.at(-2)?.content ?? null ?? undefined);
+        await setStatus(mealType, "skipped", history.at(-2)?.content);
       } else if (d?.items?.length) {
         const { error: saveError } = await save(d, "voice", (d.meal_type ?? guessMealType()) as MealType);
         if (saveError) {
