@@ -20,6 +20,9 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
   const speech = useNutrioSpeech();
   const [typing, setTyping] = useState(false);
   const [typed, setTyped] = useState("");
+  // Nutrio has asked for a yes/no. The tap controls must stay on screen even
+  // once the microphone reopens, so it can also be confirmed without speaking.
+  const [awaitingConfirm, setAwaitingConfirm] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
   const busyRef = useRef(false);
   const savedRef = useRef(false);
