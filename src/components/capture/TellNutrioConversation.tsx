@@ -90,6 +90,7 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
     savedRef.current = false;
     setTyping(false);
     setTyped("");
+    setAwaitingConfirm(false);
     void (async () => {
       await speech.prime();
       agent.setState("speaking");
