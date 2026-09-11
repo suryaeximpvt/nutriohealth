@@ -20,6 +20,9 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
   const speech = useNutrioSpeech();
   const [typing, setTyping] = useState(false);
   const [typed, setTyped] = useState("");
+  // Nutrio has asked for a yes/no. The tap controls must stay on screen even
+  // once the microphone reopens, so it can also be confirmed without speaking.
+  const [awaitingConfirm, setAwaitingConfirm] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
   const busyRef = useRef(false);
   const savedRef = useRef(false);
@@ -50,6 +53,7 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
   const deliverReply = useCallback(async (reply: Awaited<ReturnType<typeof agent.send>>) => {
     if (!reply || !openRef.current) return;
     const completedAction = reply.status === "done" && !["question", "smalltalk"].includes(reply.intent);
+    setAwaitingConfirm(reply.status === "confirm");
     agent.setState(reply.status === "confirm" ? "confirming" : completedAction ? "done" : "speaking");
     await speech.speak(reply.reply);
     if (openRef.current && !typingRef.current && !completedAction) await listenRef.current();
@@ -86,6 +90,7 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
     savedRef.current = false;
     setTyping(false);
     setTyped("");
+    setAwaitingConfirm(false);
     void (async () => {
       await speech.prime();
       agent.setState("speaking");
@@ -231,11 +236,17 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
             </Button>
             <p className="text-sm text-muted-foreground text-center">{caption}</p>
             {speech.error && <p className="text-xs text-destructive text-center">{speech.error} The written reply is still available.</p>}
-            {agent.state === "confirming" && (
+            {(agent.state === "confirming" || awaitingConfirm) && agent.state !== "thinking" && agent.state !== "saving" && (
               <div className="grid grid-cols-3 gap-2 w-full">
                 <Button variant="outline" size="lg" onClick={close}>Cancel</Button>
-                <Button variant="outline" size="lg" onClick={() => { voice.cancel(); speech.stop(); setTyping(true); }}>Correct</Button>
-                <Button size="lg" onClick={async () => { void speech.prime(); deliverReply(await agent.confirm()); }}>Confirm</Button>
+                <Button variant="outline" size="lg" onClick={() => { setAwaitingConfirm(false); voice.cancel(); speech.stop(); setTyping(true); }}>Correct</Button>
+                <Button size="lg" onClick={async () => {
+                  void speech.prime();
+                  voice.cancel();
+                  speech.stop();
+                  setAwaitingConfirm(false);
+                  await deliverReply(await agent.confirm());
+                }}>Confirm</Button>
               </div>
             )}
           </div>
