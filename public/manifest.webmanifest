@@ -1,0 +1,40 @@
+{
+  "name": "Nutrio - Your AI Nutrition Coach",
+  "short_name": "Nutrio",
+  "description": "Tell Nutrio what you ate or snap a photo in seconds.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#5a9a7c",
+  "icons": [
+    {
+      "src": "/icons/nutrio-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/nutrio-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tell Nutrio",
+      "short_name": "Tell",
+      "description": "Say what you ate",
+      "url": "/?action=tell",
+      "icons": [{ "src": "/icons/nutrio-512.png", "sizes": "512x512", "type": "image/png" }]
+    },
+    {
+      "name": "Snap what you ate",
+      "short_name": "Snap",
+      "description": "Take a food photo",
+      "url": "/?action=snap",
+      "icons": [{ "src": "/icons/nutrio-512.png", "sizes": "512x512", "type": "image/png" }]
+    }
+  ]
+}
