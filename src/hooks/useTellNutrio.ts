@@ -60,6 +60,11 @@ export const useTellNutrio = (mode: TellMode = "standard") => {
     activityRef.current = null;
   }, []);
 
+  const begin = useCallback((greeting?: string) => {
+    reset();
+    if (greeting) setTurns([{ role: "assistant", content: greeting }]);
+  }, [reset]);
+
   const complete = useCallback(
     async (reply: TellReply, history: Turn[]) => {
       setState("saving");
@@ -185,6 +190,7 @@ export const useTellNutrio = (mode: TellMode = "standard") => {
     meals: mealsRef.current,
     send,
     confirm,
+    begin,
     reset,
   };
 };
