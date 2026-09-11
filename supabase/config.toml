@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.tell-nutrio]
 verify_jwt = false
+
+[functions.nutrio-speech]
+verify_jwt = false

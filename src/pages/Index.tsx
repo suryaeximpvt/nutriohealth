@@ -81,6 +81,7 @@ const Index = () => {
 
   const [quickOpen, setQuickOpen] = useState(false);
   const [quickVoice, setQuickVoice] = useState(false);
+  const [tellMode, setTellMode] = useState<"standard" | "recap">("standard");
   const [quickMeal, setQuickMeal] = useState<MealType>(guessMealType());
 
   const openSnap = (meal?: MealType) => {
@@ -91,6 +92,13 @@ const Index = () => {
   const openQuick = (meal?: MealType, voice = false) => {
     setQuickMeal(meal ?? guessMealType());
     setQuickVoice(voice);
+    setTellMode("standard");
+    setQuickOpen(true);
+  };
+
+  const openRecap = () => {
+    setQuickVoice(true);
+    setTellMode("recap");
     setQuickOpen(true);
   };
 
@@ -344,7 +352,7 @@ return (
         </div>
 
         <div className="mb-3">
-          <DailyRecapCard onSaved={() => void refreshCaptures()} delay={0.12} />
+          <DailyRecapCard captures={todaysCaptures} onOpen={openRecap} delay={0.12} />
         </div>
 
         <div className="mb-3">
@@ -713,6 +721,7 @@ return (
         mealType={quickMeal}
         startWithVoice={quickVoice}
         voiceOnly={quickVoice}
+        tellMode={tellMode}
         onSaved={() => {
           void refreshCaptures();
           void refreshData();

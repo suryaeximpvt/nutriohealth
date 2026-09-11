@@ -49,9 +49,9 @@ export const useMealStatus = () => {
   }, [fetchToday]);
 
   const setStatus = async (mealType: string, status: MealStatusValue, note?: string) => {
-    if (!user) return;
+    if (!user) return { error: "Not signed in" };
     setStatuses((s) => ({ ...s, [mealType]: status }));
-    await supabase.from("meal_status").upsert(
+    const { error } = await supabase.from("meal_status").upsert(
       {
         user_id: user.id,
         meal_type: mealType,
@@ -62,7 +62,9 @@ export const useMealStatus = () => {
       } as never,
       { onConflict: "user_id,meal_type,status_date" }
     );
+    if (error) return { error: error.message };
     await fetchToday();
+    return { error: null };
   };
 
   return { statuses, loading, setStatus, refresh: fetchToday };

@@ -17,10 +17,11 @@ interface Props {
   /** Listening only — no typing, for the "Tell Nutrio" entry point. */
   voiceOnly?: boolean;
   onSaved?: () => void;
+  tellMode?: "standard" | "recap";
 }
 
 /** Voice / text meal capture: say it, confirm it, done. */
-export const QuickCaptureSheet = ({ open, onClose, mealType, startWithVoice, voiceOnly, onSaved }: Props) => {
+export const QuickCaptureSheet = ({ open, onClose, mealType, startWithVoice, voiceOnly, onSaved, tellMode = "standard" }: Props) => {
   const { parse, save, parsing, saving } = useQuickCapture();
   const { recording, transcribing, level, start, stop, cancel } = useVoiceInput();
   const [text, setText] = useState("");
@@ -41,7 +42,7 @@ export const QuickCaptureSheet = ({ open, onClose, mealType, startWithVoice, voi
 
   // "Tell Nutrio" is now a hands-free conversation.
   if (voiceOnly) {
-    return <TellNutrioConversation open={open} onClose={onClose} onSaved={onSaved} />;
+    return <TellNutrioConversation open={open} onClose={onClose} onSaved={onSaved} mode={tellMode} />;
   }
 
 
