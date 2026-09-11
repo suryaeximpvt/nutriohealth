@@ -32,6 +32,8 @@ export const useNutrioSpeech = () => {
       element.autoplay = false;
       // Play through the loudspeaker rather than the earpiece on iOS.
       element.setAttribute("playsinline", "true");
+      element.style.display = "none";
+      document.body.appendChild(element);
       audioRef.current = element;
     }
     return audioRef.current;
