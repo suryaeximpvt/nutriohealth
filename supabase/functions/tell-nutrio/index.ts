@@ -82,7 +82,11 @@ Set "draft" to null when the turn is not about food. Set "activity" to null unle
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "google/gemini-2.5-flash", messages }),
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages,
+        response_format: { type: "json_object" },
+      }),
     });
 
     if (!res.ok) {
