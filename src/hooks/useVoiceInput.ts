@@ -59,15 +59,29 @@ const blobToBase64 = (blob: Blob) =>
  * Reliable microphone capture: records real audio and transcribes it
  * server-side (works on iOS Safari and Android, unlike SpeechRecognition).
  */
+export interface VoiceStartOptions {
+  /** Stop automatically once the user has clearly finished speaking. */
+  autoStop?: boolean;
+  /** Silence (ms) after speech before Nutrio decides the sentence is finished. */
+  silenceMs?: number;
+  /** Called once end-of-speech is detected (the caller then calls stop()). */
+  onEndOfSpeech?: () => void;
+}
+
+const MAX_RECORDING_MS = 30000;
+const MIN_SPEECH_MS = 700;
+
 export const useVoiceInput = () => {
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
   const [level, setLevel] = useState(0);
+  const [speechDetected, setSpeechDetected] = useState(false);
   const streamRef = useRef<MediaStream | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
   const nodeRef = useRef<ScriptProcessorNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const chunksRef = useRef<Float32Array[]>([]);
+  const endedRef = useRef(false);
 
   const cleanup = useCallback(() => {
     try {
