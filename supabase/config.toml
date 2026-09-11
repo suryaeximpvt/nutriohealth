@@ -50,3 +50,9 @@ verify_jwt = false
 
 [functions.create-portal-session]
 verify_jwt = false
+
+[functions.parse-meal-text]
+verify_jwt = false
+
+[functions.ask-nutrio]
+verify_jwt = false
