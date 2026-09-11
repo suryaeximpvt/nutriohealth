@@ -303,14 +303,46 @@ return (
           </p>
         </motion.button>
 
+        {/* Low-friction alternatives to a photo */}
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          <button
+            onClick={() => openQuick(undefined, true)}
+            className="bg-card rounded-2xl p-3 shadow-card flex items-center justify-center gap-2 text-sm font-semibold text-foreground"
+          >
+            🎙 Tell Nutrio
+          </button>
+          <button
+            onClick={() => openQuick(undefined, false)}
+            className="bg-card rounded-2xl p-3 shadow-card flex items-center justify-center gap-2 text-sm font-semibold text-foreground"
+          >
+            ⌨️ Type what I ate
+          </button>
+        </div>
+
         {/* Gentle nudge when a usual meal hasn't been seen */}
         <div className="mb-3">
-          <MissedMealPrompt captures={todaysCaptures} onSnap={(m) => openSnap(m)} />
+          <MissedMealPrompt
+            captures={todaysCaptures}
+            onSnap={(m) => openSnap(m)}
+            onQuickCapture={(m, voice) => openQuick(m, voice)}
+          />
         </div>
 
         {/* Today's food journey */}
         <div className="mb-3">
           <TodaysFoodJourney captures={todaysCaptures} onSnap={(m) => openSnap(m)} delay={0.1} />
+        </div>
+
+        <div className="mb-3">
+          <DailyRecapCard onSaved={() => void refreshCaptures()} delay={0.12} />
+        </div>
+
+        <div className="mb-3">
+          <OnePhotoChallengeCard captures={todaysCaptures} onSnap={() => openSnap()} delay={0.14} />
+        </div>
+
+        <div className="mb-3">
+          <FrictionFeedbackCard captures={todaysCaptures} delay={0.16} />
         </div>
 
         <button
