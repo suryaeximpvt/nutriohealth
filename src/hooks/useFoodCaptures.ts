@@ -21,6 +21,8 @@ export interface FoodCapture {
   user_edited: boolean;
   detected_foods: unknown;
   confirmed_foods: unknown;
+  capture_method: string;
+  estimated: boolean;
 }
 
 const iso = (d: Date) => d.toISOString().split("T")[0];
