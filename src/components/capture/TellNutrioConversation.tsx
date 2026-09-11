@@ -49,9 +49,10 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
 
   const deliverReply = useCallback(async (reply: Awaited<ReturnType<typeof agent.send>>) => {
     if (!reply || !openRef.current) return;
-    agent.setState(reply.status === "confirm" ? "confirming" : reply.status === "done" ? "done" : "speaking");
+    const completedAction = reply.status === "done" && !["question", "smalltalk"].includes(reply.intent);
+    agent.setState(reply.status === "confirm" ? "confirming" : completedAction ? "done" : "speaking");
     await speech.speak(reply.reply);
-    if (openRef.current && !typingRef.current && reply.status !== "done") await listenRef.current();
+    if (openRef.current && !typingRef.current && !completedAction) await listenRef.current();
   }, [agent, speech]);
 
   const finishTurn = useCallback(async () => {

@@ -11,8 +11,8 @@
 - [x] Preview testing guide with test card (shared in chat)
 
 ## Tell Nutrio conversational voice agent
-- [ ] Add secure spoken Nutrio replies and mobile audio playback
-- [ ] Coordinate listening, thinking, speaking, confirmation, and saving
-- [ ] Support multi-meal recap and safe multi-action completion
-- [ ] Move the later-day recap prompt into Tell Nutrio
-- [ ] Verify voice, text, errors, mobile layout, and backend calls
+- [x] Add secure spoken Nutrio replies and mobile audio playback
+- [x] Coordinate listening, thinking, speaking, confirmation, and saving
+- [x] Support multi-meal recap and safe multi-action completion
+- [x] Move the later-day recap prompt into Tell Nutrio
+- [x] Verify voice, text, errors, mobile layout, and backend calls

@@ -144,7 +144,7 @@ export const useTellNutrio = (mode: TellMode = "standard") => {
         const reply = data as TellReply;
         setIntent(reply.intent);
         const nextMeals = Array.isArray(reply.meals) ? reply.meals.filter((meal) => meal?.items?.length) : [];
-        if (nextMeals.length) mealsRef.current = nextMeals;
+        if (Array.isArray(reply.meals)) mealsRef.current = nextMeals;
         if (reply.draft !== undefined) {
           draftRef.current = reply.draft;
           setDraft(reply.draft);
