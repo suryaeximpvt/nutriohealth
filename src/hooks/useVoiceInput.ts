@@ -59,15 +59,29 @@ const blobToBase64 = (blob: Blob) =>
  * Reliable microphone capture: records real audio and transcribes it
  * server-side (works on iOS Safari and Android, unlike SpeechRecognition).
  */
+export interface VoiceStartOptions {
+  /** Stop automatically once the user has clearly finished speaking. */
+  autoStop?: boolean;
+  /** Silence (ms) after speech before Nutrio decides the sentence is finished. */
+  silenceMs?: number;
+  /** Called once end-of-speech is detected (the caller then calls stop()). */
+  onEndOfSpeech?: () => void;
+}
+
+const MAX_RECORDING_MS = 30000;
+const MIN_SPEECH_MS = 700;
+
 export const useVoiceInput = () => {
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
   const [level, setLevel] = useState(0);
+  const [speechDetected, setSpeechDetected] = useState(false);
   const streamRef = useRef<MediaStream | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
   const nodeRef = useRef<ScriptProcessorNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const chunksRef = useRef<Float32Array[]>([]);
+  const endedRef = useRef(false);
 
   const cleanup = useCallback(() => {
     try {
@@ -83,41 +97,91 @@ export const useVoiceInput = () => {
     streamRef.current = null;
     ctxRef.current = null;
     setLevel(0);
+    setSpeechDetected(false);
     setRecording(false);
   }, []);
 
-  const start = useCallback(async (): Promise<{ error?: string }> => {
-    if (recording) return {};
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: { echoCancellation: true, noiseSuppression: true },
-      });
-      streamRef.current = stream;
-      const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
-      const ctx: AudioContext = new Ctx();
-      if (ctx.state === "suspended") await ctx.resume();
-      ctxRef.current = ctx;
-      const source = ctx.createMediaStreamSource(stream);
-      const node = ctx.createScriptProcessor(4096, 1, 1);
-      chunksRef.current = [];
-      node.onaudioprocess = (e) => {
-        const input = e.inputBuffer.getChannelData(0);
-        chunksRef.current.push(new Float32Array(input));
-        let peak = 0;
-        for (let i = 0; i < input.length; i += 32) peak = Math.max(peak, Math.abs(input[i]));
-        setLevel(peak);
-      };
-      source.connect(node);
-      node.connect(ctx.destination);
-      sourceRef.current = source;
-      nodeRef.current = node;
-      setRecording(true);
-      return {};
-    } catch {
-      cleanup();
-      return { error: "Nutrio needs microphone access — allow it in your browser settings." };
-    }
-  }, [recording, cleanup]);
+  const start = useCallback(
+    async (options?: VoiceStartOptions): Promise<{ error?: string }> => {
+      if (recording) return {};
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        });
+        streamRef.current = stream;
+        const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+        const ctx: AudioContext = new Ctx();
+        if (ctx.state === "suspended") await ctx.resume();
+        ctxRef.current = ctx;
+        const source = ctx.createMediaStreamSource(stream);
+        const node = ctx.createScriptProcessor(4096, 1, 1);
+        chunksRef.current = [];
+        endedRef.current = false;
+        setSpeechDetected(false);
+
+        // --- voice activity detection ---
+        const silenceMs = options?.silenceMs ?? 1500;
+        const startedAt = Date.now();
+        let noiseFloor = 0.008;
+        let speaking = false;
+        let lastVoiceAt = Date.now();
+
+        node.onaudioprocess = (e) => {
+          const input = e.inputBuffer.getChannelData(0);
+          chunksRef.current.push(new Float32Array(input));
+
+          let sum = 0;
+          let peak = 0;
+          for (let i = 0; i < input.length; i++) {
+            const v = input[i];
+            sum += v * v;
+            const a = Math.abs(v);
+            if (a > peak) peak = a;
+          }
+          const rms = Math.sqrt(sum / input.length);
+          setLevel(Math.min(1, peak));
+
+          const threshold = Math.max(0.012, noiseFloor * 2.8);
+          const now = Date.now();
+
+          if (rms > threshold) {
+            if (!speaking) {
+              speaking = true;
+              setSpeechDetected(true);
+            }
+            lastVoiceAt = now;
+          } else {
+            // Track the room's quiet level so noisy places still work.
+            noiseFloor = noiseFloor * 0.95 + rms * 0.05;
+          }
+
+          if (!options?.autoStop || endedRef.current) return;
+
+          const longEnough = now - startedAt > MIN_SPEECH_MS;
+          const finished = speaking && longEnough && now - lastVoiceAt > silenceMs;
+          const timedOut = now - startedAt > MAX_RECORDING_MS;
+          if (finished || (timedOut && speaking)) {
+            endedRef.current = true;
+            options.onEndOfSpeech?.();
+          } else if (timedOut) {
+            endedRef.current = true;
+            options.onEndOfSpeech?.();
+          }
+        };
+
+        source.connect(node);
+        node.connect(ctx.destination);
+        sourceRef.current = source;
+        nodeRef.current = node;
+        setRecording(true);
+        return {};
+      } catch {
+        cleanup();
+        return { error: "Nutrio needs microphone access — allow it in your browser settings." };
+      }
+    },
+    [recording, cleanup],
+  );
 
   /** Stops recording and returns the transcript. */
   const stop = useCallback(async (): Promise<{ text?: string; error?: string }> => {
@@ -147,5 +211,5 @@ export const useVoiceInput = () => {
     cleanup();
   }, [cleanup]);
 
-  return { recording, transcribing, level, start, stop, cancel };
+  return { recording, transcribing, level, speechDetected, start, stop, cancel };
 };

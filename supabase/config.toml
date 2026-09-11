@@ -59,3 +59,6 @@ verify_jwt = false
 
 [functions.transcribe-audio]
 verify_jwt = false
+
+[functions.tell-nutrio]
+verify_jwt = false

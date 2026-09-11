@@ -7,6 +7,7 @@ import { MEAL_TYPES, guessMealType, type MealType } from "@/lib/foodSnap";
 import type { CaptureMethod, ParsedMeal } from "@/lib/capture";
 import { useQuickCapture } from "@/hooks/useQuickCapture";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
+import { TellNutrioConversation } from "./TellNutrioConversation";
 
 interface Props {
   open: boolean;
@@ -37,6 +38,12 @@ export const QuickCaptureSheet = ({ open, onClose, mealType, startWithVoice, voi
   }, [open, mealType, startWithVoice]);
 
   if (!open) return null;
+
+  // "Tell Nutrio" is now a hands-free conversation.
+  if (voiceOnly) {
+    return <TellNutrioConversation open={open} onClose={onClose} onSaved={onSaved} />;
+  }
+
 
   const close = () => {
     cancel();
