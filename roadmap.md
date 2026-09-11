@@ -9,3 +9,10 @@
 - [x] Checkout UI in PremiumModal + test mode banner + manage billing + return page
 - [x] Premium gating for Strict Weight Loss Mode
 - [x] Preview testing guide with test card (shared in chat)
+
+## Tell Nutrio conversational voice agent
+- [ ] Add secure spoken Nutrio replies and mobile audio playback
+- [ ] Coordinate listening, thinking, speaking, confirmation, and saving
+- [ ] Support multi-meal recap and safe multi-action completion
+- [ ] Move the later-day recap prompt into Tell Nutrio
+- [ ] Verify voice, text, errors, mobile layout, and backend calls
