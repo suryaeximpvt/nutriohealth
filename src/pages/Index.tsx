@@ -28,6 +28,10 @@ import { FoodRealityCard } from "@/components/foodsnap/FoodRealityCard";
 import { useFoodBehaviour } from "@/hooks/useFoodBehaviour";
 import { SmallestChangeCard } from "@/components/foodsnap/SmallestChangeCard";
 import { useMinimumChange } from "@/hooks/useMinimumChange";
+import { QuickCaptureSheet } from "@/components/capture/QuickCaptureSheet";
+import { DailyRecapCard } from "@/components/capture/DailyRecapCard";
+import { OnePhotoChallengeCard } from "@/components/capture/OnePhotoChallengeCard";
+import { FrictionFeedbackCard } from "@/components/capture/FrictionFeedbackCard";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
