@@ -211,5 +211,5 @@ export const useVoiceInput = () => {
     cleanup();
   }, [cleanup]);
 
-  return { recording, transcribing, level, start, stop, cancel };
+  return { recording, transcribing, level, speechDetected, start, stop, cancel };
 };
