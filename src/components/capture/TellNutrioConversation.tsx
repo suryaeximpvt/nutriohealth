@@ -83,9 +83,8 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
 
   useEffect(() => {
     if (!open) return;
-    const greeting = mode === "recap"
-      ? "Let's quickly catch up. Tell me everything you remember eating and drinking today."
-      : "I'm listening. Tell me what you ate, what you did, or ask me anything about your day.";
+    // Keep the opener very short so the microphone opens almost immediately.
+    const greeting = mode === "recap" ? "What have you had today?" : "I'm listening.";
     agent.begin(greeting);
     savedRef.current = false;
     setTyping(false);
@@ -227,7 +226,7 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
                 void speech.prime();
                 return voice.recording ? void finishTurn() : void listen();
               }}
-              disabled={voice.transcribing || agent.state === "thinking" || agent.state === "saving" || speech.loading || speech.speaking}
+              disabled={voice.transcribing || agent.state === "thinking" || agent.state === "saving"}
               aria-label={voice.recording ? "Stop listening" : "Start listening"}
               style={{ transform: `scale(${scale})` }}
               className="w-24 h-24 rounded-full transition-transform duration-100"
