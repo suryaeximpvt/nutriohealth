@@ -36,6 +36,10 @@ export interface SaveCaptureInput {
   edited: boolean;
   confidence: number | null;
   source: "camera" | "upload" | "recent";
+  /** photo | voice | text | recap | quick_confirm */
+  captureMethod?: string;
+  /** True when nutrition is an approximation rather than a measured value. */
+  estimated?: boolean;
 }
 
 export const useFoodCaptures = (days = 14) => {
@@ -112,6 +116,8 @@ export const useFoodCaptures = (days = 14) => {
             user_confirmed: true,
             user_edited: input.edited,
             source: input.source,
+            capture_method: input.captureMethod ?? "photo",
+            estimated: input.estimated ?? false,
           })
           .select()
           .single();

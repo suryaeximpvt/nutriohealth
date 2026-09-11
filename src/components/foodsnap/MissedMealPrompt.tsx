@@ -1,30 +1,37 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { MEAL_TYPES, MISS_REASONS, type MealType } from "@/lib/foodSnap";
 import type { FoodCapture } from "@/hooks/useFoodCaptures";
+import { useMealTiming } from "@/hooks/useMealTiming";
+import { useCapturePreference } from "@/hooks/useCapturePreference";
+import { CAPTURE_METHODS, type CaptureMethod } from "@/lib/capture";
 
 interface Props {
   captures: FoodCapture[];
   onSnap: (meal: MealType) => void;
+  onQuickCapture?: (meal: MealType, voice: boolean) => void;
 }
-
-/** Windows after which a usual meal is considered "not seen yet". */
-const WINDOW: Record<Exclude<MealType, "snack">, number> = {
-  breakfast: 11,
-  lunch: 15,
-  dinner: 21,
-};
 
 const iso = (d: Date) => d.toISOString().split("T")[0];
 
-export const MissedMealPrompt = ({ captures, onSnap }: Props) => {
+/**
+ * Conversational, timing-aware nudge. It asks what happened rather than
+ * telling the user to complete a task, and offers the easiest capture method
+ * for this particular person first.
+ */
+export const MissedMealPrompt = ({ captures, onSnap, onQuickCapture }: Props) => {
   const { user } = useAuth();
+  const { overdueMeals, formatTime } = useMealTiming(captures);
+  const { orderedMethods, markOffered, avoidsPhotos } = useCapturePreference();
   const [answered, setAnswered] = useState<string[]>([]);
-  const [askReason, setAskReason] = useState<MealType | null>(null);
+  const [step, setStep] = useState<"ask" | "methods" | "reason">("ask");
   const [dismissed, setDismissed] = useState(false);
+  const [promptId, setPromptId] = useState<string | null>(null);
+
+  const missing = overdueMeals.find((m) => !answered.includes(m)) as MealType | undefined;
 
   useEffect(() => {
     if (!user) return;
@@ -38,19 +45,44 @@ export const MissedMealPrompt = ({ captures, onSnap }: Props) => {
     })();
   }, [user]);
 
-  const missing = useMemo(() => {
-    const hour = new Date().getHours();
-    const today = iso(new Date());
-    return (Object.keys(WINDOW) as (keyof typeof WINDOW)[]).find((m) => {
-      if (hour < WINDOW[m]) return false;
-      if (answered.includes(m)) return false;
-      return !captures.some((c) => c.capture_date === today && c.meal_type === m);
-    }) as MealType | undefined;
-  }, [captures, answered]);
+  // Log that Nutrio asked, and which methods it offered.
+  useEffect(() => {
+    if (!user || !missing || promptId) return;
+    const methods = orderedMethods(avoidsPhotos ? ["voice", "text"] : ["voice", "text", "photo"]);
+    (async () => {
+      const { data } = await supabase
+        .from("capture_prompts")
+        .insert({
+          user_id: user.id,
+          prompt_type: "missed_meal",
+          meal_type: missing,
+          prompt_date: iso(new Date()),
+          offered_methods: methods,
+        } as never)
+        .select("id")
+        .maybeSingle();
+      setPromptId((data as { id?: string } | null)?.id ?? null);
+      methods.forEach((m) => void markOffered(m));
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, missing]);
 
   if (!missing || dismissed) return null;
 
   const meal = MEAL_TYPES.find((m) => m.value === missing)!;
+  const methods = orderedMethods(avoidsPhotos ? ["voice", "text"] : ["voice", "text", "photo"]);
+
+  const savePrompt = async (response: string, methodUsed?: CaptureMethod) => {
+    if (!user || !promptId) return;
+    await supabase
+      .from("capture_prompts")
+      .update({
+        response,
+        method_used: methodUsed ?? null,
+        responded_at: new Date().toISOString(),
+      } as never)
+      .eq("id", promptId);
+  };
 
   const record = async (outcome: string, reason?: string) => {
     if (!user) return;
@@ -66,8 +98,16 @@ export const MissedMealPrompt = ({ captures, onSnap }: Props) => {
       { onConflict: "user_id,meal_type,event_date" },
     );
     setAnswered((a) => [...a, missing]);
-    setAskReason(null);
   };
+
+  const chooseMethod = async (method: CaptureMethod) => {
+    await savePrompt("ate", method);
+    await record("ate_snapped");
+    if (method === "photo") onSnap(missing);
+    else onQuickCapture?.(missing, method === "voice");
+  };
+
+  const chip = "rounded-full border px-3 py-2 text-xs text-muted-foreground hover:border-primary";
 
   return (
     <AnimatePresence>
@@ -84,44 +124,88 @@ export const MissedMealPrompt = ({ captures, onSnap }: Props) => {
           <X className="w-4 h-4" />
         </button>
 
-        {askReason ? (
+        {step === "reason" && (
           <>
-            <p className="font-medium text-foreground text-sm mb-3">What stopped you from snapping?</p>
+            <p className="font-medium text-foreground text-sm mb-3">What got in the way?</p>
             <div className="flex flex-wrap gap-2">
               {MISS_REASONS.map((r) => (
                 <button
                   key={r.value}
-                  onClick={() => record("ate_not_snapped", r.value)}
-                  className="rounded-full border px-3 py-1.5 text-xs text-muted-foreground hover:border-primary"
+                  onClick={async () => {
+                    await savePrompt("ate_not_captured");
+                    await record("ate_not_snapped", r.value);
+                    setStep("ask");
+                  }}
+                  className={chip}
                 >
                   {r.label}
                 </button>
               ))}
             </div>
           </>
-        ) : (
+        )}
+
+        {step === "methods" && (
+          <>
+            <p className="font-medium text-foreground text-sm mb-1">Tell me what you had</p>
+            <p className="text-xs text-muted-foreground mb-3">Whichever is easiest right now.</p>
+            <div className="flex flex-wrap gap-2">
+              {methods.map((m) => {
+                const info = CAPTURE_METHODS.find((c) => c.value === m)!;
+                return (
+                  <button key={m} onClick={() => chooseMethod(m)} className={chip}>
+                    {info.emoji} {info.label}
+                  </button>
+                );
+              })}
+              <button
+                onClick={() => setStep("reason")}
+                className={chip}
+              >
+                Not now
+              </button>
+            </div>
+          </>
+        )}
+
+        {step === "ask" && (
           <>
             <p className="font-medium text-foreground text-sm pr-6">
-              We haven't seen your usual {meal.label.toLowerCase()} today. Did you eat something?
+              You normally have {meal.label.toLowerCase()} around {formatTime(missing as "breakfast" | "lunch" | "dinner")}. Did you eat?
             </p>
             <div className="flex flex-wrap gap-2 mt-3">
               <button
-                onClick={() => { void record("ate_snapped"); onSnap(missing); }}
-                className="rounded-full bg-primary text-primary-foreground px-3 py-1.5 text-xs"
+                onClick={() => setStep("methods")}
+                className="rounded-full bg-primary text-primary-foreground px-3 py-2 text-xs"
               >
-                📸 Yes, upload food
+                Yes, I ate
               </button>
               <button
-                onClick={() => setAskReason(missing)}
-                className="rounded-full border px-3 py-1.5 text-xs text-muted-foreground"
+                onClick={async () => {
+                  await savePrompt("skipped");
+                  await record("skipped");
+                }}
+                className={chip}
               >
-                🍽 Yes, I forgot to snap it
+                No, I skipped
               </button>
               <button
-                onClick={() => record("skipped")}
-                className="rounded-full border px-3 py-1.5 text-xs text-muted-foreground"
+                onClick={async () => {
+                  await savePrompt("not_yet");
+                  setDismissed(true);
+                }}
+                className={chip}
               >
-                ❌ I skipped {meal.label.toLowerCase()}
+                Not yet
+              </button>
+              <button
+                onClick={async () => {
+                  await savePrompt("later");
+                  setDismissed(true);
+                }}
+                className={chip}
+              >
+                I'll tell you later
               </button>
             </div>
           </>

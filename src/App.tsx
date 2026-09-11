@@ -20,6 +20,7 @@ import PersonalisationDebug from "./pages/PersonalisationDebug";
 import FoodHistory from "./pages/FoodHistory";
 import CheckoutReturn from "./pages/CheckoutReturn";
 import { RouteSeo } from "./components/RouteSeo";
+import { AskNutrioButton } from "./components/capture/AskNutrioButton";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <AskNutrioButton />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
