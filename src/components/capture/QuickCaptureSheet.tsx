@@ -7,6 +7,7 @@ import { MEAL_TYPES, guessMealType, type MealType } from "@/lib/foodSnap";
 import type { CaptureMethod, ParsedMeal } from "@/lib/capture";
 import { useQuickCapture } from "@/hooks/useQuickCapture";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
+import { TellNutrioConversation } from "./TellNutrioConversation";
 
 interface Props {
   open: boolean;
