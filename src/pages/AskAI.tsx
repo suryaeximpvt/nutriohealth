@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2, User, MessageCircleHeart, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Send, Loader2, User, MessageCircleHeart, ThumbsUp, ThumbsDown, Mic, Square } from "lucide-react";
+import { toast } from "sonner";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BottomNav } from "@/components/BottomNav";
@@ -27,6 +29,7 @@ const AskAI = () => {
   const [intent, setIntent] = useState<string | null>(null);
   const [rated, setRated] = useState<Record<string, boolean>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { recording, transcribing, start, stop } = useVoiceInput();
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -40,6 +43,18 @@ const AskAI = () => {
     if (!text.trim() || loading) return;
     void ask(text, { location, intent });
     setInput("");
+  };
+
+  const toggleVoice = async () => {
+    if (transcribing) return;
+    if (recording) {
+      const { text, error } = await stop();
+      if (error) return toast.error(error);
+      if (text) send(text);
+      return;
+    }
+    const { error } = await start();
+    if (error) toast.error(error);
   };
 
   if (authLoading) {
@@ -232,10 +247,26 @@ const AskAI = () => {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Nutrio anything about food right now..."
+              placeholder={recording ? "Listening… tap stop when you're done" : "Ask Nutrio anything about food right now..."}
               className="flex-1"
-              disabled={loading}
+              disabled={loading || recording || transcribing}
             />
+            <Button
+              type="button"
+              size="icon"
+              variant={recording ? "default" : "outline"}
+              onClick={toggleVoice}
+              disabled={loading || transcribing}
+              aria-label={recording ? "Stop and send what you said" : "Speak to Nutrio"}
+            >
+              {transcribing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : recording ? (
+                <Square className="w-4 h-4" />
+              ) : (
+                <Mic className="w-4 h-4" />
+              )}
+            </Button>
             <Button type="submit" size="icon" disabled={!input.trim() || loading} aria-label="Send">
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </Button>
