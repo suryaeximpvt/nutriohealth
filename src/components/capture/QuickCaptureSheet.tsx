@@ -39,6 +39,12 @@ export const QuickCaptureSheet = ({ open, onClose, mealType, startWithVoice, voi
 
   if (!open) return null;
 
+  // "Tell Nutrio" is now a hands-free conversation.
+  if (voiceOnly) {
+    return <TellNutrioConversation open={open} onClose={onClose} onSaved={onSaved} />;
+  }
+
+
   const close = () => {
     cancel();
     onClose();
