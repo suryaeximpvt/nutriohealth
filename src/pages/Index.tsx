@@ -101,6 +101,16 @@ const Index = () => {
     }
   }, [user, authLoading, navigate]);
 
+  // Home-screen shortcuts: /?action=tell and /?action=snap
+  useEffect(() => {
+    if (!user) return;
+    const action = new URLSearchParams(window.location.search).get("action");
+    if (action === "tell") openQuick(undefined, true);
+    if (action === "snap") openSnap();
+    if (action) window.history.replaceState({}, "", window.location.pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   useEffect(() => {
     if (!authLoading && !dataLoading && user && profile) {
       if (!profile.goal || !profile.height_cm || !profile.weight_kg) {
@@ -702,6 +712,7 @@ return (
         onClose={() => setQuickOpen(false)}
         mealType={quickMeal}
         startWithVoice={quickVoice}
+        voiceOnly={quickVoice}
         onSaved={() => {
           void refreshCaptures();
           void refreshData();
