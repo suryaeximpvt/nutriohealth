@@ -41,11 +41,24 @@ export const useFoodBehaviour = (auto = true) => {
 
   const analyse = useCallback(async () => {
     if (!user) return;
-    const { data } = await supabase.functions.invoke("food-behaviour-engine");
-    if (data?.score) setScore(data.score as RealityScore);
-    if (data?.patterns) setPatterns(data.patterns as BehaviourPattern[]);
-    if (data?.tracking) setTracking(data.tracking as TrackingProfile);
-    setLoading(false);
+    try {
+      // Make sure we send a valid, non-expired token (refreshes it if needed).
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) return;
+
+      const { data, error } = await supabase.functions.invoke("food-behaviour-engine", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (error) return;
+      if (data?.score) setScore(data.score as RealityScore);
+      if (data?.patterns) setPatterns(data.patterns as BehaviourPattern[]);
+      if (data?.tracking) setTracking(data.tracking as TrackingProfile);
+    } catch {
+      // Non-fatal: the dashboard keeps showing the last stored insights.
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
   useEffect(() => {
