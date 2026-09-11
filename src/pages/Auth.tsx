@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Leaf, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
+import { NutrioLogo } from "@/components/NutrioLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -89,11 +90,8 @@ const Auth = () => {
         className="w-full max-w-sm"
       >
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Leaf className="w-6 h-6 text-primary" />
-          </div>
-          <span className="text-2xl font-bold text-foreground">Nutrio</span>
+        <div className="flex items-center justify-center mb-6">
+          <NutrioLogo className="h-20 w-auto" />
         </div>
 
         {/* Illustration */}
