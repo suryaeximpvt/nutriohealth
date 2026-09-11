@@ -29,6 +29,7 @@ const AskAI = () => {
   const [intent, setIntent] = useState<string | null>(null);
   const [rated, setRated] = useState<Record<string, boolean>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const finishingRef = useRef(false);
   const { recording, transcribing, start, stop } = useVoiceInput();
 
   useEffect(() => {
