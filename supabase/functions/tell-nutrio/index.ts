@@ -99,7 +99,10 @@ Set "draft" to null when the turn is not about food. Set "activity" to null unle
     const data = await res.json();
     const raw: string = data.choices?.[0]?.message?.content ?? "";
     const match = raw.match(/\{[\s\S]*\}/);
-    if (!match) return json({ error: "Nutrio couldn't quite follow that — try again." }, 502);
+    if (!match) {
+      console.error("no json in reply", JSON.stringify(data).slice(0, 800));
+      return json({ error: "Nutrio couldn't quite follow that — try again." }, 502);
+    }
 
     const parsed = JSON.parse(match[0]);
 
