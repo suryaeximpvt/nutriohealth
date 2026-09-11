@@ -208,7 +208,10 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
           <div className="flex flex-col items-center gap-3 pb-2">
             <Button
               variant={voice.recording ? "default" : "secondary"}
-              onClick={() => voice.recording ? void finishTurn() : void listen()}
+              onClick={() => {
+                void speech.prime();
+                return voice.recording ? void finishTurn() : void listen();
+              }}
               disabled={voice.transcribing || agent.state === "thinking" || agent.state === "saving" || speech.loading || speech.speaking}
               aria-label={voice.recording ? "Stop listening" : "Start listening"}
               style={{ transform: `scale(${scale})` }}
@@ -222,7 +225,7 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
               <div className="grid grid-cols-3 gap-2 w-full">
                 <Button variant="outline" size="lg" onClick={close}>Cancel</Button>
                 <Button variant="outline" size="lg" onClick={() => { voice.cancel(); speech.stop(); setTyping(true); }}>Correct</Button>
-                <Button size="lg" onClick={async () => deliverReply(await agent.confirm())}>Confirm</Button>
+                <Button size="lg" onClick={async () => { void speech.prime(); deliverReply(await agent.confirm()); }}>Confirm</Button>
               </div>
             )}
           </div>
