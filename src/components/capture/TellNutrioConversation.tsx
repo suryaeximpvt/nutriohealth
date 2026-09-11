@@ -150,7 +150,17 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-bold text-lg text-foreground">{mode === "recap" ? "Daily recap" : "Tell Nutrio"}</h2>
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={speech.toggleMuted} aria-label={speech.muted ? "Turn Nutrio voice on" : "Mute Nutrio voice"}>
+            <Button variant="ghost" size="icon" onClick={() => {
+              void speech.prime();
+              if (speech.muted) {
+                speech.toggleMuted();
+                void speech.replay();
+              } else if (!speech.speaking && !speech.loading) {
+                void speech.replay();
+              } else {
+                speech.toggleMuted();
+              }
+            }} aria-label={speech.muted ? "Turn Nutrio voice on" : speech.speaking ? "Mute Nutrio voice" : "Replay Nutrio's last reply"}>
               {speech.muted ? <VolumeX /> : <Volume2 />}
             </Button>
             <Button variant="ghost" size="icon" onClick={() => {
