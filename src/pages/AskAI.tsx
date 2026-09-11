@@ -29,6 +29,7 @@ const AskAI = () => {
   const [intent, setIntent] = useState<string | null>(null);
   const [rated, setRated] = useState<Record<string, boolean>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { recording, transcribing, start, stop } = useVoiceInput();
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -42,6 +43,18 @@ const AskAI = () => {
     if (!text.trim() || loading) return;
     void ask(text, { location, intent });
     setInput("");
+  };
+
+  const toggleVoice = async () => {
+    if (transcribing) return;
+    if (recording) {
+      const { text, error } = await stop();
+      if (error) return toast.error(error);
+      if (text) send(text);
+      return;
+    }
+    const { error } = await start();
+    if (error) toast.error(error);
   };
 
   if (authLoading) {
