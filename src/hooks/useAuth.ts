@@ -18,10 +18,21 @@ export const useAuth = () => {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // A stored session can already be revoked server-side. Verify it once and
+      // clear it locally if it is dead, so the app shows sign-in instead of 401s.
+      if (session) {
+        const { error } = await supabase.auth.getUser();
+        if (error) {
+          await supabase.auth.signOut({ scope: "local" });
+          setSession(null);
+          setUser(null);
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
