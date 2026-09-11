@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2, User, MessageCircleHeart, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Send, Loader2, User, MessageCircleHeart, ThumbsUp, ThumbsDown, Mic, Square } from "lucide-react";
+import { toast } from "sonner";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BottomNav } from "@/components/BottomNav";
