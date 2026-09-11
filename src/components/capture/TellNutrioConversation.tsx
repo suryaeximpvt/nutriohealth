@@ -236,11 +236,17 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
             </Button>
             <p className="text-sm text-muted-foreground text-center">{caption}</p>
             {speech.error && <p className="text-xs text-destructive text-center">{speech.error} The written reply is still available.</p>}
-            {agent.state === "confirming" && (
+            {(agent.state === "confirming" || awaitingConfirm) && agent.state !== "thinking" && agent.state !== "saving" && (
               <div className="grid grid-cols-3 gap-2 w-full">
                 <Button variant="outline" size="lg" onClick={close}>Cancel</Button>
-                <Button variant="outline" size="lg" onClick={() => { voice.cancel(); speech.stop(); setTyping(true); }}>Correct</Button>
-                <Button size="lg" onClick={async () => { void speech.prime(); deliverReply(await agent.confirm()); }}>Confirm</Button>
+                <Button variant="outline" size="lg" onClick={() => { setAwaitingConfirm(false); voice.cancel(); speech.stop(); setTyping(true); }}>Correct</Button>
+                <Button size="lg" onClick={async () => {
+                  void speech.prime();
+                  voice.cancel();
+                  speech.stop();
+                  setAwaitingConfirm(false);
+                  await deliverReply(await agent.confirm());
+                }}>Confirm</Button>
               </div>
             )}
           </div>
