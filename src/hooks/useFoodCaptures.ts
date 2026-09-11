@@ -116,6 +116,8 @@ export const useFoodCaptures = (days = 14) => {
             user_confirmed: true,
             user_edited: input.edited,
             source: input.source,
+            capture_method: input.captureMethod ?? "photo",
+            estimated: input.estimated ?? false,
           })
           .select()
           .single();
