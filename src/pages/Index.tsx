@@ -79,9 +79,19 @@ const Index = () => {
     respond: respondChange,
   } = useMinimumChange();
 
+  const [quickOpen, setQuickOpen] = useState(false);
+  const [quickVoice, setQuickVoice] = useState(false);
+  const [quickMeal, setQuickMeal] = useState<MealType>(guessMealType());
+
   const openSnap = (meal?: MealType) => {
     setSnapMealType(meal ?? guessMealType());
     setSnapOpen(true);
+  };
+
+  const openQuick = (meal?: MealType, voice = false) => {
+    setQuickMeal(meal ?? guessMealType());
+    setQuickVoice(voice);
+    setQuickOpen(true);
   };
 
 
