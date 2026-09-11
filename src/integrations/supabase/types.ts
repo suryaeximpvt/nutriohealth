@@ -14,6 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
+      ask_nutrio_interactions: {
+        Row: {
+          context_snapshot: Json | null
+          created_at: string
+          helpful: boolean | null
+          id: string
+          intent: string | null
+          location_context: string | null
+          question: string
+          response: string | null
+          user_id: string
+        }
+        Insert: {
+          context_snapshot?: Json | null
+          created_at?: string
+          helpful?: boolean | null
+          id?: string
+          intent?: string | null
+          location_context?: string | null
+          question: string
+          response?: string | null
+          user_id: string
+        }
+        Update: {
+          context_snapshot?: Json | null
+          created_at?: string
+          helpful?: boolean | null
+          id?: string
+          intent?: string | null
+          location_context?: string | null
+          question?: string
+          response?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      capture_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          last_used_at: string | null
+          method: string
+          offered_count: number
+          updated_at: string
+          used_count: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_used_at?: string | null
+          method: string
+          offered_count?: number
+          updated_at?: string
+          used_count?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_used_at?: string | null
+          method?: string
+          offered_count?: number
+          updated_at?: string
+          used_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      capture_prompts: {
+        Row: {
+          created_at: string
+          id: string
+          meal_type: string | null
+          method_used: string | null
+          offered_methods: string[]
+          prompt_date: string
+          prompt_type: string
+          responded_at: string | null
+          response: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          meal_type?: string | null
+          method_used?: string | null
+          offered_methods?: string[]
+          prompt_date?: string
+          prompt_type: string
+          responded_at?: string | null
+          response?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          meal_type?: string | null
+          method_used?: string | null
+          offered_methods?: string[]
+          prompt_date?: string
+          prompt_type?: string
+          responded_at?: string | null
+          response?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       charity_payments: {
         Row: {
           amount_gbp: number
@@ -255,6 +366,7 @@ export type Database = {
           ai_confidence: number | null
           calories: number | null
           capture_date: string
+          capture_method: string
           capture_time: string
           captured_at: string
           carbs: number | null
@@ -263,6 +375,7 @@ export type Database = {
           day_context: string | null
           day_of_week: number | null
           detected_foods: Json | null
+          estimated: boolean
           fat: number | null
           fibre: number | null
           food_name: string | null
@@ -284,6 +397,7 @@ export type Database = {
           ai_confidence?: number | null
           calories?: number | null
           capture_date?: string
+          capture_method?: string
           capture_time?: string
           captured_at?: string
           carbs?: number | null
@@ -292,6 +406,7 @@ export type Database = {
           day_context?: string | null
           day_of_week?: number | null
           detected_foods?: Json | null
+          estimated?: boolean
           fat?: number | null
           fibre?: number | null
           food_name?: string | null
@@ -313,6 +428,7 @@ export type Database = {
           ai_confidence?: number | null
           calories?: number | null
           capture_date?: string
+          capture_method?: string
           capture_time?: string
           captured_at?: string
           carbs?: number | null
@@ -321,6 +437,7 @@ export type Database = {
           day_context?: string | null
           day_of_week?: number | null
           detected_foods?: Json | null
+          estimated?: boolean
           fat?: number | null
           fibre?: number | null
           food_name?: string | null
