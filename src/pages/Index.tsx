@@ -696,6 +696,18 @@ return (
           void analyseBehaviour();
         }}
       />
+
+      <QuickCaptureSheet
+        open={quickOpen}
+        onClose={() => setQuickOpen(false)}
+        mealType={quickMeal}
+        startWithVoice={quickVoice}
+        onSaved={() => {
+          void refreshCaptures();
+          void refreshData();
+          void analyseBehaviour();
+        }}
+      />
     </div>
   );
 };
