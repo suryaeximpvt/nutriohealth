@@ -247,10 +247,26 @@ const AskAI = () => {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Nutrio anything about food right now..."
+              placeholder={recording ? "Listening… tap stop when you're done" : "Ask Nutrio anything about food right now..."}
               className="flex-1"
-              disabled={loading}
+              disabled={loading || recording || transcribing}
             />
+            <Button
+              type="button"
+              size="icon"
+              variant={recording ? "default" : "outline"}
+              onClick={toggleVoice}
+              disabled={loading || transcribing}
+              aria-label={recording ? "Stop and send what you said" : "Speak to Nutrio"}
+            >
+              {transcribing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : recording ? (
+                <Square className="w-4 h-4" />
+              ) : (
+                <Mic className="w-4 h-4" />
+              )}
+            </Button>
             <Button type="submit" size="icon" disabled={!input.trim() || loading} aria-label="Send">
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </Button>
