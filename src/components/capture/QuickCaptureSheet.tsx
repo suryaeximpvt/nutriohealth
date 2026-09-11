@@ -12,11 +12,13 @@ interface Props {
   onClose: () => void;
   mealType?: MealType;
   startWithVoice?: boolean;
+  /** Listening only — no typing, for the "Tell Nutrio" entry point. */
+  voiceOnly?: boolean;
   onSaved?: () => void;
 }
 
 /** Voice / text meal capture: say it, confirm it, done. */
-export const QuickCaptureSheet = ({ open, onClose, mealType, startWithVoice, onSaved }: Props) => {
+export const QuickCaptureSheet = ({ open, onClose, mealType, startWithVoice, voiceOnly, onSaved }: Props) => {
   const { parse, save, parsing, saving } = useQuickCapture();
   const [text, setText] = useState("");
   const [meal, setMeal] = useState<MealType>(mealType ?? guessMealType());
