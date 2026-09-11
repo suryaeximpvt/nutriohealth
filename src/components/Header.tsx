@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Bell, Settings, LogOut, Leaf } from "lucide-react";
+import { Bell, Settings, LogOut } from "lucide-react";
+import { NutrioLogo } from "@/components/NutrioLogo";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import {
@@ -36,9 +37,7 @@ export const Header = ({ userName }: HeaderProps) => {
       className="flex items-center justify-between py-4"
     >
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-          <Leaf className="w-5 h-5 text-primary" />
-        </div>
+        <NutrioLogo className="h-10 w-auto" />
         <div>
           <p className="text-sm text-muted-foreground">{getGreeting()}</p>
           <h1 className="text-lg font-semibold text-foreground">{userName}</h1>

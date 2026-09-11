@@ -10,6 +10,7 @@ import { ChevronRight, ChevronLeft, Loader2, X, Check } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { usePersonalisation } from "@/hooks/usePersonalisation";
 import { useAuth } from "@/hooks/useAuth";
+import { NutrioLogo } from "@/components/NutrioLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -429,6 +430,10 @@ const Onboarding = () => {
             transition={{ duration: 0.22 }}
             className="flex-1 flex flex-col"
           >
+            <div className="flex justify-center mb-4">
+              <NutrioLogo className="h-12 w-auto" />
+            </div>
+
             {/* Question-specific illustration */}
             <div className="rounded-3xl bg-primary/5 border border-border overflow-hidden mb-5">
               <img

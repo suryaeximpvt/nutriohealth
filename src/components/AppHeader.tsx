@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Bell, Crown } from "lucide-react";
 import { QuickActionMenu } from "./QuickActionMenu";
+import { NutrioLogo } from "./NutrioLogo";
 import { NotificationsSheet } from "./NotificationsSheet";
 import { useSmartReminders } from "@/hooks/useSmartReminders";
 import { WaterIntakeModal } from "./WaterIntakeModal";
@@ -55,6 +56,7 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
             <p className="text-lg font-bold text-foreground">{userName}</p>
           </div>
         </div>
+        <NutrioLogo className="h-9 w-auto shrink-0" />
         <div className="flex items-center gap-2">
           <button
             aria-label="Nutrio Premium"
