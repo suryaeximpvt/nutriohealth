@@ -226,7 +226,7 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
                 void speech.prime();
                 return voice.recording ? void finishTurn() : void listen();
               }}
-              disabled={voice.transcribing || agent.state === "thinking" || agent.state === "saving" || speech.loading || speech.speaking}
+              disabled={voice.transcribing || agent.state === "thinking" || agent.state === "saving"}
               aria-label={voice.recording ? "Stop listening" : "Start listening"}
               style={{ transform: `scale(${scale})` }}
               className="w-24 h-24 rounded-full transition-transform duration-100"
