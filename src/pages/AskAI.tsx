@@ -45,15 +45,26 @@ const AskAI = () => {
     setInput("");
   };
 
+  const finishVoice = async () => {
+    if (finishingRef.current) return;
+    finishingRef.current = true;
+    const { text, error } = await stop();
+    finishingRef.current = false;
+    if (error) return toast.error(error);
+    if (text) send(text);
+  };
+  const finishVoiceRef = useRef(finishVoice);
+  finishVoiceRef.current = finishVoice;
+
   const toggleVoice = async () => {
     if (transcribing) return;
-    if (recording) {
-      const { text, error } = await stop();
-      if (error) return toast.error(error);
-      if (text) send(text);
-      return;
-    }
-    const { error } = await start();
+    if (recording) return void finishVoice();
+    // Nutrio stops listening on its own once you've finished speaking.
+    const { error } = await start({
+      autoStop: true,
+      silenceMs: 1600,
+      onEndOfSpeech: () => void finishVoiceRef.current(),
+    });
     if (error) toast.error(error);
   };
 
