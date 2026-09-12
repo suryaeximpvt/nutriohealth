@@ -1,11 +1,21 @@
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+type MacroTone = "protein" | "carbs" | "fat" | "fibre";
+
+const toneClasses: Record<MacroTone, string> = {
+  protein: "bg-foreground",
+  carbs: "bg-muted-foreground/80",
+  fat: "bg-muted-foreground/60",
+  fibre: "bg-muted-foreground/40",
+};
 
 interface MacroBarProps {
   label: string;
   current: number;
   target: number;
   unit?: string;
-  color: string;
+  tone?: MacroTone;
   delay?: number;
 }
 
@@ -14,13 +24,13 @@ export const MacroBar = ({
   current,
   target,
   unit = "g",
-  color,
+  tone = "protein",
   delay = 0,
 }: MacroBarProps) => {
   const progress = Math.min((current / target) * 100, 100);
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium text-foreground">{label}</span>
         <span className="text-muted-foreground">
@@ -29,11 +39,10 @@ export const MacroBar = ({
       </div>
       <div className="h-2 rounded-full bg-muted overflow-hidden">
         <motion.div
-          className="h-full rounded-full"
-          style={{ backgroundColor: color }}
+          className={cn("h-full rounded-full", toneClasses[tone])}
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.8, ease: "easeOut", delay }}
+          transition={{ type: "spring", stiffness: 300, damping: 30, delay }}
         />
       </div>
     </div>

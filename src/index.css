@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Nutrio Design System - Fresh, Energetic, Vibrant */
+/* Nutrio Design System - restrained, clear, and accessible */
 
 @layer base {
   :root {
     /* Core palette - fresh, vibrant, health-focused */
-    --background: 0 0% 98%;
-    --foreground: 220 15% 20%;
+    --background: 0 0% 99%;
+    --foreground: 220 18% 12%;
 
     --card: 0 0% 100%;
     --card-foreground: 220 15% 20%;
@@ -17,7 +17,7 @@
     --popover-foreground: 220 15% 20%;
 
     /* Vibrant teal/green - energetic, fresh */
-    --primary: 160 84% 39%;
+    --primary: 160 84% 27%;
     --primary-foreground: 0 0% 100%;
 
     /* Light gray secondary */
@@ -26,26 +26,26 @@
 
     /* Soft muted tones */
     --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 46%;
+    --muted-foreground: 220 10% 40%;
 
     /* Orange accent - energetic, motivational */
-    --accent: 25 95% 53%;
+    --accent: 25 92% 38%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 160 84% 39%;
+    --border: 220 10% 68%;
+    --input: 220 10% 68%;
+    --ring: 160 84% 27%;
 
     --radius: 1rem;
 
     /* Custom Nutrio tokens */
-    --nutrio-green: 160 84% 39%;
+    --nutrio-green: 160 84% 27%;
     --nutrio-green-light: 160 60% 95%;
     --nutrio-teal: 174 72% 40%;
-    --nutrio-orange: 25 95% 53%;
+    --nutrio-orange: 25 92% 38%;
     --nutrio-orange-light: 25 100% 95%;
     --nutrio-charcoal: 220 15% 20%;
     --nutrio-gray: 220 10% 46%;
@@ -55,8 +55,8 @@
     --nutrio-red: 0 84% 60%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(160 84% 39%), hsl(174 72% 40%));
-    --gradient-orange: linear-gradient(135deg, hsl(25 95% 53%), hsl(35 95% 55%));
+    --gradient-primary: linear-gradient(135deg, hsl(160 84% 27%), hsl(174 72% 28%));
+    --gradient-orange: linear-gradient(135deg, hsl(25 92% 38%), hsl(35 88% 40%));
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 14% 99%));
     --gradient-capture: linear-gradient(180deg, hsl(220 15% 20% / 0.02), hsl(220 15% 20% / 0.78));
 
@@ -86,7 +86,7 @@
     --popover: 220 18% 14%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 160 70% 45%;
+    --primary: 160 72% 30%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 15% 20%;
@@ -95,15 +95,15 @@
     --muted: 220 15% 20%;
     --muted-foreground: 220 10% 60%;
 
-    --accent: 25 90% 55%;
+    --accent: 25 88% 40%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 22%;
-    --input: 220 15% 22%;
-    --ring: 160 70% 45%;
+    --border: 220 12% 42%;
+    --input: 220 12% 42%;
+    --ring: 160 72% 38%;
 
     --sidebar-background: 220 20% 10%;
     --sidebar-foreground: 0 0% 95%;
@@ -128,6 +128,20 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', system-ui, sans-serif;
+    letter-spacing: 0;
+  }
+
+  button,
+  a,
+  [role="button"] {
+    @apply transition-transform duration-150 ease-out;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:not(:disabled):active,
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.96);
   }
 }
 
@@ -176,6 +190,14 @@
   .capture-scrim {
     background: var(--gradient-capture);
   }
+
+  .pressable {
+    @apply transition-transform duration-150 ease-out active:scale-[0.96];
+  }
+
+  /* Product type scale: 12 / 14 / 16 / 20 / 24 / 32px only. */
+  .text-lg { font-size: 1.25rem; line-height: 1.75rem; }
+  .text-3xl, .text-4xl, .text-5xl { font-size: 2rem; line-height: 2.5rem; }
 
   .snap-x {
     scroll-snap-type: x mandatory;
