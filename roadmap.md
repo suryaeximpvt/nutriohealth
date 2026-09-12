@@ -16,3 +16,9 @@
 - [x] Support multi-meal recap and safe multi-action completion
 - [x] Move the later-day recap prompt into Tell Nutrio
 - [x] Verify voice, text, errors, mobile layout, and backend calls
+
+## Camera-first UI upgrade (complete)
+- [x] Refine authentication and onboarding presentation
+- [x] Recompose the Home dashboard around capture and diary scanning
+- [x] Restyle meal suggestions as a swipeable visual carousel
+- [x] Verify mobile layouts and capture interactions
