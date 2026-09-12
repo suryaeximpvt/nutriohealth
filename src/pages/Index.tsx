@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Camera, ChevronRight, Sparkles, Crown, Loader2 } from "lucide-react";
+import { ChevronRight, Sparkles, Crown, Loader2 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
-import { ProgressRing } from "@/components/ProgressRing";
-import { MacroBar } from "@/components/MacroBar";
 import { BottomNav } from "@/components/BottomNav";
 import { HealthTrackingCard } from "@/components/HealthTrackingCard";
 import { AISuggestedMealCard } from "@/components/AISuggestedMealCard";
@@ -12,7 +10,6 @@ import { FoodLogModal } from "@/components/FoodLogModal";
 import { PhotoUploadModal } from "@/components/PhotoUploadModal";
 import { MealTypeSelector } from "@/components/MealTypeSelector";
 import { PremiumModal } from "@/components/PremiumModal";
-import { WaterTracker } from "@/components/WaterTracker";
 import { DailyIntakeBreakdown } from "@/components/DailyIntakeBreakdown";
 import { LifestyleModeCard } from "@/components/LifestyleModeCard";
 import { MealCheckIn } from "@/components/MealCheckIn";
@@ -32,6 +29,7 @@ import { QuickCaptureSheet } from "@/components/capture/QuickCaptureSheet";
 import { DailyRecapCard } from "@/components/capture/DailyRecapCard";
 import { OnePhotoChallengeCard } from "@/components/capture/OnePhotoChallengeCard";
 import { FrictionFeedbackCard } from "@/components/capture/FrictionFeedbackCard";
+import { CameraFirstDashboard } from "@/components/CameraFirstDashboard";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
@@ -304,41 +302,32 @@ return (
       <div className="container max-w-lg mx-auto px-4">
         <AppHeader userName={userName} />
 
-        {/* Primary action: snap what you ate */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          onClick={() => openSnap()}
-          className="w-full bg-gradient-to-r from-primary to-primary/80 rounded-3xl p-6 flex flex-col items-center gap-2 mb-3 shadow-card"
-        >
-          <div className="w-14 h-14 rounded-2xl bg-primary-foreground/20 flex items-center justify-center">
-            <Camera className="w-7 h-7 text-primary-foreground" />
-          </div>
-          <h2 className="font-bold text-primary-foreground text-xl">Snap what you ate</h2>
-          <p className="text-primary-foreground/80 text-sm">
-            Nutrio learns from your real meals — no searching required
-          </p>
-        </motion.button>
-
-        {/* Low-friction alternatives to a photo */}
-        <div className="grid grid-cols-2 gap-2 mb-3">
-          <button
-            onClick={() => openQuick(undefined, true)}
-            className="bg-card rounded-2xl p-3 shadow-card flex items-center justify-center gap-2 text-sm font-semibold text-foreground"
-          >
-            🎙 Tell Nutrio
-          </button>
-          <button
-            onClick={() => openQuick(undefined, false)}
-            className="bg-card rounded-2xl p-3 shadow-card flex items-center justify-center gap-2 text-sm font-semibold text-foreground"
-          >
-            ⌨️ Type what I ate
-          </button>
-        </div>
+        <CameraFirstDashboard
+          caloriesConsumed={caloriesConsumed}
+          caloriesRemaining={caloriesRemaining}
+          calorieTarget={calorieTarget}
+          calorieProgress={calorieProgress}
+          protein={dailySummary.totalProtein}
+          proteinTarget={profile?.protein_target || 120}
+          carbs={dailySummary.totalCarbs}
+          carbsTarget={profile?.carbs_target || 250}
+          fat={dailySummary.totalFat}
+          fatTarget={profile?.fat_target || 65}
+          fibre={dailySummary.totalFibre}
+          fibreTarget={profile?.fibre_target || 30}
+          meals={dailySummary.meals}
+          waterGlasses={waterGlasses}
+          weight={profile?.weight_kg}
+          onSnap={() => openSnap()}
+          onVoice={() => openQuick(undefined, true)}
+          onManual={(meal) => meal ? handleAddManual(meal) : openQuick(undefined, false)}
+          onOpenIntake={() => setIntakeBreakdownOpen(true)}
+          onAddWater={() => updateWater(waterGlasses + 1)}
+          onRemoveWater={() => updateWater(Math.max(0, waterGlasses - 1))}
+        />
 
         {/* Gentle nudge when a usual meal hasn't been seen */}
-        <div className="mb-3">
+        <div className="mt-4 mb-3">
           <MissedMealPrompt
             captures={todaysCaptures}
             onSnap={(m) => openSnap(m)}
@@ -436,65 +425,6 @@ return (
           </motion.div>
         )}
 
-        {/* Today's Summary Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-card rounded-2xl p-6 shadow-card mb-4"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-bold text-foreground text-lg">Today's Summary</h2>
-            <span className="text-muted-foreground text-sm">{dateStr}</span>
-          </div>
-
-          <motion.button
-            className="flex justify-center mb-6 cursor-pointer w-full mx-auto"
-            onClick={() => setIntakeBreakdownOpen(true)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <ProgressRing
-              progress={calorieProgress}
-              size={180}
-              strokeWidth={12}
-              color="hsl(var(--primary))"
-            >
-              <div className="text-center">
-                <p className="text-4xl font-bold text-foreground">{caloriesRemaining}</p>
-                <p className="text-muted-foreground text-sm">Remaining</p>
-                <p className="text-xs text-primary mt-1">Tap to view</p>
-              </div>
-            </ProgressRing>
-          </motion.button>
-
-          <div className="flex items-center justify-around">
-            <div className="text-center">
-              <div className="flex items-center gap-1 justify-center">
-                <span className="w-2 h-2 rounded-full bg-primary" />
-                <span className="font-semibold text-foreground">{caloriesConsumed}</span>
-              </div>
-              <span className="text-muted-foreground text-sm">Eaten</span>
-            </div>
-            <div className="w-px h-8 bg-border" />
-            <div className="text-center">
-              <div className="flex items-center gap-1 justify-center">
-                <span className="w-2 h-2 rounded-full bg-nutrio-amber" />
-                <span className="font-semibold text-foreground">0</span>
-              </div>
-              <span className="text-muted-foreground text-sm">Burned</span>
-            </div>
-            <div className="w-px h-8 bg-border" />
-            <div className="text-center">
-              <div className="flex items-center gap-1 justify-center">
-                <span className="w-2 h-2 rounded-full bg-nutrio-blue" />
-                <span className="font-semibold text-foreground">{calorieTarget}</span>
-              </div>
-              <span className="text-muted-foreground text-sm">Goal</span>
-            </div>
-          </div>
-        </motion.div>
-
         {/* Personalised AI recommendations */}
         <div className="mb-4">
           <RecommendationsCard delay={0.212} />
@@ -532,61 +462,6 @@ return (
         </div>
 
 
-
-        {/* Macronutrients Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="bg-card rounded-2xl p-5 shadow-card mb-4"
-        >
-          <h2 className="font-bold text-foreground mb-4">Macronutrients</h2>
-          <div className="space-y-4">
-            <MacroBar
-              label="Carbs"
-              current={Math.round(dailySummary.totalCarbs)}
-              target={profile?.carbs_target || 250}
-              color="hsl(var(--nutrio-orange))"
-              delay={0.3}
-            />
-            <MacroBar
-              label="Protein"
-              current={Math.round(dailySummary.totalProtein)}
-              target={profile?.protein_target || 120}
-              color="hsl(var(--primary))"
-              delay={0.35}
-            />
-            <MacroBar
-              label="Fat"
-              current={Math.round(dailySummary.totalFat)}
-              target={profile?.fat_target || 65}
-              color="hsl(var(--nutrio-amber))"
-              delay={0.4}
-            />
-            <MacroBar
-              label="Fibre"
-              current={Math.round(dailySummary.totalFibre)}
-              target={profile?.fibre_target || 30}
-              color="hsl(var(--nutrio-purple))"
-              delay={0.45}
-            />
-          </div>
-        </motion.div>
-
-        {/* Water Tracker */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-4"
-        >
-          <WaterTracker
-            current={waterGlasses * 250}
-            target={2000}
-            onAdd={() => updateWater(waterGlasses + 1)}
-            onRemove={() => updateWater(Math.max(0, waterGlasses - 1))}
-          />
-        </motion.div>
 
         {/* Health Stats */}
         <motion.div
