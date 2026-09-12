@@ -370,32 +370,19 @@ const Onboarding = () => {
               {options.map((option) => {
                 const active = isMulti ? selected.includes(option.value) : values[field.key] === option.value;
                 return (
-                  <motion.button
+                  <ChoiceRow
                     key={option.value}
-                    type="button"
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() =>
+                    label={option.label}
+                    description={option.desc}
+                    symbol={option.label.slice(0, 1)}
+                    selected={active}
+                    multiple={isMulti}
+                    onSelect={() =>
                       isMulti
                         ? toggleMulti(field.key, option.value, (field as any).max)
                         : set(field.key, option.value)
                     }
-                    className={`relative p-4 rounded-2xl border-2 text-left transition-all ${
-                      active ? "border-primary bg-primary/10 shadow-elevated" : "border-border/70 bg-card shadow-card hover:border-primary/40"
-                    }`}
-                  >
-                    <ChoiceRow
-                      label={option.label}
-                      description={option.desc}
-                      symbol={option.label.slice(0, 1)}
-                      selected={active}
-                      multiple={isMulti}
-                      onSelect={() =>
-                        isMulti
-                          ? toggleMulti(field.key, option.value, (field as any).max)
-                          : set(field.key, option.value)
-                      }
-                    />
-                  </motion.button>
+                  />
                 );
               })}
             </div>
