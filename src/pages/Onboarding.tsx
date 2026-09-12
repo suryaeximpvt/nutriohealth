@@ -450,7 +450,10 @@ const Onboarding = () => {
 
             <div className="mt-7 space-y-6">
               {current.id === "body" ? (
-                <BodyPickers heightCm={Number(values.height_cm) || 170} weightKg={Number(values.weight_kg) || 70} goalWeightKg={values.goal_weight_kg ? Number(values.goal_weight_kg) : undefined} onChange={set} />
+                <>
+                  <BodyPickers heightCm={Number(values.height_cm) || 170} weightKg={Number(values.weight_kg) || 70} goalWeightKg={values.goal_weight_kg ? Number(values.goal_weight_kg) : undefined} onChange={set} />
+                  {current.fields.filter((field) => field.key === "activity_level").map(renderField)}
+                </>
               ) : current.presentation === "progress" || current.presentation === "summary" ? (
                 <PlanPreview goalLabel={goalLabel} calorieTarget={targets.calorieTarget} proteinTarget={targets.proteinTarget} carbsTarget={targets.carbsTarget} fatTarget={targets.fatTarget} summary={current.presentation === "summary"} />
               ) : current.fields.map(renderField)}
