@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, ChevronRight, Star, Loader2, Plus } from "lucide-react";
+import { X, Sparkles, Star, Loader2, Plus, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface MealOption {
@@ -76,7 +76,7 @@ export const AIMealModal = forwardRef<HTMLDivElement, AIMealModalProps>(({
             </div>
 
             {/* Content */}
-            <div className="overflow-y-auto max-h-[calc(85vh-80px)] px-6 py-4">
+            <div className="overflow-y-auto max-h-[calc(85vh-80px)] px-5 py-5">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-12">
                   <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
@@ -89,15 +89,16 @@ export const AIMealModal = forwardRef<HTMLDivElement, AIMealModalProps>(({
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-primary/10 rounded-xl p-4 mb-5"
+                    className="flex items-start gap-2 mb-4"
                   >
-                    <p className="text-sm text-foreground leading-relaxed">
-                      {explanation}
+                    <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {explanation.split(/[.!?]/)[0]}.
                     </p>
                   </motion.div>
 
                   {/* Meal Options */}
-                  <div className="space-y-3">
+                  <div className="flex gap-4 overflow-x-auto snap-x scrollbar-hide -mx-5 px-5 pb-3">
                     {options.map((option, index) => (
                       <motion.button
                         key={option.name}
@@ -105,9 +106,10 @@ export const AIMealModal = forwardRef<HTMLDivElement, AIMealModalProps>(({
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.15 + index * 0.1 }}
                         onClick={() => onSelectMeal(option)}
-                        className="w-full glass-card rounded-xl p-4 text-left hover:shadow-elevated transition-all active:scale-[0.98] group"
+                        className="snap-card flex-[0_0_82%] max-w-xs bg-card rounded-2xl overflow-hidden text-left border border-border/60 shadow-elevated transition-all active:scale-[0.98] group"
                       >
-                        <div className="flex items-start justify-between gap-3">
+                        <div className="h-32 bg-primary/10 flex items-center justify-center text-6xl" aria-hidden="true">🍽️</div>
+                        <div className="p-4 flex items-start justify-between gap-3">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold text-foreground">
@@ -120,8 +122,8 @@ export const AIMealModal = forwardRef<HTMLDivElement, AIMealModalProps>(({
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {option.description}
+                            <p className="text-sm text-muted-foreground mt-2 line-clamp-1">
+                              {option.description.split(/[.!?]/)[0]}.
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -133,7 +135,7 @@ export const AIMealModal = forwardRef<HTMLDivElement, AIMealModalProps>(({
                                 kcal
                               </span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                            <span className="sr-only">Choose meal</span>
                           </div>
                         </div>
                       </motion.button>
@@ -165,17 +167,15 @@ export const AIMealModal = forwardRef<HTMLDivElement, AIMealModalProps>(({
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.5 }}
-                      className="mt-6 p-4 border border-border rounded-xl"
+                      className="mt-6"
                     >
                       <p className="text-sm text-muted-foreground mb-3">
                         {followUpQuestion}
                       </p>
-                      <div className="flex gap-2">
-                        <Button variant="secondary" size="sm" className="flex-1">
-                          Yes
-                        </Button>
-                        <Button variant="secondary" size="sm" className="flex-1">
-                          No
+                      <div className="flex items-center gap-2 rounded-xl border border-input bg-background p-1.5 focus-within:ring-2 focus-within:ring-ring">
+                        <input className="h-9 flex-1 bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground" placeholder="Type your answer" aria-label="Answer follow-up question" />
+                        <Button size="icon" className="rounded-lg" aria-label="Send answer">
+                          <Send className="w-4 h-4" />
                         </Button>
                       </div>
                     </motion.div>

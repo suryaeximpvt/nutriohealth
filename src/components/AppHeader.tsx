@@ -39,7 +39,7 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
       <motion.header
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="sticky top-0 z-40 -mx-4 px-4 py-3 mb-4 flex items-center justify-between bg-background/95 backdrop-blur border-b border-border"
+        className="sticky top-0 z-40 -mx-4 px-4 py-3 mb-4 flex items-center justify-between bg-background/95 backdrop-blur-md border-b border-border/60"
       >
         <div className="flex items-center gap-3">
           <motion.button
@@ -47,16 +47,16 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
             whileTap={{ scale: 0.95 }}
             onClick={() => setMenuOpen(true)}
             aria-label="Open profile and quick actions menu"
-            className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-lg font-bold cursor-pointer"
+            className="w-11 h-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-lg font-bold cursor-pointer shadow-card"
           >
             {firstLetter}
           </motion.button>
           <div>
-            <p className="text-sm text-muted-foreground">{getGreeting()}</p>
-            <p className="text-lg font-bold text-foreground">{userName}</p>
+            <p className="text-xs text-muted-foreground">{getGreeting()}</p>
+            <p className="text-base font-bold text-foreground">{userName}</p>
           </div>
         </div>
-        <NutrioLogo className="h-9 w-auto shrink-0" />
+        <NutrioLogo className="h-8 w-auto shrink-0" />
         <div className="flex items-center gap-2">
           <button
             aria-label="Nutrio Premium"

@@ -1,4 +1,4 @@
-import logoAsset from "@/assets/nutrio-logo.png.asset.json";
+import logoAsset from "@/assets/nutrio-logo-local.png";
 
 interface NutrioLogoProps {
   className?: string;
@@ -7,10 +7,10 @@ interface NutrioLogoProps {
 /** Nutrio brand logo (leaf + bird mark with wordmark). */
 export const NutrioLogo = ({ className = "h-9 w-auto" }: NutrioLogoProps) => (
   <img
-    src={logoAsset.url}
+    src={logoAsset}
     alt="Nutrio — nutrition that adapts to you"
     className={className}
-    width={666}
-    height={494}
+    width={180}
+    height={180}
   />
 );

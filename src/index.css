@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
-
 /* Nutrio Design System - Fresh, Energetic, Vibrant */
 
 @layer base {
@@ -60,6 +58,7 @@
     --gradient-primary: linear-gradient(135deg, hsl(160 84% 39%), hsl(174 72% 40%));
     --gradient-orange: linear-gradient(135deg, hsl(25 95% 53%), hsl(35 95% 55%));
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 14% 99%));
+    --gradient-capture: linear-gradient(180deg, hsl(220 15% 20% / 0.02), hsl(220 15% 20% / 0.78));
 
     /* Shadows */
     --shadow-soft: 0 4px 20px -4px hsl(220 15% 20% / 0.08);
@@ -172,5 +171,26 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .capture-scrim {
+    background: var(--gradient-capture);
+  }
+
+  .snap-x {
+    scroll-snap-type: x mandatory;
+  }
+
+  .snap-card {
+    scroll-snap-align: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

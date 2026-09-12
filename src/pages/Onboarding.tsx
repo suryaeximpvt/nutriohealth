@@ -250,7 +250,7 @@ const Onboarding = () => {
               value={values[field.key] ?? ""}
               placeholder={field.placeholder}
               onChange={(e) => set(field.key, e.target.value)}
-              className="text-base h-12 rounded-xl"
+              className="text-base h-14 rounded-xl bg-card shadow-card border-border/70"
             />
           </div>
         );
@@ -264,7 +264,7 @@ const Onboarding = () => {
               value={values[field.key] ?? ""}
               placeholder={field.placeholder}
               onChange={(e) => set(field.key, e.target.value)}
-              className="text-base h-12 rounded-xl"
+              className="text-base h-14 rounded-xl bg-card shadow-card border-border/70"
             />
           </div>
         );
@@ -276,13 +276,13 @@ const Onboarding = () => {
               type="time"
               value={values[field.key] ?? ""}
               onChange={(e) => set(field.key, e.target.value)}
-              className="text-base h-12 rounded-xl"
+              className="text-base h-14 rounded-xl bg-card shadow-card border-border/70"
             />
           </div>
         );
       case "toggle":
         return (
-          <div key={field.key} className="flex items-center justify-between rounded-2xl border border-border p-4">
+          <div key={field.key} className="flex items-center justify-between rounded-2xl border border-border/70 bg-card p-5 shadow-card">
             <div className="pr-4">
               <p className="font-semibold text-foreground">{field.label}</p>
               {field.desc && <p className="text-sm text-muted-foreground">{field.desc}</p>}
@@ -377,7 +377,7 @@ const Onboarding = () => {
                         : set(field.key, option.value)
                     }
                     className={`relative p-4 rounded-2xl border-2 text-left transition-all ${
-                      active ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/40"
+                      active ? "border-primary bg-primary/10 shadow-elevated" : "border-border/70 bg-card shadow-card hover:border-primary/40"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -411,16 +411,27 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="w-full h-1.5 bg-muted">
-        <motion.div
-          className="h-full bg-primary rounded-r-full"
-          initial={{ width: 0 }}
-          animate={{ width: `${((step + 1) / total) * 100}%` }}
-          transition={{ duration: 0.35 }}
-        />
-      </div>
+      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border/60">
+        <div className="container max-w-lg mx-auto px-4 pt-3 pb-3">
+          <div className="flex items-center justify-between mb-3">
+            <button type="button" onClick={handleBack} disabled={step === 0} aria-label="Go back" className="w-10 h-10 rounded-full bg-card shadow-card flex items-center justify-center disabled:opacity-0">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <NutrioLogo className="h-9 w-auto" />
+            <span className="w-10 text-right text-xs font-semibold text-muted-foreground">{step + 1}/{total}</span>
+          </div>
+          <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-primary rounded-full"
+              initial={false}
+              animate={{ width: `${((step + 1) / total) * 100}%` }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+            />
+          </div>
+        </div>
+      </header>
 
-      <div className="flex-1 container max-w-lg mx-auto px-4 py-6 flex flex-col">
+      <div className="flex-1 container max-w-lg mx-auto px-4 pt-5 pb-28 flex flex-col">
         <AnimatePresence mode="wait">
           <motion.div
             key={current.id}
@@ -430,29 +441,25 @@ const Onboarding = () => {
             transition={{ duration: 0.22 }}
             className="flex-1 flex flex-col"
           >
-            <div className="flex justify-center mb-4">
-              <NutrioLogo className="h-12 w-auto" />
-            </div>
-
             {/* Question-specific illustration */}
-            <div className="rounded-3xl bg-primary/5 border border-border overflow-hidden mb-5">
+            <div className="relative rounded-2xl bg-primary/5 border border-border/60 overflow-hidden mb-6 aspect-[16/9] shadow-soft">
               <img
                 src={current.image}
                 alt={current.imageAlt}
                 width={768}
                 height={512}
                 loading="lazy"
-                className="w-full h-40 object-contain"
+                className="w-full h-full object-cover"
               />
             </div>
 
             <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-              {current.section} · Step {step + 1} of {total}
+              {current.section}
             </p>
-            <h1 className="text-2xl font-bold text-foreground mt-1">{current.title}</h1>
+            <h1 className="text-3xl font-bold text-foreground mt-1 leading-tight">{current.title}</h1>
             {current.subtitle && <p className="text-muted-foreground mt-1.5">{current.subtitle}</p>}
 
-            <div className="space-y-6 mt-6">
+            <div className="space-y-6 mt-7">
               {current.fields.map(renderField)}
 
               {/* Frequency picker for each chosen non-negotiable */}
@@ -491,19 +498,14 @@ const Onboarding = () => {
           </motion.div>
         </AnimatePresence>
 
-        <div className="sticky bottom-0 flex gap-3 mt-8 pt-4 pb-2 border-t border-border bg-background">
-          {step > 0 && (
-            <Button variant="outline" onClick={handleBack} className="flex-1 h-12 rounded-xl">
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              Back
-            </Button>
-          )}
+        <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-border/60 bg-background/95 backdrop-blur-md">
+          <div className="container max-w-lg mx-auto px-4 py-3 flex gap-3">
           {current.optional && step < total - 1 && (
             <Button variant="ghost" onClick={handleNext} className="h-12 rounded-xl px-4 text-muted-foreground">
               Skip
             </Button>
           )}
-          <Button onClick={handleNext} disabled={!canProceed() || saving} className="flex-[2] h-12 rounded-xl">
+          <Button onClick={handleNext} disabled={!canProceed() || saving} className="flex-[2] h-12 rounded-xl shadow-card">
             {saving ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -518,6 +520,7 @@ const Onboarding = () => {
               </>
             )}
           </Button>
+          </div>
         </div>
       </div>
     </div>
