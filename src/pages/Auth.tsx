@@ -83,40 +83,41 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-5 py-8">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-sm"
       >
         {/* Logo */}
-        <div className="flex items-center justify-center mb-6">
-          <NutrioLogo className="h-20 w-auto" />
+        <div className="flex items-center justify-center mb-5">
+          <NutrioLogo className="h-16 w-auto" />
         </div>
 
         {/* Illustration */}
-        <div className="mb-6 rounded-3xl bg-primary/5 border border-border overflow-hidden">
+        <div className="relative mb-7 aspect-[16/9] rounded-2xl bg-primary/5 border border-border/70 overflow-hidden shadow-card">
           <img
             src={authArt}
             alt="Healthy bowl of greens, avocado, berries, water and a dumbbell"
             width={1024}
             height={640}
-            className="w-full h-40 object-contain"
+            className="w-full h-full object-cover"
           />
         </div>
 
 
         {/* Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-foreground mb-2">
+        <div className="text-center mb-7">
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Nutrition that adapts to you</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             {isLogin
-              ? "Nutrio — AI Nutrition and Fitness Tracking"
-              : "Join Nutrio — AI Nutrition and Fitness Tracking"}
+              ? "Welcome back to Nutrio"
+              : "Meet your everyday nutrition coach"}
           </h1>
           <p className="text-muted-foreground">
             {isLogin
-              ? "Log in to continue your nutrition journey"
-              : "Start eating better without changing your life"}
+              ? "Pick up where you left off."
+              : "Build healthier habits around the food you already enjoy."}
           </p>
         </div>
 
@@ -126,7 +127,7 @@ const Auth = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
           onSubmit={handleSubmit}
-          className="space-y-4"
+          className="space-y-4 rounded-2xl bg-card p-5 shadow-soft border border-border/60"
         >
           {!isLogin && (
             <div className="space-y-2">
@@ -139,7 +140,7 @@ const Auth = () => {
                   placeholder="Alex Smith"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 h-12 rounded-xl bg-background"
                   required={!isLogin}
                 />
               </div>
@@ -156,7 +157,7 @@ const Auth = () => {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-12 rounded-xl bg-background"
                 required
               />
             </div>
@@ -172,7 +173,7 @@ const Auth = () => {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-12 rounded-xl bg-background"
                 required
                 minLength={6}
               />
@@ -181,7 +182,7 @@ const Auth = () => {
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full h-12 rounded-xl shadow-card"
             size="lg"
             disabled={loading}
           >
