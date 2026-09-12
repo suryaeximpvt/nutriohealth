@@ -33,12 +33,11 @@ const BottomNav = () => {
                 >
                   <motion.div
                     className="w-14 h-14 -mt-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-elevated ring-4 ring-card"
-                    whileTap={{ scale: 0.95 }}
-                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.96 }}
                   >
                     <Icon className="w-6 h-6" />
                   </motion.div>
-                  <span className={`text-xs font-medium ${active ? "text-primary" : "text-muted-foreground"}`}>
+                  <span className={`text-xs font-medium ${active ? "text-foreground" : "text-muted-foreground"}`}>
                     {item.label}
                   </span>
                 </button>
@@ -52,12 +51,12 @@ const BottomNav = () => {
                 className="flex flex-col items-center gap-1 py-2 px-4 min-w-[64px]"
               >
                 <motion.div
-                  className={`transition-colors ${active ? "text-primary" : "text-muted-foreground"}`}
+                  className={`transition-colors ${active ? "text-foreground" : "text-muted-foreground"}`}
                   animate={{ scale: active ? 1.1 : 1 }}
                 >
                   <Icon className="w-6 h-6" />
                 </motion.div>
-                <span className={`text-xs font-medium ${active ? "text-primary" : "text-muted-foreground"}`}>
+                <span className={`text-xs font-medium ${active ? "text-foreground" : "text-muted-foreground"}`}>
                   {item.label}
                 </span>
               </button>

@@ -26,7 +26,7 @@ export const WaterIntakeModal = ({ isOpen, onClose, waterGlasses, onUpdateWater 
       <SheetContent side="bottom" className="rounded-t-3xl h-auto max-h-[80vh]">
         <SheetHeader className="pb-4">
           <SheetTitle className="text-left flex items-center gap-2">
-            <Droplets className="w-5 h-5 text-cyan-500" />
+            <Droplets className="w-5 h-5 text-foreground" />
             Water Intake Tracker
           </SheetTitle>
         </SheetHeader>
@@ -49,19 +49,17 @@ export const WaterIntakeModal = ({ isOpen, onClose, waterGlasses, onUpdateWater 
                   cy="50"
                   r="45"
                   fill="none"
-                  stroke="hsl(var(--cyan-500, 180 100% 50%))"
+                  stroke="hsl(var(--primary))"
                   strokeWidth="8"
                   strokeLinecap="round"
                   strokeDasharray={`${progress * 2.83} ${283 - progress * 2.83}`}
                   initial={{ strokeDasharray: "0 283" }}
                   animate={{ strokeDasharray: `${progress * 2.83} ${283 - progress * 2.83}` }}
-                  transition={{ duration: 0.5 }}
-                  className="text-cyan-500"
-                  style={{ stroke: "rgb(6, 182, 212)" }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <Droplets className="w-6 h-6 text-cyan-500 mb-1" />
+                <Droplets className="w-6 h-6 text-foreground mb-1" />
                 <p className="text-2xl font-bold text-foreground">{waterMl}ml</p>
                 <p className="text-sm text-muted-foreground">of {targetMl}ml</p>
               </div>
@@ -76,6 +74,7 @@ export const WaterIntakeModal = ({ isOpen, onClose, waterGlasses, onUpdateWater 
               className="w-12 h-12 rounded-full"
               onClick={() => onUpdateWater(Math.max(0, waterGlasses - 1))}
               disabled={waterGlasses === 0}
+              aria-label="Remove one glass"
             >
               <Minus className="w-5 h-5" />
             </Button>
@@ -88,6 +87,7 @@ export const WaterIntakeModal = ({ isOpen, onClose, waterGlasses, onUpdateWater 
               size="icon"
               className="w-12 h-12 rounded-full"
               onClick={() => onUpdateWater(waterGlasses + 1)}
+              aria-label="Add one glass"
             >
               <Plus className="w-5 h-5" />
             </Button>
@@ -112,8 +112,8 @@ export const WaterIntakeModal = ({ isOpen, onClose, waterGlasses, onUpdateWater 
           </div>
 
           {/* Tips */}
-          <div className="bg-cyan-500/10 rounded-xl p-4">
-            <p className="text-sm text-cyan-600 dark:text-cyan-400">
+          <div className="bg-muted rounded-xl p-4">
+            <p className="text-sm text-muted-foreground">
               💡 Staying hydrated helps with energy levels, digestion, and keeping you feeling full between meals.
             </p>
           </div>
