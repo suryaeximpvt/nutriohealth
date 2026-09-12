@@ -399,10 +399,10 @@ const Onboarding = () => {
 
   const selectedNonNegotiables: string[] = values.non_negotiables ?? [];
   const targets = calculateTargets();
-  const goalLabel = ONBOARDING_STEPS
+  const goalField = ONBOARDING_STEPS
     .flatMap((item) => item.fields)
-    .find((field) => field.kind === "single" && field.key === "primary_goal" && "options" in field)
-    ?.options.find((option) => option.value === values.primary_goal)?.label ?? "Your goal";
+    .find((field): field is Extract<StepField, { kind: "single" }> => field.kind === "single" && field.key === "primary_goal");
+  const goalLabel = goalField?.options.find((option) => option.value === values.primary_goal)?.label ?? "Your goal";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
