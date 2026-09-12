@@ -197,7 +197,19 @@
 
   /* Product type scale: 12 / 14 / 16 / 20 / 24 / 32px only. */
   .text-lg { font-size: 1.25rem; line-height: 1.75rem; }
-  .text-3xl, .text-4xl, .text-5xl { font-size: 2rem; line-height: 2.5rem; }
+  .text-3xl, .text-4xl, .text-5xl, .text-6xl, .text-7xl, .text-8xl, .text-9xl { font-size: 2rem; line-height: 2.5rem; }
+  [class*="text-[10px]"], [class*="text-[11px]"] { font-size: 0.75rem; line-height: 1rem; }
+
+  /* Keep legacy half-step spacing aligned to the product's 4px rhythm. */
+  .gap-0\.5, .gap-1\.5 { gap: 0.5rem; }
+  .space-x-1\.5 > :not([hidden]) ~ :not([hidden]),
+  .space-y-1\.5 > :not([hidden]) ~ :not([hidden]) { margin: 0.5rem; }
+  .p-0\.5, .p-1\.5 { padding: 0.5rem; }
+  .px-1\.5 { padding-left: 0.5rem; padding-right: 0.5rem; }
+  .py-0\.5, .py-1\.5 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+  .m-0\.5, .m-1\.5, .ml-0\.5, .ml-1\.5, .mt-0\.5, .mt-1\.5,
+  .mr-0\.5, .mr-1\.5, .mb-0\.5, .mb-1\.5 { margin: 0.5rem; }
+  .top-1\.5, .right-1\.5, .bottom-1\.5, .left-1\.5 { inset: 0.5rem; }
 
   .snap-x {
     scroll-snap-type: x mandatory;

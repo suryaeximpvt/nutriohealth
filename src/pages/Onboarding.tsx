@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRight, ChevronLeft, Loader2, X, Check } from "lucide-react";
+import { ChevronRight, ChevronLeft, Loader2, X } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { usePersonalisation } from "@/hooks/usePersonalisation";
 import { useAuth } from "@/hooks/useAuth";
@@ -344,7 +344,7 @@ const Onboarding = () => {
                     <button
                       type="button"
                       onClick={() => set(field.key, list.filter((t) => t !== tag))}
-                      className="ml-1 rounded-full p-0.5 hover:bg-background/60"
+                      className="ml-1 rounded-full p-1 hover:bg-background/60"
                       aria-label={`Remove ${tag}`}
                     >
                       <X className="w-3 h-3" />
