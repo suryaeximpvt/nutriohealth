@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { User, Settings, Target, Droplets, Bell, LogOut, X, ChevronRight } from "lucide-react";
+import { User, Settings, Target, Droplets, Bell, LogOut, ChevronRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
@@ -26,35 +26,35 @@ export const QuickActionMenu = ({ isOpen, onClose, onOpenWaterTracker }: QuickAc
       label: "Profile", 
       desc: "View and edit your profile",
       onClick: () => { navigate("/profile"); onClose(); },
-      color: "text-blue-500"
+       color: "text-foreground"
     },
     { 
       icon: Settings, 
       label: "Settings", 
       desc: "App preferences & account",
       onClick: () => { navigate("/settings?tab=account"); onClose(); },
-      color: "text-gray-500"
+       color: "text-foreground"
     },
     { 
       icon: Target, 
       label: "Goals & Preferences", 
       desc: "Update your fitness goals",
       onClick: () => { navigate("/settings?tab=preferences"); onClose(); },
-      color: "text-green-500"
+       color: "text-foreground"
     },
     { 
       icon: Droplets, 
       label: "Water Intake Tracker", 
       desc: "Track your hydration",
       onClick: () => { onOpenWaterTracker(); onClose(); },
-      color: "text-cyan-500"
+       color: "text-foreground"
     },
     { 
       icon: Bell, 
       label: "Notifications", 
       desc: "Manage reminders",
       onClick: () => { navigate("/settings?tab=notifications"); onClose(); },
-      color: "text-amber-500"
+       color: "text-foreground"
     },
   ];
 
@@ -73,7 +73,7 @@ export const QuickActionMenu = ({ isOpen, onClose, onOpenWaterTracker }: QuickAc
                 key={item.label}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
+                 transition={{ type: "spring", stiffness: 300, damping: 30, delay: index * 0.05 }}
                 onClick={item.onClick}
                 className="w-full p-4 rounded-xl bg-muted/50 hover:bg-muted flex items-center gap-4 transition-colors"
               >
@@ -93,7 +93,7 @@ export const QuickActionMenu = ({ isOpen, onClose, onOpenWaterTracker }: QuickAc
           <motion.button
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: menuItems.length * 0.05 }}
+             transition={{ type: "spring", stiffness: 300, damping: 30, delay: menuItems.length * 0.05 }}
             onClick={handleSignOut}
             className="w-full p-4 rounded-xl bg-destructive/10 hover:bg-destructive/20 flex items-center gap-4 transition-colors mt-4"
           >

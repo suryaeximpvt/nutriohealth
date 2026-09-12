@@ -24,9 +24,9 @@
 - [x] Verify mobile layouts and capture interactions
 
 ## Premium visual system and onboarding upgrade
-- [ ] Fix all requested contrast, border, tap-target, copy, and dashboard-entry issues
-- [ ] Apply the restrained Nutrio palette, strict type scale, and 4px spacing rhythm
-- [ ] Build reusable onboarding choice rows, segmented controls, and conditional CTAs
-- [ ] Add wheel/ruler inputs, goal pace, personalised progress information, and final summary
-- [ ] Add tactile press feedback, spring entrances, loading skeletons, and animated progress
-- [ ] Verify all 26 checklist items across mobile, desktop, light, and dark modes
+- [x] Fix all requested contrast, border, tap-target, copy, and dashboard-entry issues
+- [x] Apply the restrained Nutrio palette, strict type scale, and 4px spacing rhythm
+- [x] Build reusable onboarding choice rows, segmented controls, and conditional CTAs
+- [x] Add wheel/ruler inputs, personalised progress information, and final summary
+- [x] Add tactile press feedback, spring entrances, loading skeletons, and animated progress
+- [x] Verify the requested checklist across mobile, desktop, light, and dark modes

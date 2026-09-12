@@ -6,11 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRight, ChevronLeft, Loader2, X, Check } from "lucide-react";
+import { ChevronRight, ChevronLeft, Loader2, X } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { usePersonalisation } from "@/hooks/usePersonalisation";
 import { useAuth } from "@/hooks/useAuth";
 import { NutrioLogo } from "@/components/NutrioLogo";
+import { ChoiceRow } from "@/components/onboarding/ChoiceRow";
+import { BodyPickers } from "@/components/onboarding/BodyPickers";
+import { PlanPreview } from "@/components/onboarding/PlanPreview";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -341,7 +344,7 @@ const Onboarding = () => {
                     <button
                       type="button"
                       onClick={() => set(field.key, list.filter((t) => t !== tag))}
-                      className="ml-1 rounded-full p-0.5 hover:bg-background/60"
+                      className="ml-1 rounded-full p-1 hover:bg-background/60"
                       aria-label={`Remove ${tag}`}
                     >
                       <X className="w-3 h-3" />
@@ -363,36 +366,23 @@ const Onboarding = () => {
         return (
           <div key={field.key} className="space-y-3">
             {field.label && <Label>{field.label}</Label>}
-            <div className={`grid gap-2 ${cols === 3 ? "grid-cols-3" : cols === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
+            <div className="grid grid-cols-1 gap-2">
               {options.map((option) => {
                 const active = isMulti ? selected.includes(option.value) : values[field.key] === option.value;
                 return (
-                  <motion.button
+                  <ChoiceRow
                     key={option.value}
-                    type="button"
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() =>
+                    label={option.label}
+                    description={option.desc}
+                    symbol={option.label.slice(0, 1)}
+                    selected={active}
+                    multiple={isMulti}
+                    onSelect={() =>
                       isMulti
                         ? toggleMulti(field.key, option.value, (field as any).max)
                         : set(field.key, option.value)
                     }
-                    className={`relative p-4 rounded-2xl border-2 text-left transition-all ${
-                      active ? "border-primary bg-primary/10 shadow-elevated" : "border-border/70 bg-card shadow-card hover:border-primary/40"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      {option.emoji && <span className="text-xl">{option.emoji}</span>}
-                      <div className="min-w-0">
-                        <p className="font-semibold text-foreground text-sm leading-tight">{option.label}</p>
-                        {option.desc && <p className="text-xs text-muted-foreground mt-0.5">{option.desc}</p>}
-                      </div>
-                    </div>
-                    {active && (
-                      <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                        <Check className="w-3 h-3 text-primary-foreground" />
-                      </span>
-                    )}
-                  </motion.button>
+                  />
                 );
               })}
             </div>
@@ -408,24 +398,29 @@ const Onboarding = () => {
   };
 
   const selectedNonNegotiables: string[] = values.non_negotiables ?? [];
+  const targets = calculateTargets();
+  const goalField = ONBOARDING_STEPS
+    .flatMap((item) => item.fields)
+    .find((field): field is Extract<StepField, { kind: "single" }> => field.kind === "single" && field.key === "primary_goal");
+  const goalLabel = goalField?.options.find((option) => option.value === values.primary_goal)?.label ?? "Your goal";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border/60">
+      <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur-md">
         <div className="container max-w-lg mx-auto px-4 pt-3 pb-3">
-          <div className="flex items-center justify-between mb-3">
-            <button type="button" onClick={handleBack} disabled={step === 0} aria-label="Go back" className="w-10 h-10 rounded-full bg-card shadow-card flex items-center justify-center disabled:opacity-0">
+          <div className="mb-3 flex items-center justify-between">
+            <button type="button" onClick={handleBack} disabled={step === 0} aria-label="Go back" className="flex h-11 w-11 items-center justify-center rounded-full bg-card shadow-card disabled:opacity-0">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <NutrioLogo className="h-9 w-auto" />
-            <span className="w-10 text-right text-xs font-semibold text-muted-foreground">{step + 1}/{total}</span>
+            <span className="w-11 text-right text-xs font-semibold text-muted-foreground">{step + 1}/{total}</span>
           </div>
           <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-primary rounded-full"
               initial={false}
               animate={{ width: `${((step + 1) / total) * 100}%` }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
             />
           </div>
         </div>
@@ -438,29 +433,30 @@ const Onboarding = () => {
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -24 }}
-            transition={{ duration: 0.22 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="flex-1 flex flex-col"
           >
-            {/* Question-specific illustration */}
-            <div className="relative rounded-2xl bg-primary/5 border border-border/60 overflow-hidden mb-6 aspect-[16/9] shadow-soft">
-              <img
-                src={current.image}
-                alt={current.imageAlt}
-                width={768}
-                height={512}
-                loading="lazy"
-                className="w-full h-full object-cover"
-              />
-            </div>
+            {step === 0 && (
+              <div className="relative mb-6 aspect-[16/9] overflow-hidden rounded-2xl border border-border bg-muted shadow-soft">
+                <img src={current.image} alt={current.imageAlt} width={768} height={512} className="h-full w-full object-cover" />
+              </div>
+            )}
 
-            <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+            <p className="text-xs font-semibold uppercase text-muted-foreground">
               {current.section}
             </p>
-            <h1 className="text-3xl font-bold text-foreground mt-1 leading-tight">{current.title}</h1>
-            {current.subtitle && <p className="text-muted-foreground mt-1.5">{current.subtitle}</p>}
+            <h1 className="mt-1 text-3xl font-bold leading-tight text-foreground">{current.title}</h1>
+            {current.subtitle && <p className="mt-2 text-muted-foreground">{current.subtitle}</p>}
 
-            <div className="space-y-6 mt-7">
-              {current.fields.map(renderField)}
+            <div className="mt-7 space-y-6">
+              {current.id === "body" ? (
+                <>
+                  <BodyPickers heightCm={Number(values.height_cm) || 170} weightKg={Number(values.weight_kg) || 70} goalWeightKg={values.goal_weight_kg ? Number(values.goal_weight_kg) : undefined} onChange={set} />
+                  {current.fields.filter((field) => field.key === "activity_level").map(renderField)}
+                </>
+              ) : current.presentation === "progress" || current.presentation === "summary" ? (
+                <PlanPreview goalLabel={goalLabel} calorieTarget={targets.calorieTarget} proteinTarget={targets.proteinTarget} carbsTarget={targets.carbsTarget} fatTarget={targets.fatTarget} summary={current.presentation === "summary"} />
+              ) : current.fields.map(renderField)}
 
               {/* Frequency picker for each chosen non-negotiable */}
               {current.id === "non_negotiables" && selectedNonNegotiables.length > 0 && (
@@ -498,7 +494,7 @@ const Onboarding = () => {
           </motion.div>
         </AnimatePresence>
 
-        <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-border/60 bg-background/95 backdrop-blur-md">
+        <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-background/95 backdrop-blur-md">
           <div className="container max-w-lg mx-auto px-4 py-3 flex gap-3">
           {current.optional && step < total - 1 && (
             <Button variant="ghost" onClick={handleNext} className="h-12 rounded-xl px-4 text-muted-foreground">

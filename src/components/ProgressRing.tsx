@@ -25,6 +25,7 @@ export const ProgressRing = ({
   return (
     <div className="relative inline-flex items-center justify-center">
       <svg width={size} height={size} className="-rotate-90">
+        <title>Calorie progress: {Math.round(clampedProgress)}%</title>
         {/* Background circle */}
         <circle
           cx={size / 2}
@@ -44,11 +45,9 @@ export const ProgressRing = ({
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
-          className="animate-progress-fill"
-          style={{ "--progress-offset": offset } as React.CSSProperties}
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.12 }}
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">

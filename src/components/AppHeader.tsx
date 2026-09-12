@@ -39,15 +39,15 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
       <motion.header
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className="sticky top-0 z-40 -mx-4 px-4 py-3 mb-4 flex items-center justify-between bg-background/95 backdrop-blur-md border-b border-border/60"
       >
         <div className="flex items-center gap-3">
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => setMenuOpen(true)}
             aria-label="Open profile and quick actions menu"
-            className="w-11 h-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-lg font-bold cursor-pointer shadow-card"
+            className="w-11 h-11 rounded-full bg-foreground text-background flex items-center justify-center text-base font-bold cursor-pointer shadow-card"
           >
             {firstLetter}
           </motion.button>
@@ -60,19 +60,19 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
         <div className="flex items-center gap-2">
           <button
             aria-label="Nutrio Premium"
-            className="w-10 h-10 rounded-full bg-nutrio-sage-light flex items-center justify-center"
+            className="w-11 h-11 rounded-full bg-muted flex items-center justify-center"
           >
-            <Crown className="w-5 h-5 text-nutrio-amber" />
+            <Crown className="w-5 h-5 text-muted-foreground" />
           </button>
 
           <button
             onClick={() => setNotificationsOpen(true)}
             aria-label="Notifications"
-            className="w-10 h-10 rounded-full bg-nutrio-sage-light flex items-center justify-center relative"
+            className="w-11 h-11 rounded-full bg-muted flex items-center justify-center relative"
           >
             <Bell className="w-5 h-5 text-muted-foreground" />
             {reminders.length > 0 && (
-              <span className="absolute top-1.5 right-1.5 min-w-[1rem] h-4 px-1 rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground flex items-center justify-center">
+              <span className="absolute top-1 right-1 min-w-[1rem] h-4 px-1 rounded-full bg-destructive text-xs font-bold text-destructive-foreground flex items-center justify-center">
                 {reminders.length}
               </span>
             )}
