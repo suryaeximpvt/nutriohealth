@@ -366,7 +366,7 @@ const Onboarding = () => {
         return (
           <div key={field.key} className="space-y-3">
             {field.label && <Label>{field.label}</Label>}
-            <div className={`grid gap-2 ${cols === 3 ? "grid-cols-3" : cols === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
+            <div className="grid grid-cols-1 gap-2">
               {options.map((option) => {
                 const active = isMulti ? selected.includes(option.value) : values[field.key] === option.value;
                 return (
