@@ -3,7 +3,7 @@ import { Camera, Mic, Search, Plus, Minus, Droplets, Scale, ChevronRight } from 
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
 import { MacroBar } from "@/components/MacroBar";
-import authArt from "@/assets/auth-art.jpg";
+import cameraFirstMeal from "@/assets/camera-first-meal.jpg";
 
 type MealType = "breakfast" | "lunch" | "snacks" | "dinner";
 
@@ -73,7 +73,13 @@ export const CameraFirstDashboard = ({
       animate={{ opacity: 1, y: 0 }}
       className="relative aspect-[16/10] overflow-hidden rounded-2xl shadow-elevated"
     >
-      <img src={authArt} alt="A colourful balanced meal ready to capture" className="absolute inset-0 h-full w-full object-cover" />
+      <img
+        src={cameraFirstMeal}
+        alt="A colourful balanced meal ready to capture"
+        className="absolute inset-0 h-full w-full object-cover"
+        width={1280}
+        height={960}
+      />
       <div className="capture-scrim absolute inset-0" />
       <div className="absolute inset-x-0 bottom-0 p-5">
         <p className="text-sm font-semibold text-primary-foreground/90">Your real food. Your better plan.</p>
