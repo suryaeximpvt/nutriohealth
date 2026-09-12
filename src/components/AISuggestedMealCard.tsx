@@ -190,16 +190,17 @@ return (
                         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                           Other AI Options
                         </p>
-                        <div className="space-y-2">
+                        <div className="flex gap-3 overflow-x-auto snap-x scrollbar-hide -mx-4 px-4 pb-3">
                           {mealOptions.alternatives.map((alt, idx) => (
-                            <SuggestionCard
-                              key={idx}
-                              suggestion={alt}
-                              isSelected={selectedOption?.name === alt.name}
-                              isCompact
-                              onSelect={() => handleSelectOption(alt)}
-                              onLog={() => handleLog(alt)}
-                            />
+                            <div key={idx} className="snap-card flex-[0_0_78%]">
+                              <SuggestionCard
+                                suggestion={alt}
+                                isSelected={selectedOption?.name === alt.name}
+                                isCompact
+                                onSelect={() => handleSelectOption(alt)}
+                                onLog={() => handleLog(alt)}
+                              />
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -337,15 +338,15 @@ const SuggestionCard = ({
           onSelect();
         }}
         className={cn(
-          "w-full text-left p-3 rounded-xl border transition-all",
+          "h-full w-full text-left overflow-hidden rounded-2xl border bg-card shadow-card transition-all",
           isSelected
             ? "border-primary bg-primary/5"
             : "border-border/50 hover:border-primary/50 hover:bg-muted/30",
           hasNutrio && "border-nutrio-amber/50"
         )}
       >
-        <div className="flex items-start gap-2">
-          <span className="text-lg">{suggestion.emoji}</span>
+        <div className="h-28 bg-primary/10 flex items-center justify-center text-5xl">{suggestion.emoji}</div>
+        <div className="flex items-start gap-2 p-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <p className="font-medium text-foreground text-sm truncate">{suggestion.name}</p>
@@ -356,7 +357,8 @@ const SuggestionCard = ({
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2 mt-1">
+            <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{suggestion.description.split(/[.!?]/)[0]}.</p>
+            <div className="flex items-center gap-2 mt-2">
               <span className="text-xs text-muted-foreground">{suggestion.calories} kcal</span>
               <span className="text-xs text-muted-foreground">•</span>
               <span className="text-xs text-muted-foreground">{suggestion.protein}g protein</span>
@@ -377,13 +379,13 @@ const SuggestionCard = ({
   }
 
   return (
-    <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-4 border border-primary/20">
-      <div className="flex items-start gap-3">
-        <span className="text-2xl">{suggestion.emoji}</span>
+    <div className="overflow-hidden rounded-2xl border border-primary/20 bg-card shadow-elevated">
+      <div className="h-36 bg-primary/10 flex items-center justify-center text-6xl">{suggestion.emoji}</div>
+      <div className="flex items-start gap-3 p-4">
         <div className="flex-1">
           <h4 className="font-semibold text-foreground">{suggestion.name}</h4>
-          <p className="text-sm text-muted-foreground mt-1">
-            {suggestion.description}
+          <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
+            {suggestion.description.split(/[.!?]/)[0]}.
           </p>
           
           {/* Nutrio Product Badge */}

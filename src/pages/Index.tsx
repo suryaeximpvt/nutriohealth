@@ -174,9 +174,6 @@ const Index = () => {
   const calorieProgress = Math.min((caloriesConsumed / calorieTarget) * 100, 100);
   const userName = profile?.full_name?.split(" ")[0] || "there";
 
-  const today = new Date();
-  const dateStr = today.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-
 const handleLogAIMeal = async (mealType: typeof selectedMealType, suggestion: AISuggestion) => {
     if (!suggestion) return;
 
