@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2, User, MessageCircleHeart, ThumbsUp, ThumbsDown, Mic, Square } from "lucide-react";
-import { toast } from "sonner";
-import { useVoiceInput } from "@/hooks/useVoiceInput";
+import { Send, Loader2, User, ThumbsUp, ThumbsDown, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BottomNav } from "@/components/BottomNav";
+import { VellynLogo } from "@/components/VellynLogo";
+import { HeyVellynConversation } from "@/components/capture/HeyVellynConversation";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
 import { useAskVellyn } from "@/hooks/useAskVellyn";
@@ -28,9 +28,8 @@ const AskAI = () => {
   const [location, setLocation] = useState<string | null>(null);
   const [intent, setIntent] = useState<string | null>(null);
   const [rated, setRated] = useState<Record<string, boolean>>({});
+  const [voiceOpen, setVoiceOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const finishingRef = useRef(false);
-  const { recording, transcribing, start, stop } = useVoiceInput();
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -44,29 +43,6 @@ const AskAI = () => {
     if (!text.trim() || loading) return;
     void ask(text, { location, intent });
     setInput("");
-  };
-
-  const finishVoice = async () => {
-    if (finishingRef.current) return;
-    finishingRef.current = true;
-    const { text, error } = await stop();
-    finishingRef.current = false;
-    if (error) return toast.error(error);
-    if (text) send(text);
-  };
-  const finishVoiceRef = useRef(finishVoice);
-  finishVoiceRef.current = finishVoice;
-
-  const toggleVoice = async () => {
-    if (transcribing) return;
-    if (recording) return void finishVoice();
-    // Vellyn stops listening on its own once you've finished speaking.
-    const { error } = await start({
-      autoStop: true,
-      silenceMs: 1600,
-      onEndOfSpeech: () => void finishVoiceRef.current(),
-    });
-    if (error) toast.error(error);
   };
 
   if (authLoading) {
@@ -86,8 +62,8 @@ const AskAI = () => {
     <div className="min-h-screen bg-background flex flex-col pb-24">
       <div className="bg-card border-b border-border p-4 sticky top-0 z-10">
         <div className="container max-w-lg mx-auto flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <MessageCircleHeart className="w-5 h-5 text-primary" />
+          <div className="w-10 h-10 rounded-xl bg-primary/10 p-1.5 flex items-center justify-center">
+            <VellynLogo className="w-full h-full object-contain" />
           </div>
           <div>
             <h1 className="font-bold text-foreground">Ask Vellyn</h1>
@@ -179,8 +155,8 @@ const AskAI = () => {
                     className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     {message.role === "assistant" && (
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <MessageCircleHeart className="w-4 h-4 text-primary" />
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 p-1 flex items-center justify-center flex-shrink-0">
+                        <VellynLogo className="w-full h-full object-contain" />
                       </div>
                     )}
                     <div className="max-w-[80%]">
@@ -198,7 +174,8 @@ const AskAI = () => {
                           <button
                             aria-label="This helped"
                             onClick={() => {
-                              void rate(message.interactionId!, true);
+                              if (!message.interactionId) return;
+                              void rate(message.interactionId, true);
                               setRated((r) => ({ ...r, [message.id]: true }));
                             }}
                             className="text-muted-foreground"
@@ -208,7 +185,8 @@ const AskAI = () => {
                           <button
                             aria-label="This didn't help"
                             onClick={() => {
-                              void rate(message.interactionId!, false);
+                              if (!message.interactionId) return;
+                              void rate(message.interactionId, false);
                               setRated((r) => ({ ...r, [message.id]: true }));
                             }}
                             className="text-muted-foreground"
@@ -229,8 +207,8 @@ const AskAI = () => {
 
               {loading && (
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <MessageCircleHeart className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 p-1 flex items-center justify-center">
+                    <VellynLogo className="w-full h-full object-contain" />
                   </div>
                   <div className="bg-muted rounded-2xl rounded-bl-md p-3">
                     <div className="flex gap-1">
@@ -259,25 +237,19 @@ const AskAI = () => {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={recording ? "Listening… tap stop when you're done" : "Ask Vellyn anything about food right now..."}
+              placeholder="Ask Vellyn anything about food right now..."
               className="flex-1"
-              disabled={loading || recording || transcribing}
+              disabled={loading}
             />
             <Button
               type="button"
               size="icon"
-              variant={recording ? "default" : "outline"}
-              onClick={toggleVoice}
-              disabled={loading || transcribing}
-              aria-label={recording ? "Stop and send what you said" : "Speak to Vellyn"}
+              variant="outline"
+              onClick={() => setVoiceOpen(true)}
+              disabled={loading}
+              aria-label="Start a hands-free conversation with Vellyn"
             >
-              {transcribing ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : recording ? (
-                <Square className="w-4 h-4" />
-              ) : (
-                <Mic className="w-4 h-4" />
-              )}
+              <Mic className="w-4 h-4" />
             </Button>
             <Button type="submit" size="icon" disabled={!input.trim() || loading} aria-label="Send">
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
@@ -286,6 +258,10 @@ const AskAI = () => {
         </div>
       </div>
 
+      <HeyVellynConversation
+        open={voiceOpen}
+        onClose={() => setVoiceOpen(false)}
+      />
       <BottomNav />
     </div>
   );

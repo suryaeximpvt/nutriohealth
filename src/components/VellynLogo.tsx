@@ -1,14 +1,14 @@
-import logoAsset from "@/assets/nutrio-logo-local.png";
+import logoAsset from "@/assets/vellyn-mark.png.asset.json";
 
 interface VellynLogoProps {
   className?: string;
 }
 
-/** Vellyn brand logo (leaf + bird mark with wordmark). */
+/** Vellyn brand mark. */
 export const VellynLogo = ({ className = "h-9 w-auto" }: VellynLogoProps) => (
   <img
-    src={logoAsset}
-    alt="Vellyn — nutrition that adapts to you"
+    src={logoAsset.url}
+    alt="Vellyn"
     className={className}
     width={180}
     height={180}
