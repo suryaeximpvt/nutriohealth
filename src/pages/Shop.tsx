@@ -2,12 +2,12 @@ import { motion } from "framer-motion";
 import { ShoppingBag, Star, ExternalLink, Package } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
-import { NUTRIO_PRODUCTS } from "@/data/nutrioProducts";
+import { VELLYN_PRODUCTS } from "@/data/vellynProducts";
 
 
 const Shop = () => {
-  const breakfastProducts = NUTRIO_PRODUCTS.filter(p => p.category === "Breakfast");
-  const snackProducts = NUTRIO_PRODUCTS.filter(p => p.category === "Snacks");
+  const breakfastProducts = VELLYN_PRODUCTS.filter(p => p.category === "Breakfast");
+  const snackProducts = VELLYN_PRODUCTS.filter(p => p.category === "Snacks");
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -23,7 +23,7 @@ const Shop = () => {
               <ShoppingBag className="w-6 h-6 text-nutrio-amber" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Shop Nutrio</h1>
+              <h1 className="text-2xl font-bold text-foreground">Shop Vellyn</h1>
               <p className="text-muted-foreground text-sm">Premium nutrition products</p>
             </div>
           </div>
@@ -69,7 +69,7 @@ const Shop = () => {
   );
 };
 
-const ProductCard = ({ product }: { product: typeof NUTRIO_PRODUCTS[0] }) => {
+const ProductCard = ({ product }: { product: typeof VELLYN_PRODUCTS[0] }) => {
   return (
     <div className="bg-card rounded-2xl p-4 shadow-card">
       <div className="flex gap-4">

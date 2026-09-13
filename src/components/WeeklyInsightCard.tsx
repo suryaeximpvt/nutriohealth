@@ -37,7 +37,7 @@ export const WeeklyInsightCard = ({ delay = 0 }: { delay?: number }) => {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <LineChart className="w-5 h-5 text-primary" />
-          <h2 className="font-bold text-foreground">Weekly Nutrio Insight</h2>
+          <h2 className="font-bold text-foreground">Weekly Vellyn Insight</h2>
         </div>
         <button
           onClick={generate}
@@ -57,7 +57,7 @@ export const WeeklyInsightCard = ({ delay = 0 }: { delay?: number }) => {
         </div>
       ) : !insight ? (
         <p className="text-sm text-muted-foreground">
-          Log a few meals this week and Nutrio will build your insight.
+          Log a few meals this week and Vellyn will build your insight.
         </p>
       ) : (
         <div className="space-y-4">

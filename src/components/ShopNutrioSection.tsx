@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ShoppingBag, ExternalLink, Star, Package } from "lucide-react";
 import { AISuggestion } from "@/hooks/useDailyAISuggestions";
 
-interface NutrioProduct {
+interface VellynProduct {
   id: string;
   name: string;
   description: string;
@@ -14,10 +14,10 @@ interface NutrioProduct {
   purchaseUrl: string;
 }
 
-const NUTRIO_PRODUCTS: NutrioProduct[] = [
+const VELLYN_PRODUCTS: VellynProduct[] = [
   {
     id: "protein-pancake-mix",
-    name: "Nutrio Protein Pancake Mix",
+    name: "Vellyn Protein Pancake Mix",
     description: "High protein pancake mix - 25g protein per serving",
     price: "£12.99",
     rating: 4.8,
@@ -28,7 +28,7 @@ const NUTRIO_PRODUCTS: NutrioProduct[] = [
   },
   {
     id: "breakfast-smoothie",
-    name: "Nutrio Breakfast Smoothie",
+    name: "Vellyn Breakfast Smoothie",
     description: "Ready-blend protein smoothie powder - 22g protein",
     price: "£18.99",
     rating: 4.7,
@@ -39,7 +39,7 @@ const NUTRIO_PRODUCTS: NutrioProduct[] = [
   },
   {
     id: "overnight-oats-cup",
-    name: "Nutrio Overnight Oats Cup",
+    name: "Vellyn Overnight Oats Cup",
     description: "Protein-enriched overnight oats - 20g protein",
     price: "£3.49",
     rating: 4.6,
@@ -50,7 +50,7 @@ const NUTRIO_PRODUCTS: NutrioProduct[] = [
   },
   {
     id: "protein-bar",
-    name: "Nutrio Protein Bar",
+    name: "Vellyn Protein Bar",
     description: "Chocolate & peanut protein bar - 15g protein",
     price: "£2.49",
     rating: 4.9,
@@ -61,7 +61,7 @@ const NUTRIO_PRODUCTS: NutrioProduct[] = [
   },
   {
     id: "nut-mix",
-    name: "Nutrio Nut Mix",
+    name: "Vellyn Nut Mix",
     description: "High protein nut & seed blend - 8g protein",
     price: "£4.99",
     rating: 4.5,
@@ -72,7 +72,7 @@ const NUTRIO_PRODUCTS: NutrioProduct[] = [
   },
   {
     id: "shake-sachet",
-    name: "Nutrio Shake Sachet",
+    name: "Vellyn Shake Sachet",
     description: "On-the-go protein shake - 20g protein",
     price: "£1.99",
     rating: 4.7,
@@ -83,7 +83,7 @@ const NUTRIO_PRODUCTS: NutrioProduct[] = [
   },
 ];
 
-interface ShopNutrioSectionProps {
+interface ShopVellynSectionProps {
   suggestions: {
     breakfast: AISuggestion | null;
     lunch: AISuggestion | null;
@@ -92,9 +92,9 @@ interface ShopNutrioSectionProps {
   };
 }
 
-export const ShopNutrioSection = ({ suggestions }: ShopNutrioSectionProps) => {
+export const ShopVellynSection = ({ suggestions }: ShopVellynSectionProps) => {
   // Get recommended products based on what's in the suggestions
-  const getRecommendedProducts = (): NutrioProduct[] => {
+  const getRecommendedProducts = (): VellynProduct[] => {
     const recommendedProductNames = new Set<string>();
     
     // Check breakfast suggestion
@@ -108,13 +108,13 @@ export const ShopNutrioSection = ({ suggestions }: ShopNutrioSectionProps) => {
     }
 
     // Get products that match the recommendations
-    const recommended = NUTRIO_PRODUCTS.filter(product => 
+    const recommended = VELLYN_PRODUCTS.filter(product => 
       recommendedProductNames.has(product.name)
     );
 
     // If we have less than 3 recommended, add top-rated products
     if (recommended.length < 3) {
-      const remaining = NUTRIO_PRODUCTS
+      const remaining = VELLYN_PRODUCTS
         .filter(p => !recommendedProductNames.has(p.name))
         .sort((a, b) => b.rating - a.rating)
         .slice(0, 3 - recommended.length);
@@ -126,7 +126,7 @@ export const ShopNutrioSection = ({ suggestions }: ShopNutrioSectionProps) => {
 
   const productsToShow = getRecommendedProducts();
 
-  const handleShopClick = (product: NutrioProduct) => {
+  const handleShopClick = (product: VellynProduct) => {
     // In production, this would open the actual shop URL
     // For now, show a toast or open in new tab
     window.open(product.purchaseUrl, "_blank");
@@ -147,7 +147,7 @@ export const ShopNutrioSection = ({ suggestions }: ShopNutrioSectionProps) => {
               <ShoppingBag className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-foreground">Shop Nutrio</h3>
+              <h3 className="font-semibold text-foreground">Shop Vellyn</h3>
               <p className="text-xs text-muted-foreground">Products in your meal plan</p>
             </div>
           </div>
@@ -229,7 +229,7 @@ export const ShopNutrioSection = ({ suggestions }: ShopNutrioSectionProps) => {
           className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-xl font-medium hover:opacity-90 transition-opacity"
         >
           <ShoppingBag className="w-4 h-4" />
-          Visit Nutrio Shop
+          Visit Vellyn Shop
           <ExternalLink className="w-4 h-4" />
         </a>
       </div>

@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://nutrio.uk/sitemap.xml
+Sitemap: https://heyvellyn.com/sitemap.xml

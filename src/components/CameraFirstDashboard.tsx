@@ -158,7 +158,7 @@ export const CameraFirstDashboard = ({
           onClick={onVoice}
           className="press flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl px-3 text-sm font-semibold text-foreground"
         >
-          <Mic className="h-4 w-4 text-muted-foreground" aria-hidden="true" /> Log with Tell Nutrio
+          <Mic className="h-4 w-4 text-muted-foreground" aria-hidden="true" /> Log with Hey Vellyn
         </button>
       </div>
 

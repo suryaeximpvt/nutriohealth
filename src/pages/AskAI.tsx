@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { BottomNav } from "@/components/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserData } from "@/hooks/useUserData";
-import { useAskNutrio } from "@/hooks/useAskNutrio";
+import { useAskVellyn } from "@/hooks/useAskVellyn";
 import { ASK_INTENTS, ASK_LOCATIONS } from "@/lib/capture";
 import { useNavigate } from "react-router-dom";
 
@@ -23,7 +23,7 @@ const AskAI = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { profile, dailySummary } = useUserData();
-  const { messages, loading, ask, rate } = useAskNutrio();
+  const { messages, loading, ask, rate } = useAskVellyn();
   const [input, setInput] = useState("");
   const [location, setLocation] = useState<string | null>(null);
   const [intent, setIntent] = useState<string | null>(null);
@@ -60,7 +60,7 @@ const AskAI = () => {
   const toggleVoice = async () => {
     if (transcribing) return;
     if (recording) return void finishVoice();
-    // Nutrio stops listening on its own once you've finished speaking.
+    // Vellyn stops listening on its own once you've finished speaking.
     const { error } = await start({
       autoStop: true,
       silenceMs: 1600,
@@ -90,7 +90,7 @@ const AskAI = () => {
             <MessageCircleHeart className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="font-bold text-foreground">Ask Nutrio</h1>
+            <h1 className="font-bold text-foreground">Ask Vellyn</h1>
             <p className="text-xs text-muted-foreground">Real food decisions, in real situations</p>
           </div>
         </div>
@@ -259,7 +259,7 @@ const AskAI = () => {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={recording ? "Listening… tap stop when you're done" : "Ask Nutrio anything about food right now..."}
+              placeholder={recording ? "Listening… tap stop when you're done" : "Ask Vellyn anything about food right now..."}
               className="flex-1"
               disabled={loading || recording || transcribing}
             />
@@ -269,7 +269,7 @@ const AskAI = () => {
               variant={recording ? "default" : "outline"}
               onClick={toggleVoice}
               disabled={loading || transcribing}
-              aria-label={recording ? "Stop and send what you said" : "Speak to Nutrio"}
+              aria-label={recording ? "Stop and send what you said" : "Speak to Vellyn"}
             >
               {transcribing ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

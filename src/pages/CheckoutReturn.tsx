@@ -36,12 +36,12 @@ const CheckoutReturn = () => {
         <p className="text-muted-foreground mb-6">
           {sessionId
             ? isPremium
-              ? "Your Nutrio Premium trial has started. Enjoy unlimited AI coaching."
+              ? "Your Vellyn Premium trial has started. Enjoy unlimited AI coaching."
               : "Thanks! We're confirming your payment — this usually takes a few seconds."
             : "We couldn't find any payment details for this page."}
         </p>
         <Button asChild className="w-full h-12">
-          <Link to="/">Back to Nutrio</Link>
+          <Link to="/">Back to Vellyn</Link>
         </Button>
       </motion.div>
     </div>

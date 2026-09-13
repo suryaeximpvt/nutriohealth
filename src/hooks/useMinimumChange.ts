@@ -18,7 +18,7 @@ export interface MinimumChange {
   friction_addressed?: string;
 }
 
-/** The friction map plus the single smallest realistic change Nutrio suggests. */
+/** The friction map plus the single smallest realistic change Vellyn suggests. */
 export const useMinimumChange = () => {
   const { user } = useAuth();
   const [friction, setFriction] = useState<FrictionItem[]>([]);
@@ -37,7 +37,7 @@ export const useMinimumChange = () => {
     try {
       const { data, error: invokeError } = await supabase.functions.invoke("minimum-change-engine");
       if (invokeError) {
-        setError("Nutrio couldn't work that out just now. Try again in a moment.");
+        setError("Vellyn couldn't work that out just now. Try again in a moment.");
         return;
       }
       const next = (data?.change ?? null) as MinimumChange | null;
@@ -47,7 +47,7 @@ export const useMinimumChange = () => {
       setNeedsMoreData(!next);
       setAnswered(false);
     } catch {
-      setError("Nutrio couldn't work that out just now. Try again in a moment.");
+      setError("Vellyn couldn't work that out just now. Try again in a moment.");
     } finally {
       setLoading(false);
     }

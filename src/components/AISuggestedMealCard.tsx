@@ -182,7 +182,7 @@ return (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="w-6 h-6 animate-spin text-primary" />
                     <span className="ml-2 text-sm text-muted-foreground">
-                      Nutrio AI is thinking...
+                      Vellyn AI is thinking...
                     </span>
                   </div>
                 ) : currentSuggestion ? (
@@ -343,7 +343,7 @@ const SuggestionCard = ({
   onSelect: () => void;
   onLog: () => void;
 }) => {
-  const hasNutrio = !!suggestion.nutrioProduct;
+  const hasVellyn = !!suggestion.nutrioProduct;
 
   if (isCompact) {
     return (
@@ -357,7 +357,7 @@ const SuggestionCard = ({
           isSelected
             ? "border-primary bg-primary/5"
             : "border-border/50 hover:border-primary/50 hover:bg-muted/30",
-          hasNutrio && "border-nutrio-amber/50"
+          hasVellyn && "border-nutrio-amber/50"
         )}
       >
         <img src={image} alt={suggestion.name} loading="lazy" className="h-28 w-full object-cover" />
@@ -365,10 +365,10 @@ const SuggestionCard = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <p className="font-medium text-foreground text-sm truncate">{suggestion.name}</p>
-              {hasNutrio && (
+              {hasVellyn && (
                 <span className="flex-shrink-0 flex items-center gap-1 px-1.5 py-0.5 bg-nutrio-amber/10 rounded text-nutrio-amber text-[10px] font-medium">
                   <Package className="w-2.5 h-2.5" />
-                  Nutrio
+                  Vellyn
                 </span>
               )}
             </div>
@@ -403,8 +403,8 @@ const SuggestionCard = ({
             {suggestion.description.split(/[.!?]/)[0]}.
           </p>
           
-          {/* Nutrio Product Badge */}
-          {hasNutrio && (
+          {/* Vellyn Product Badge */}
+          {hasVellyn && (
             <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-nutrio-amber/10 rounded-lg border border-nutrio-amber/30">
               <Package className="w-4 h-4 text-nutrio-amber" />
               <span className="text-xs font-medium text-nutrio-amber">

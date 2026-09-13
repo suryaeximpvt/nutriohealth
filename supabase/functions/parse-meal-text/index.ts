@@ -48,16 +48,16 @@ Rules: British English. Use sensible everyday portions. Never return zero items 
     });
 
     if (!res.ok) {
-      if (res.status === 429) return json({ error: "Nutrio is busy — try again in a moment." }, 429);
+      if (res.status === 429) return json({ error: "Vellyn is busy — try again in a moment." }, 429);
       if (res.status === 402) return json({ error: "AI credits have run out." }, 402);
       console.error("gateway error", res.status, await res.text());
-      return json({ error: "Nutrio couldn't read that just now." }, 502);
+      return json({ error: "Vellyn couldn't read that just now." }, 502);
     }
 
     const data = await res.json();
     const raw: string = data.choices?.[0]?.message?.content ?? "";
     const match = raw.match(/\{[\s\S]*\}/);
-    if (!match) return json({ error: "Nutrio couldn't read that just now." }, 502);
+    if (!match) return json({ error: "Vellyn couldn't read that just now." }, 502);
 
     const parsed = JSON.parse(match[0]);
     return json({ ...parsed, estimated: true });

@@ -1,7 +1,7 @@
-export const NUTRIO_PRODUCTS = [
+export const VELLYN_PRODUCTS = [
   {
     id: "protein-pancake-mix",
-    name: "Nutrio Protein Pancake Mix",
+    name: "Vellyn Protein Pancake Mix",
     description: "High protein pancake mix - just add water",
     category: "Breakfast",
     calories: 280,
@@ -14,7 +14,7 @@ export const NUTRIO_PRODUCTS = [
   },
   {
     id: "breakfast-smoothie",
-    name: "Nutrio Breakfast Smoothie",
+    name: "Vellyn Breakfast Smoothie",
     description: "Ready-blend protein smoothie powder",
     category: "Breakfast",
     calories: 220,
@@ -27,7 +27,7 @@ export const NUTRIO_PRODUCTS = [
   },
   {
     id: "overnight-oats",
-    name: "Nutrio Overnight Oats Cup",
+    name: "Vellyn Overnight Oats Cup",
     description: "Protein-enriched overnight oats - ready to eat",
     category: "Breakfast",
     calories: 310,
@@ -40,7 +40,7 @@ export const NUTRIO_PRODUCTS = [
   },
   {
     id: "protein-bar",
-    name: "Nutrio Protein Bar",
+    name: "Vellyn Protein Bar",
     description: "Chocolate & peanut butter protein bar",
     category: "Snacks",
     calories: 180,
@@ -53,7 +53,7 @@ export const NUTRIO_PRODUCTS = [
   },
   {
     id: "nut-mix",
-    name: "Nutrio Nut Mix",
+    name: "Vellyn Nut Mix",
     description: "High protein nut and seed blend",
     category: "Snacks",
     calories: 160,
@@ -66,7 +66,7 @@ export const NUTRIO_PRODUCTS = [
   },
   {
     id: "shake-sachet",
-    name: "Nutrio Shake Sachet",
+    name: "Vellyn Shake Sachet",
     description: "On-the-go protein shake - just add water",
     category: "Snacks",
     calories: 150,

@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { clientFor, corsHeaders } from "../_shared/userContext.ts";
 
-// Speech-to-text for "Tell Nutrio" and Ask Nutrio voice input.
+// Speech-to-text for "Hey Vellyn" and Ask Vellyn voice input.
 // Client uploads a complete WAV file (base64) recorded via the Web Audio API.
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -43,14 +43,14 @@ serve(async (req) => {
     if (!res.ok) {
       const detail = await res.text().catch(() => "");
       console.error("transcription error", res.status, detail);
-      if (res.status === 429) return json({ error: "Nutrio is busy — try again in a moment." }, 429);
+      if (res.status === 429) return json({ error: "Vellyn is busy — try again in a moment." }, 429);
       if (res.status === 402) return json({ error: "AI credits have run out." }, 402);
-      return json({ error: "Nutrio couldn't hear that — please try again." }, 502);
+      return json({ error: "Vellyn couldn't hear that — please try again." }, 502);
     }
 
     const data = await res.json();
     const text: string = (data?.text ?? "").trim();
-    if (!text) return json({ error: "Nutrio didn't catch any words — please try again." }, 422);
+    if (!text) return json({ error: "Vellyn didn't catch any words — please try again." }, 422);
     return json({ text });
   } catch (e) {
     console.error("transcribe-audio", e);

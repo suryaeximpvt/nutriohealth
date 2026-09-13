@@ -62,10 +62,10 @@ export const RecommendationsCard = ({ delay = 0 }: { delay?: number }) => {
     if (kind !== "not_followed") await track(kind, payloadFor(rec));
     toast.success(
       kind === "followed"
-        ? "Logged — Nutrio will suggest more like this."
+        ? "Logged — Vellyn will suggest more like this."
         : kind === "partially_followed"
           ? "Noted, part of the way there."
-          : "Noted — Nutrio will change tack.",
+          : "Noted — Vellyn will change tack.",
     );
   };
 
@@ -118,7 +118,7 @@ export const RecommendationsCard = ({ delay = 0 }: { delay?: number }) => {
 
       {!loading && !generating && recommendations.length === 0 && !error && (
         <p className="text-sm text-muted-foreground">
-          Log a meal or two and Nutrio will start tailoring today's guidance to you.
+          Log a meal or two and Vellyn will start tailoring today's guidance to you.
         </p>
       )}
 

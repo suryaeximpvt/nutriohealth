@@ -105,7 +105,7 @@ serve(async (req) => {
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    const prompt = `Generate this week's Nutrio Insight for a user.
+    const prompt = `Generate this week's Vellyn Insight for a user.
 
 Data (last 7 days):
 - Days logged: ${daysLogged}/7, meals logged: ${mealsLogged}
@@ -149,7 +149,7 @@ Return ONLY JSON:
         body: JSON.stringify({
           model: "google/gemini-2.5-flash",
           messages: [
-            { role: "system", content: "You are Nutrio's nutrition analyst. Reply with valid JSON only." },
+            { role: "system", content: "You are Vellyn's nutrition analyst. Reply with valid JSON only." },
             { role: "user", content: prompt },
           ],
         }),

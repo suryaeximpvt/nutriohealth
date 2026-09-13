@@ -29,7 +29,7 @@ serve(async (req) => {
     const today = ctx.today;
     const { remaining, glasses } = ctx.today_totals;
 
-    const prompt = `Create today's personalised Nutrio recommendations.
+    const prompt = `Create today's personalised Vellyn recommendations.
 
 ${contextPrompt(ctx)}
 
@@ -63,7 +63,7 @@ Return ONLY JSON:
         title: ctx.nonNegotiables.length ? "Tick off a non-negotiable" : "Log one more meal today",
         body: ctx.nonNegotiables.length
           ? `Your habits this week: ${nnStatus}.`
-          : "The more you log, the sharper Nutrio's suggestions get.",
+          : "The more you log, the sharper Vellyn's suggestions get.",
       },
     ];
 
@@ -77,7 +77,7 @@ Return ONLY JSON:
         body: JSON.stringify({
           model: "google/gemini-2.5-flash",
           messages: [
-            { role: "system", content: "You are Nutrio's adaptive personalisation engine. Reply with valid JSON only." },
+            { role: "system", content: "You are Vellyn's adaptive personalisation engine. Reply with valid JSON only." },
             { role: "user", content: prompt },
           ],
         }),
@@ -86,7 +86,7 @@ Return ONLY JSON:
       if (aiRes.status === 429 || aiRes.status === 402) {
         return new Response(
           JSON.stringify({
-            error: aiRes.status === 429 ? "Nutrio AI is busy right now, please try again shortly." : "AI credits are exhausted for this workspace.",
+            error: aiRes.status === 429 ? "Vellyn AI is busy right now, please try again shortly." : "AI credits are exhausted for this workspace.",
           }),
           { status: aiRes.status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );

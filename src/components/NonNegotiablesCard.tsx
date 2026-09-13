@@ -22,13 +22,13 @@ export const NonNegotiablesCard = ({ delay = 0 }: { delay?: number }) => {
         <h2 className="font-bold text-foreground">Your Non-Negotiables</h2>
       </div>
       <p className="text-sm text-muted-foreground mb-4">
-        The habits you told Nutrio you never want to miss.
+        The habits you told Vellyn you never want to miss.
       </p>
 
       {items.length === 0 ? (
         <div>
           <p className="text-sm text-muted-foreground mb-3">
-            You haven't set any yet. Add a few and Nutrio will keep track of them with you.
+            You haven't set any yet. Add a few and Vellyn will keep track of them with you.
           </p>
           <Button variant="outline" className="w-full rounded-xl" onClick={() => navigate("/settings")}>
             Add non-negotiables

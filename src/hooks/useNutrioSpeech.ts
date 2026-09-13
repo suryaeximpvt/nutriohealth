@@ -2,14 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Nutrio's spoken replies.
+ * Vellyn's spoken replies.
  *
  * Audio is generated server-side (never in the browser) and played back through
  * a single long-lived <audio> element. The element is created and "unlocked"
  * during a real user tap (prime), which is what iOS Safari requires before any
  * sound is allowed to play automatically later in the conversation.
  */
-export const useNutrioSpeech = () => {
+export const useVellynSpeech = () => {
   const [loading, setLoading] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -94,7 +94,7 @@ export const useNutrioSpeech = () => {
       try {
         const { data } = await supabase.auth.getSession();
         const token = data.session?.access_token;
-        if (!token) throw new Error("Please sign in again to use Nutrio voice.");
+        if (!token) throw new Error("Please sign in again to use Vellyn voice.");
         const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
         const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
@@ -111,7 +111,7 @@ export const useNutrioSpeech = () => {
 
         if (!response.ok) {
           const payload = await response.json().catch(() => null);
-          throw new Error(payload?.error ?? "Nutrio couldn't speak just now.");
+          throw new Error(payload?.error ?? "Vellyn couldn't speak just now.");
         }
 
         const blob = await response.blob();
@@ -139,7 +139,7 @@ export const useNutrioSpeech = () => {
             .catch(() => {
               // Autoplay blocked: the transcript stays on screen and the user
               // can tap the speaker control to hear the reply.
-              setError("Tap the speaker icon to hear Nutrio.");
+              setError("Tap the speaker icon to hear Vellyn.");
               done();
             });
         });
@@ -148,7 +148,7 @@ export const useNutrioSpeech = () => {
         return {};
       } catch (caught) {
         if (controller.signal.aborted) return {};
-        const message = caught instanceof Error ? caught.message : "Nutrio couldn't speak just now.";
+        const message = caught instanceof Error ? caught.message : "Vellyn couldn't speak just now.";
         setError(message);
         setSpeaking(false);
         return { error: message };

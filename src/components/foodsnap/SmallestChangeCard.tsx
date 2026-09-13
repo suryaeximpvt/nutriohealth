@@ -17,7 +17,7 @@ const FRICTION_LABELS: Record<string, string> = {
   skipping_breakfast: "Mornings without breakfast",
   late_eating: "Late dinners",
   low_protein_meals: "Lighter protein meals",
-  logging_gaps: "Meals Nutrio hasn't seen",
+  logging_gaps: "Meals Vellyn hasn't seen",
 };
 
 interface Props {
@@ -96,8 +96,8 @@ export const SmallestChangeCard = ({
         <div>
           <p className="text-sm text-muted-foreground mb-3">
             {needsMoreData
-              ? "Nutrio needs a few more meals before it can suggest something that really fits your week."
-              : "Log a couple of meals and Nutrio will suggest one tiny change that fits your real life."}
+              ? "Vellyn needs a few more meals before it can suggest something that really fits your week."
+              : "Log a couple of meals and Vellyn will suggest one tiny change that fits your real life."}
           </p>
           <button
             onClick={onRefresh}
@@ -115,7 +115,7 @@ export const SmallestChangeCard = ({
             onClick={() => setShowWhy((v) => !v)}
             className="press flex items-center gap-1 text-xs text-foreground font-semibold mb-3"
           >
-            Why Nutrio suggests this
+            Why Vellyn suggests this
             <ChevronDown className={`w-3 h-3 transition-transform ${showWhy ? "rotate-180" : ""}`} aria-hidden="true" />
           </button>
           {showWhy && (
@@ -125,7 +125,7 @@ export const SmallestChangeCard = ({
           )}
 
           {answered ? (
-            <p className="text-xs text-muted-foreground">Thanks — Nutrio will remember that.</p>
+            <p className="text-xs text-muted-foreground">Thanks — Vellyn will remember that.</p>
           ) : askReason ? (
             <div className="flex flex-wrap gap-2">
               {NOT_REALISTIC_REASONS.map((r) => (

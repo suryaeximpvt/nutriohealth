@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Bell, Crown } from "lucide-react";
 import { QuickActionMenu } from "./QuickActionMenu";
-import { NutrioLogo } from "./NutrioLogo";
+import { VellynLogo } from "./VellynLogo";
 import { NotificationsSheet } from "./NotificationsSheet";
 import { useSmartReminders } from "@/hooks/useSmartReminders";
 import { WaterIntakeModal } from "./WaterIntakeModal";
@@ -56,10 +56,10 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
             <p className="text-base font-bold text-foreground">{userName}</p>
           </div>
         </div>
-        <NutrioLogo className="h-8 w-auto shrink-0" />
+        <VellynLogo className="h-8 w-auto shrink-0" />
         <div className="flex items-center gap-2">
           <button
-            aria-label="Nutrio Premium"
+            aria-label="Vellyn Premium"
             className="w-10 h-10 rounded-full bg-nutrio-sage-light flex items-center justify-center"
           >
             <Crown className="w-5 h-5 text-nutrio-amber" />

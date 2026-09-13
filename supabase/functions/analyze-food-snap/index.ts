@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SYSTEM = `You are Nutrio's food photo analyst for a UK audience.
+const SYSTEM = `You are Vellyn's food photo analyst for a UK audience.
 Look at the photo and describe what the person most likely ate.
 
 Return ONLY JSON in this exact shape:

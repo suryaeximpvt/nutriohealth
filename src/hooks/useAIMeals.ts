@@ -6,7 +6,7 @@ interface MealOption {
   name: string;
   description: string;
   calories: number;
-  isNutrio?: boolean;
+  isVellyn?: boolean;
 }
 
 interface AIResponse {
@@ -103,24 +103,24 @@ export const useAIMeals = () => {
 function getFallbackOptions(mealType: string): MealOption[] {
   const fallbacks: Record<string, MealOption[]> = {
     breakfast: [
-      { name: "Porridge with berries", description: "Warming and filling start to the day.", calories: 320, isNutrio: false },
-      { name: "Scrambled eggs on toast", description: "Classic protein-rich breakfast.", calories: 380, isNutrio: false },
-      { name: "Greek yogurt with granola", description: "Quick and nutritious option.", calories: 280, isNutrio: false },
+      { name: "Porridge with berries", description: "Warming and filling start to the day.", calories: 320, isVellyn: false },
+      { name: "Scrambled eggs on toast", description: "Classic protein-rich breakfast.", calories: 380, isVellyn: false },
+      { name: "Greek yogurt with granola", description: "Quick and nutritious option.", calories: 280, isVellyn: false },
     ],
     lunch: [
-      { name: "Tuna jacket potato", description: "Filling British classic.", calories: 450, isNutrio: false },
-      { name: "Chicken salad wrap", description: "Light but satisfying.", calories: 420, isNutrio: false },
-      { name: "Soup and sandwich", description: "Warming combo for a busy day.", calories: 480, isNutrio: false },
+      { name: "Tuna jacket potato", description: "Filling British classic.", calories: 450, isVellyn: false },
+      { name: "Chicken salad wrap", description: "Light but satisfying.", calories: 420, isVellyn: false },
+      { name: "Soup and sandwich", description: "Warming combo for a busy day.", calories: 480, isVellyn: false },
     ],
     snacks: [
-      { name: "Apple with almond butter", description: "Fibre and healthy fats.", calories: 200, isNutrio: false },
-      { name: "Greek yogurt pot", description: "High protein, low sugar.", calories: 120, isNutrio: false },
-      { name: "Handful of nuts", description: "Energy-boosting snack.", calories: 180, isNutrio: false },
+      { name: "Apple with almond butter", description: "Fibre and healthy fats.", calories: 200, isVellyn: false },
+      { name: "Greek yogurt pot", description: "High protein, low sugar.", calories: 120, isVellyn: false },
+      { name: "Handful of nuts", description: "Energy-boosting snack.", calories: 180, isVellyn: false },
     ],
     dinner: [
-      { name: "Grilled salmon with veg", description: "Omega-3 rich and satisfying.", calories: 520, isNutrio: false },
-      { name: "Chicken stir-fry", description: "Quick, colourful and balanced.", calories: 480, isNutrio: false },
-      { name: "Shepherd's pie (lighter)", description: "Comfort food made healthier.", calories: 450, isNutrio: false },
+      { name: "Grilled salmon with veg", description: "Omega-3 rich and satisfying.", calories: 520, isVellyn: false },
+      { name: "Chicken stir-fry", description: "Quick, colourful and balanced.", calories: 480, isVellyn: false },
+      { name: "Shepherd's pie (lighter)", description: "Comfort food made healthier.", calories: 450, isVellyn: false },
     ],
   };
 

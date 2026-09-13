@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Nutrio Design System - Fresh, Energetic, Vibrant */
+/* Vellyn Design System - Fresh, Energetic, Vibrant */
 
 @layer base {
   :root {
@@ -41,7 +41,7 @@
 
     --radius: 1rem;
 
-    /* Custom Nutrio tokens */
+    /* Custom Vellyn tokens */
     --nutrio-green: 162 88% 24%;
     --nutrio-green-light: 160 40% 94%;
     --nutrio-teal: 174 72% 26%;

@@ -63,7 +63,7 @@ export interface SnapAnalysis {
   confidence?: number;
 }
 
-/** Meal type Nutrio expects at this hour — used as a starting guess only. */
+/** Meal type Vellyn expects at this hour — used as a starting guess only. */
 export const guessMealType = (d = new Date()): MealType => {
   const h = d.getHours();
   if (h < 11) return "breakfast";

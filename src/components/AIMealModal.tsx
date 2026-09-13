@@ -7,7 +7,7 @@ interface MealOption {
   name: string;
   description: string;
   calories: number;
-  isNutrio?: boolean;
+  isVellyn?: boolean;
 }
 
 interface AIMealModalProps {
@@ -115,7 +115,7 @@ export const AIMealModal = forwardRef<HTMLDivElement, AIMealModalProps>(({
                               <h3 className="font-semibold text-foreground">
                                 {option.name}
                               </h3>
-                              {option.isNutrio && (
+                              {option.isVellyn && (
                                 <span className="inline-flex items-center gap-1 text-xs font-medium text-nutrio-yellow bg-nutrio-yellow/10 px-2 py-0.5 rounded-full">
                                   <Star className="w-3 h-3" />
                                   AI-Preferred

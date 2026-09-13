@@ -51,7 +51,7 @@ serve(async (req) => {
       mixed: 'Mix different cuisines for variety. No single regional focus.',
     };
 
-    const systemPrompt = `You are Nutrio AI, a nutrition-first assistant. Generate personalized meal suggestions.
+    const systemPrompt = `You are Vellyn AI, a nutrition-first assistant. Generate personalized meal suggestions.
 
 USER CONTEXT:
 - Calories remaining today: ${context.caloriesRemaining} kcal

@@ -33,10 +33,10 @@ interface TellReply {
 export type TellMode = "standard" | "recap";
 
 /**
- * Conversation engine for Tell Nutrio: turns, working draft, intent and
+ * Conversation engine for Hey Vellyn: turns, working draft, intent and
  * completing the action (meal, skipped meal, activity or a question).
  */
-export const useTellNutrio = (mode: TellMode = "standard") => {
+export const useHeyVellyn = (mode: TellMode = "standard") => {
   const { user } = useAuth();
   const { save } = useQuickCapture();
   const { setStatus } = useMealStatus();
@@ -82,7 +82,7 @@ export const useTellNutrio = (mode: TellMode = "standard") => {
             intensity: "moderate",
           } as never);
           if (activityError) {
-            setError("Nutrio couldn't save that activity just now.");
+            setError("Vellyn couldn't save that activity just now.");
             setState("confirming");
             return false;
           }
@@ -92,7 +92,7 @@ export const useTellNutrio = (mode: TellMode = "standard") => {
         const mealType = (d?.meal_type ?? guessMealType()) as MealType;
         const result = await setStatus(mealType, "skipped", history[history.length - 2]?.content);
         if (result?.error) {
-          setError("Nutrio couldn't save that skipped meal just now.");
+          setError("Vellyn couldn't save that skipped meal just now.");
           setState("confirming");
           return false;
         }
@@ -109,7 +109,7 @@ export const useTellNutrio = (mode: TellMode = "standard") => {
           if (!saveError) saved += 1;
         }
         if (saved !== meals.length) {
-          setError(saved ? `Nutrio saved ${saved} item${saved === 1 ? "" : "s"}, but couldn't save the rest.` : "Nutrio couldn't save that just now.");
+          setError(saved ? `Vellyn saved ${saved} item${saved === 1 ? "" : "s"}, but couldn't save the rest.` : "Vellyn couldn't save that just now.");
           setState("confirming");
           return false;
         }
@@ -121,7 +121,7 @@ export const useTellNutrio = (mode: TellMode = "standard") => {
     [mode, save, setStatus, user],
   );
 
-  /** Send one user turn (spoken or typed) and get Nutrio's reply. */
+  /** Send one user turn (spoken or typed) and get Vellyn's reply. */
   const send = useCallback(
     async (text: string) => {
       const said = text.trim();
@@ -136,7 +136,7 @@ export const useTellNutrio = (mode: TellMode = "standard") => {
           body: { turns: history, draft: draftRef.current, meals: mealsRef.current, mode },
         });
         if (fnError || data?.error) {
-          setError((data?.error as string) ?? "Nutrio couldn't answer just now.");
+          setError((data?.error as string) ?? "Vellyn couldn't answer just now.");
           setState("idle");
           return;
         }
@@ -168,7 +168,7 @@ export const useTellNutrio = (mode: TellMode = "standard") => {
         }
         return reply;
       } catch {
-        setError("Nutrio couldn't answer just now.");
+        setError("Vellyn couldn't answer just now.");
         setState("idle");
         return null;
       }

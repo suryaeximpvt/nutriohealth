@@ -34,7 +34,7 @@ serve(async (req) => {
 
     const { question, location, intent, history } = await req.json();
     if (typeof question !== "string" || !question.trim()) {
-      return json({ error: "Ask Nutrio a question first." }, 400);
+      return json({ error: "Ask Vellyn a question first." }, 400);
     }
 
     const key = Deno.env.get("LOVABLE_API_KEY");
@@ -49,7 +49,7 @@ serve(async (req) => {
       .filter(Boolean)
       .join(" ");
 
-    const system = `You are Nutrio — a personal nutrition companion, not a generic chatbot and not a calorie police.
+    const system = `You are Vellyn — a personal nutrition companion, not a generic chatbot and not a calorie police.
 
 ${contextPrompt(ctx)}
 
@@ -75,15 +75,15 @@ HOW TO ANSWER
     });
 
     if (!res.ok) {
-      if (res.status === 429) return json({ error: "Nutrio is busy — try again in a moment." }, 429);
+      if (res.status === 429) return json({ error: "Vellyn is busy — try again in a moment." }, 429);
       if (res.status === 402) return json({ error: "AI credits have run out." }, 402);
       console.error("gateway error", res.status, await res.text());
-      return json({ error: "Nutrio couldn't answer just now." }, 502);
+      return json({ error: "Vellyn couldn't answer just now." }, 502);
     }
 
     const data = await res.json();
     const answer: string = data.choices?.[0]?.message?.content ?? "";
-    if (!answer) return json({ error: "Nutrio couldn't answer just now." }, 502);
+    if (!answer) return json({ error: "Vellyn couldn't answer just now." }, 502);
 
     const { data: saved } = await supabase
       .from("ask_nutrio_interactions")

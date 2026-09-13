@@ -62,7 +62,7 @@ const blobToBase64 = (blob: Blob) =>
 export interface VoiceStartOptions {
   /** Stop automatically once the user has clearly finished speaking. */
   autoStop?: boolean;
-  /** Silence (ms) after speech before Nutrio decides the sentence is finished. */
+  /** Silence (ms) after speech before Vellyn decides the sentence is finished. */
   silenceMs?: number;
   /** Called once end-of-speech is detected (the caller then calls stop()). */
   onEndOfSpeech?: () => void;
@@ -177,7 +177,7 @@ export const useVoiceInput = () => {
         return {};
       } catch {
         cleanup();
-        return { error: "Nutrio needs microphone access — allow it in your browser settings." };
+        return { error: "Vellyn needs microphone access — allow it in your browser settings." };
       }
     },
     [recording, cleanup],
@@ -196,11 +196,11 @@ export const useVoiceInput = () => {
     try {
       const audio = await blobToBase64(blob);
       const { data, error } = await supabase.functions.invoke("transcribe-audio", { body: { audio } });
-      if (error && !data?.text) return { error: (data?.error as string) ?? "Nutrio couldn't hear that — try again." };
+      if (error && !data?.text) return { error: (data?.error as string) ?? "Vellyn couldn't hear that — try again." };
       if (data?.error) return { error: data.error as string };
       return { text: (data?.text as string) ?? "" };
     } catch {
-      return { error: "Nutrio couldn't hear that — please try again." };
+      return { error: "Vellyn couldn't hear that — please try again." };
     } finally {
       setTranscribing(false);
     }

@@ -13,7 +13,7 @@ interface PrefRow {
 const DEFAULT_ORDER: CaptureMethod[] = ["voice", "text", "photo"];
 
 /**
- * Tracks which capture methods a user actually responds to, so Nutrio can
+ * Tracks which capture methods a user actually responds to, so Vellyn can
  * offer the easiest one first instead of forcing photos on everyone.
  */
 export const useCapturePreference = () => {
