@@ -34,7 +34,7 @@ serve(async (req) => {
 
     const { question, location, intent, history } = await req.json();
     if (typeof question !== "string" || !question.trim()) {
-      return json({ error: "Ask Vellyn a question first." }, 400);
+      return json({ error: "Ask a question first." }, 400);
     }
 
     const key = Deno.env.get("LOVABLE_API_KEY");

@@ -30,7 +30,7 @@ export const DailyRecapCard = ({ captures, onOpen, delay = 0 }: Props) => {
         <div className="min-w-0 flex-1">
           <p className="font-semibold text-foreground text-sm">Quick check-in?</p>
           <p className="text-xs text-muted-foreground">
-            Hey Vellyn what you've eaten today and catch up in about 30 seconds.
+            Say what you've eaten today and catch up in about 30 seconds.
           </p>
         </div>
       </div>

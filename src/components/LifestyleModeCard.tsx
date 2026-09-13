@@ -133,7 +133,7 @@ export const LifestyleModeCard = ({ delay = 0 }: { delay?: number }) => {
         ) : (
           <div>
             <p className="text-sm text-muted-foreground mb-4">
-              Travelling, busy at work, or celebrating? Hey Vellyn and it will adapt your plan
+              Travelling, busy at work, or celebrating? Say the word and Vellyn will adapt your plan
               instead of expecting a perfect week.
             </p>
             <Button className="w-full rounded-xl" onClick={openPicker}>

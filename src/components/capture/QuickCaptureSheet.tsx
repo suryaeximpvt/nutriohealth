@@ -103,7 +103,7 @@ export const QuickCaptureSheet = ({ open, onClose, mealType, startWithVoice, voi
       <div className="relative z-10 w-full max-w-lg bg-card rounded-t-3xl p-5 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-lg text-foreground">
-            {parsed ? "Is that right?" : "Hey Vellyn what you ate"}
+            {parsed ? "Is that right?" : "Say what you ate"}
           </h2>
           <button
             type="button"

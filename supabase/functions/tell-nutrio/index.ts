@@ -24,7 +24,7 @@ serve(async (req) => {
     const draft = body?.draft ?? null;
     const meals = Array.isArray(body?.meals) ? body.meals.slice(0, 8) : [];
     const mode = body?.mode === "recap" ? "recap" : "standard";
-    if (!turns.length) return json({ error: "Hey Vellyn what happened." }, 400);
+    if (!turns.length) return json({ error: "Tell us what happened." }, 400);
 
     const key = Deno.env.get("LOVABLE_API_KEY");
     if (!key) return json({ error: "AI is not configured right now." }, 500);

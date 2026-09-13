@@ -116,7 +116,7 @@ export const useSmartReminders = ({ loggedCounts, waterGlasses = 0 }: Args = {})
           category: "meal",
           priority: "high",
           title: `Did you have ${m.label}?`,
-          body: `Tap to talk to Vellyn you ate, skipped it, or you're eating later.`,
+          body: `Tap to tell Vellyn what you ate, skipped it, or that you are eating later.`,
         });
       }
     }
