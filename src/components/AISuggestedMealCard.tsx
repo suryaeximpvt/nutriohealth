@@ -395,7 +395,7 @@ const SuggestionCard = ({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-primary/20 bg-card shadow-elevated">
-      <div className="h-36 bg-primary/10 flex items-center justify-center text-6xl">{suggestion.emoji}</div>
+      <img src={image} alt={suggestion.name} loading="lazy" className="h-36 w-full object-cover" />
       <div className="flex items-start gap-3 p-4">
         <div className="flex-1">
           <h4 className="font-semibold text-foreground">{suggestion.name}</h4>
