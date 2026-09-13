@@ -70,7 +70,7 @@ serve(async (req) => {
       ? `\nAlready eaten today:\n${context.previousMeals.map(m => `- ${m.food_name} (${m.calories} kcal) for ${m.meal_type}`).join('\n')}`
       : '\nNo meals logged yet today.';
 
-    const systemPrompt = `You are Nutrio AI, an intelligent nutrition coach for the UK market. Generate personalized meal suggestions with MULTIPLE OPTIONS per meal.
+    const systemPrompt = `You are Vellyn AI, an intelligent nutrition coach for the UK market. Generate personalized meal suggestions with MULTIPLE OPTIONS per meal.
 
 USER CONTEXT:
 - Daily calorie goal: ${context.calorieTarget} kcal
@@ -94,21 +94,21 @@ NUTRITIONAL PRIORITIES: ${priorities.length > 0 ? priorities.join(', ') : 'balan
 
 CRITICAL REQUIREMENT - MULTIPLE OPTIONS:
 For EACH meal, generate 3-4 options where:
-- The "primary" option is the TOP AI recommendation (NO Nutrio product for primary)
+- The "primary" option is the TOP AI recommendation (NO Vellyn product for primary)
 - The "alternatives" array contains 2-3 other options
-- EXACTLY ONE option (either primary or in alternatives) MAY include a Nutrio product
+- EXACTLY ONE option (either primary or in alternatives) MAY include a Vellyn product
 - All other options must be WHOLE FOOD meals only
 
-NUTRIO PRODUCT RULES:
-1. Maximum ONE Nutrio product option per meal
-2. Nutrio option should NOT be the primary/default recommendation
-3. Mark Nutrio options clearly with the "nutrioProduct" field
-4. Nutrio products are SUPPORTIVE, not the main focus
-5. Include Nutrio option only for BREAKFAST and SNACKS, never for lunch/dinner
+VELLYN PRODUCT RULES:
+1. Maximum ONE Vellyn product option per meal
+2. Vellyn option should NOT be the primary/default recommendation
+3. Mark Vellyn options clearly with the "nutrioProduct" field
+4. Vellyn products are SUPPORTIVE, not the main focus
+5. Include Vellyn option only for BREAKFAST and SNACKS, never for lunch/dinner
 
-Available Nutrio products (for breakfast/snacks alternatives only):
-BREAKFAST: "Nutrio Protein Pancake Mix", "Nutrio Breakfast Smoothie", "Nutrio Overnight Oats Cup"
-SNACKS: "Nutrio Protein Bar", "Nutrio Nut Mix", "Nutrio Shake Sachet"
+Available Vellyn products (for breakfast/snacks alternatives only):
+BREAKFAST: "Vellyn Protein Pancake Mix", "Vellyn Breakfast Smoothie", "Vellyn Overnight Oats Cup"
+SNACKS: "Vellyn Protein Bar", "Vellyn Nut Mix", "Vellyn Shake Sachet"
 
 IMPORTANT RULES:
 1. Each meal MUST fit within the remaining calorie budget distributed appropriately
@@ -151,9 +151,9 @@ RESPONSE FORMAT (strict JSON, no markdown):
         "emoji": "🥣"
       },
       {
-        "name": "AI alternative using Nutrio Protein Pancake Mix",
-        "description": "Quick protein boost with Nutrio Protein Pancake Mix",
-        "nutrioProduct": "Nutrio Protein Pancake Mix",
+        "name": "AI alternative using Vellyn Protein Pancake Mix",
+        "description": "Quick protein boost with Vellyn Protein Pancake Mix",
+        "nutrioProduct": "Vellyn Protein Pancake Mix",
         "calories": 420,
         "protein": 28,
         "carbs": 42,
@@ -214,9 +214,9 @@ RESPONSE FORMAT (strict JSON, no markdown):
         "emoji": "🥜"
       },
       {
-        "name": "AI alternative using Nutrio Protein Bar",
-        "description": "Convenient protein with Nutrio Protein Bar",
-        "nutrioProduct": "Nutrio Protein Bar",
+        "name": "AI alternative using Vellyn Protein Bar",
+        "description": "Convenient protein with Vellyn Protein Bar",
+        "nutrioProduct": "Vellyn Protein Bar",
         "calories": 180,
         "protein": 15,
         "carbs": 18,
@@ -274,7 +274,7 @@ Only include the meals requested: ${mealsToGenerate.join(', ')}`;
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Generate multiple meal options for ${mealsToGenerate.join(', ')} based on my current nutritional state. Remember: primary option should be whole food, with Nutrio product as ONE alternative option only for breakfast/snacks.` }
+          { role: 'user', content: `Generate multiple meal options for ${mealsToGenerate.join(', ')} based on my current nutritional state. Remember: primary option should be whole food, with Vellyn product as ONE alternative option only for breakfast/snacks.` }
         ],
       }),
     });

@@ -75,7 +75,7 @@ const OAuthConsent = () => {
       <div className="w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-lg">
         <div className="mb-6 flex items-center gap-2 text-primary">
           <Leaf className="h-6 w-6" />
-          <span className="font-heading text-lg font-semibold">Nutrio</span>
+          <span className="font-heading text-lg font-semibold">Vellyn</span>
         </div>
 
         {error ? (

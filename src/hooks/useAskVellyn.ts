@@ -8,8 +8,8 @@ export interface AskMessage {
   interactionId?: string | null;
 }
 
-/** Personalised Ask Nutrio conversation. Context is built server-side. */
-export const useAskNutrio = () => {
+/** Personalised Ask Vellyn conversation. Context is built server-side. */
+export const useAskVellyn = () => {
   const [messages, setMessages] = useState<AskMessage[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -29,7 +29,7 @@ export const useAskNutrio = () => {
         const content =
           (data?.response as string) ??
           (data?.error as string) ??
-          (error ? "Nutrio couldn't answer just now — please try again." : "");
+          (error ? "Vellyn couldn't answer just now — please try again." : "");
         setMessages((prev) => [
           ...prev,
           { id: `a-${Date.now()}`, role: "assistant", content, interactionId: data?.interactionId ?? null },
@@ -37,7 +37,7 @@ export const useAskNutrio = () => {
       } catch {
         setMessages((prev) => [
           ...prev,
-          { id: `a-${Date.now()}`, role: "assistant", content: "Nutrio couldn't answer just now — please try again." },
+          { id: `a-${Date.now()}`, role: "assistant", content: "Vellyn couldn't answer just now — please try again." },
         ]);
       } finally {
         setLoading(false);

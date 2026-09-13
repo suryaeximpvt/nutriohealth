@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://nutrio.uk/</loc>
+    <loc>https://heyvellyn.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://nutrio.uk/diet</loc>
+    <loc>https://heyvellyn.com/diet</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nutrio.uk/workout</loc>
+    <loc>https://heyvellyn.com/workout</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nutrio.uk/shop</loc>
+    <loc>https://heyvellyn.com/shop</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nutrio.uk/ask-ai</loc>
+    <loc>https://heyvellyn.com/ask-ai</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://nutrio.uk/auth</loc>
+    <loc>https://heyvellyn.com/auth</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>

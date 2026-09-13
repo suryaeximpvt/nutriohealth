@@ -23,7 +23,7 @@ export const useQuickCapture = () => {
         const { data, error } = await supabase.functions.invoke("parse-meal-text", {
           body: { text, mealType },
         });
-        if (error) return { error: "Nutrio couldn't read that just now." };
+        if (error) return { error: "Vellyn couldn't read that just now." };
         if (data?.error) return { error: data.error as string };
         return { meal: data as ParsedMeal };
       } finally {

@@ -40,7 +40,7 @@ export const NotificationsSheet = ({
               <BellOff className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
               <p className="font-semibold text-foreground">You're all caught up</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Nutrio will let you know when something needs you.
+                Vellyn will let you know when something needs you.
               </p>
             </div>
           ) : (

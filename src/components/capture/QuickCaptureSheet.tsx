@@ -7,14 +7,14 @@ import { MEAL_TYPES, guessMealType, type MealType } from "@/lib/foodSnap";
 import type { CaptureMethod, ParsedMeal } from "@/lib/capture";
 import { useQuickCapture } from "@/hooks/useQuickCapture";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
-import { TellNutrioConversation } from "./TellNutrioConversation";
+import { HeyVellynConversation } from "./HeyVellynConversation";
 
 interface Props {
   open: boolean;
   onClose: () => void;
   mealType?: MealType;
   startWithVoice?: boolean;
-  /** Listening only — no typing, for the "Tell Nutrio" entry point. */
+  /** Listening only — no typing, for the "Hey Vellyn" entry point. */
   voiceOnly?: boolean;
   onSaved?: () => void;
   tellMode?: "standard" | "recap";
@@ -40,9 +40,9 @@ export const QuickCaptureSheet = ({ open, onClose, mealType, startWithVoice, voi
 
   if (!open) return null;
 
-  // "Tell Nutrio" is now a hands-free conversation.
+  // "Hey Vellyn" is now a hands-free conversation.
   if (voiceOnly) {
-    return <TellNutrioConversation open={open} onClose={onClose} onSaved={onSaved} mode={tellMode} />;
+    return <HeyVellynConversation open={open} onClose={onClose} onSaved={onSaved} mode={tellMode} />;
   }
 
 
@@ -77,7 +77,7 @@ export const QuickCaptureSheet = ({ open, onClose, mealType, startWithVoice, voi
     if (!parsed) return;
     const { error } = await save(parsed, method, meal);
     if (error) return toast.error(error);
-    toast.success("Saved — thanks for telling Nutrio.");
+    toast.success("Saved — thanks for telling Vellyn.");
     onSaved?.();
     close();
   };
@@ -103,7 +103,7 @@ export const QuickCaptureSheet = ({ open, onClose, mealType, startWithVoice, voi
       <div className="relative z-10 w-full max-w-lg bg-card rounded-t-3xl p-5 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-lg text-foreground">
-            {parsed ? "Is that right?" : "Tell Nutrio what you ate"}
+            {parsed ? "Is that right?" : "Say what you ate"}
           </h2>
           <button
             type="button"

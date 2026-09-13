@@ -31,7 +31,7 @@ export const OnePhotoChallengeCard = ({ captures, onSnap, delay = 0 }: Props) =>
           <p className="text-xs text-muted-foreground">
             {done
               ? "Great — one photo is enough for today."
-              : "Help Nutrio understand your meals better today."}
+              : "Help Vellyn understand your meals better today."}
           </p>
         </div>
         <span className="text-xs text-muted-foreground">{done ? "1 / 1" : "0 / 1"}</span>

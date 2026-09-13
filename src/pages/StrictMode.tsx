@@ -214,7 +214,7 @@ const StrictMode = () => {
                 Unlock with Premium
               </Button>
               <p className="text-center text-xs text-muted-foreground">
-                Strict Mode is part of Nutrio Premium — start with a 7-day free trial.
+                Strict Mode is part of Vellyn Premium — start with a 7-day free trial.
               </p>
             </div>
           )}

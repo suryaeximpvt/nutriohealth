@@ -3,9 +3,9 @@ import { Check, Keyboard, Loader2, Mic, Send, Sparkles, Square, Volume2, VolumeX
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useTellNutrio, type TellMode } from "@/hooks/useTellNutrio";
+import { useHeyVellyn, type TellMode } from "@/hooks/useHeyVellyn";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
-import { useNutrioSpeech } from "@/hooks/useNutrioSpeech";
+import { useVellynSpeech } from "@/hooks/useVellynSpeech";
 
 interface Props {
   open: boolean;
@@ -14,13 +14,13 @@ interface Props {
   mode?: TellMode;
 }
 
-export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standard" }: Props) => {
-  const agent = useTellNutrio(mode);
+export const HeyVellynConversation = ({ open, onClose, onSaved, mode = "standard" }: Props) => {
+  const agent = useHeyVellyn(mode);
   const voice = useVoiceInput();
-  const speech = useNutrioSpeech();
+  const speech = useVellynSpeech();
   const [typing, setTyping] = useState(false);
   const [typed, setTyped] = useState("");
-  // Nutrio has asked for a yes/no. The tap controls must stay on screen even
+  // Vellyn has asked for a yes/no. The tap controls must stay on screen even
   // once the microphone reopens, so it can also be confirmed without speaking.
   const [awaitingConfirm, setAwaitingConfirm] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -71,7 +71,7 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
       return;
     }
     if (!text?.trim()) {
-      agent.setError("Nutrio didn't catch that — try again.");
+      agent.setError("Vellyn didn't catch that — try again.");
       agent.setState("idle");
       return;
     }
@@ -151,15 +151,15 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
     : agent.state === "thinking" ? "Got it — thinking…"
     : agent.state === "transcribing" || voice.transcribing ? "Working out what you said…"
     : agent.state === "saving" ? "Saving that for you…"
-    : speech.loading || speech.speaking || agent.state === "speaking" ? "Nutrio is speaking…"
+    : speech.loading || speech.speaking || agent.state === "speaking" ? "Vellyn is speaking…"
     : agent.state === "done" ? "Done." : "Tap the microphone and tell me what happened";
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/40 backdrop-blur-sm">
-      <button type="button" aria-label="Close Tell Nutrio" onClick={close} className="absolute inset-0 cursor-default" />
+      <button type="button" aria-label="Close Hey Vellyn" onClick={close} className="absolute inset-0 cursor-default" />
       <div className="relative z-10 w-full max-w-lg bg-card rounded-t-3xl p-5 max-h-[92vh] flex flex-col">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-bold text-lg text-foreground">{mode === "recap" ? "Daily recap" : "Tell Nutrio"}</h2>
+          <h2 className="font-bold text-lg text-foreground">{mode === "recap" ? "Daily recap" : "Hey Vellyn"}</h2>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={() => {
               void speech.prime();
@@ -171,7 +171,7 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
               } else {
                 speech.toggleMuted();
               }
-            }} aria-label={speech.muted ? "Turn Nutrio voice on" : speech.speaking ? "Mute Nutrio voice" : "Replay Nutrio's last reply"}>
+            }} aria-label={speech.muted ? "Turn Vellyn voice on" : speech.speaking ? "Mute Vellyn voice" : "Replay Vellyn's last reply"}>
               {speech.muted ? <VolumeX /> : <Volume2 />}
             </Button>
             <Button variant="ghost" size="icon" onClick={() => {
@@ -192,7 +192,7 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
               {turn.content}
             </div>
           ))}
-          {agent.state === "thinking" && <div className="flex items-center gap-2 text-sm text-muted-foreground"><Sparkles className="animate-pulse" /> Nutrio is thinking…</div>}
+          {agent.state === "thinking" && <div className="flex items-center gap-2 text-sm text-muted-foreground"><Sparkles className="animate-pulse" /> Vellyn is thinking…</div>}
           <div ref={endRef} />
         </div>
 
@@ -222,7 +222,7 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
           </div>
         ) : typing ? (
           <div className="flex gap-2 pb-2">
-            <Input value={typed} onChange={(event) => setTyped(event.target.value)} onKeyDown={(event) => event.key === "Enter" && void sendTyped()} placeholder="Type what you'd say…" aria-label="Type your message to Nutrio" />
+            <Input value={typed} onChange={(event) => setTyped(event.target.value)} onKeyDown={(event) => event.key === "Enter" && void sendTyped()} placeholder="Type what you'd say…" aria-label="Type your message to Vellyn" />
             <Button size="icon" aria-label="Send" disabled={!typed.trim()} onClick={() => void sendTyped()}><Send /></Button>
           </div>
         ) : (

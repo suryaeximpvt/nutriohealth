@@ -99,7 +99,7 @@ export const PremiumModal = ({ isOpen, onClose }: PremiumModalProps) => {
               <Crown className="w-8 h-8 text-nutrio-amber" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold">Nutrio Premium</h2>
+              <h2 className="text-2xl font-bold">Vellyn Premium</h2>
               <p className="text-primary-foreground/80 text-sm">Unlock your full potential</p>
             </div>
           </motion.div>

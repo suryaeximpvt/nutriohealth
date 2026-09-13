@@ -1,7 +1,7 @@
 {
-  "name": "Nutrio - Your AI Nutrition Coach",
-  "short_name": "Nutrio",
-  "description": "Tell Nutrio what you ate or snap a photo in seconds.",
+  "name": "Vellyn - Your AI Nutrition Coach",
+  "short_name": "Vellyn",
+  "description": "Say what you ate or snap a photo in seconds.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -23,7 +23,7 @@
   ],
   "shortcuts": [
     {
-      "name": "Tell Nutrio",
+      "name": "Hey Vellyn",
       "short_name": "Tell",
       "description": "Say what you ate",
       "url": "/?action=tell",

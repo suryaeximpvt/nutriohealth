@@ -14,12 +14,12 @@ const bandLabel = (n: number) =>
 
 const bandCopy = (n: number) =>
   n >= 80
-    ? "Nutrio can see your real week, so suggestions are grounded in what you actually eat."
+    ? "Vellyn can see your real week, so suggestions are grounded in what you actually eat."
     : n >= 55
-      ? "A few more snaps and Nutrio will see your full week."
+      ? "A few more snaps and Vellyn will see your full week."
       : n >= 30
-        ? "Some meals are still invisible to Nutrio. Snapping those makes advice far more useful."
-        : "Snap a few meals and Nutrio will start showing you your real patterns.";
+        ? "Some meals are still invisible to Vellyn. Snapping those makes advice far more useful."
+        : "Snap a few meals and Vellyn will start showing you your real patterns.";
 
 const Row = ({ label, value }: { label: string; value: number }) => (
   <div className="flex items-center gap-3">
@@ -52,9 +52,9 @@ export const FoodRealityCard = ({ score, patterns, delay = 0 }: Props) => {
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="font-heading font-semibold text-foreground">How well Nutrio knows your week</h2>
+          <h2 className="font-heading font-semibold text-foreground">How well Vellyn knows your week</h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Based on the last {score.window_days} days — this is about how much Nutrio can see, not a
+            Based on the last {score.window_days} days — this is about how much Vellyn can see, not a
             judgement of your eating.
           </p>
         </div>
@@ -82,7 +82,7 @@ export const FoodRealityCard = ({ score, patterns, delay = 0 }: Props) => {
           >
             <span className="flex items-center gap-2 text-sm font-medium text-foreground">
               <Sparkles className="w-4 h-4 text-primary" />
-              What Nutrio has noticed ({patterns.length})
+              What Vellyn has noticed ({patterns.length})
             </span>
             <ChevronDown
               className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}

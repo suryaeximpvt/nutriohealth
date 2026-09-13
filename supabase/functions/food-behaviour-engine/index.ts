@@ -95,7 +95,7 @@ serve(async (req) => {
     const captures = (capRows ?? []) as Capture[];
     const missed = (missRows ?? []) as Missed[];
 
-    // ---- Food Reality Score: how complete a picture Nutrio has ----
+    // ---- Food Reality Score: how complete a picture Vellyn has ----
     const daysSeen = new Set(captures.map((c) => c.capture_date));
     const firstDate = captures.length ? captures[0].capture_date : null;
     const daysTracked = firstDate

@@ -31,7 +31,7 @@ export interface TrackingProfile {
   least_captured_meal: string | null;
 }
 
-/** Computes and reads the picture Nutrio has of what the user actually eats. */
+/** Computes and reads the picture Vellyn has of what the user actually eats. */
 export const useFoodBehaviour = (auto = true) => {
   const { user } = useAuth();
   const [score, setScore] = useState<RealityScore | null>(null);

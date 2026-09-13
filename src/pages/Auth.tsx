@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
-import { NutrioLogo } from "@/components/NutrioLogo";
+import { VellynLogo } from "@/components/VellynLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -91,7 +91,7 @@ const Auth = () => {
       >
         {/* Logo */}
         <div className="flex items-center justify-center mb-5">
-          <NutrioLogo className="h-16 w-auto" />
+          <VellynLogo className="h-16 w-auto" />
         </div>
 
         {/* Illustration */}
@@ -111,7 +111,7 @@ const Auth = () => {
           <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Nutrition that adapts to you</p>
           <h1 className="text-3xl font-bold text-foreground mb-2">
             {isLogin
-              ? "Welcome back to Nutrio"
+              ? "Welcome back to Vellyn"
               : "Meet your everyday nutrition coach"}
           </h1>
           <p className="text-muted-foreground">

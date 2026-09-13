@@ -122,7 +122,7 @@ export const FoodSnapFlow = ({ open, onClose, defaultMealType, onSaved }: Props)
     });
 
     if (error || data?.error) {
-      toast.error(data?.error ?? "Nutrio couldn't read that photo — you can still add the food yourself.");
+      toast.error(data?.error ?? "Vellyn couldn't read that photo — you can still add the food yourself.");
       setItems([blankItem()]);
       setStep("review");
       return;
@@ -213,7 +213,7 @@ export const FoodSnapFlow = ({ open, onClose, defaultMealType, onSaved }: Props)
       toast.error("Couldn't save that — please try again");
       return;
     }
-    toast.success("Saved. Nutrio has learned a bit more about what you actually eat.");
+    toast.success("Saved. Vellyn has learned a bit more about what you actually eat.");
     onSaved?.();
     onClose();
   };
@@ -226,7 +226,7 @@ export const FoodSnapFlow = ({ open, onClose, defaultMealType, onSaved }: Props)
             {step === "source" && "Snap your food"}
             {step === "confirm" && "Is this the food you ate?"}
             {step === "analysing" && "Looking at your photo"}
-            {step === "review" && "Check what Nutrio found"}
+            {step === "review" && "Check what Vellyn found"}
           </SheetTitle>
         </SheetHeader>
 
@@ -251,7 +251,7 @@ export const FoodSnapFlow = ({ open, onClose, defaultMealType, onSaved }: Props)
             {step === "source" && (
               <motion.div key="source" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Nutrio only ever sees the photo you choose. Nothing is taken from your phone automatically.
+                  Vellyn only ever sees the photo you choose. Nothing is taken from your phone automatically.
                 </p>
                 <button
                   onClick={() => cameraRef.current?.click()}
@@ -323,7 +323,7 @@ export const FoodSnapFlow = ({ open, onClose, defaultMealType, onSaved }: Props)
                   <Info className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>
                     Everything below is an estimate to help spot patterns — it isn't exact or medical advice.
-                    {confidence !== null && ` Nutrio's confidence: ${Math.round(confidence * 100)}%.`}
+                    {confidence !== null && ` Vellyn's confidence: ${Math.round(confidence * 100)}%.`}
                   </span>
                 </div>
 

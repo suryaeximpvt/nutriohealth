@@ -76,7 +76,7 @@ export const LifestyleModeCard = ({ delay = 0 }: { delay?: number }) => {
       toast.error("Couldn't start that mode. Please try again.");
       return;
     }
-    toast.success(`${selected.title} mode is on. Nutrio will adapt.`);
+    toast.success(`${selected.title} mode is on. Vellyn will adapt.`);
     setOpen(false);
   };
 
@@ -133,7 +133,7 @@ export const LifestyleModeCard = ({ delay = 0 }: { delay?: number }) => {
         ) : (
           <div>
             <p className="text-sm text-muted-foreground mb-4">
-              Travelling, busy at work, or celebrating? Tell Nutrio and it will adapt your plan
+              Travelling, busy at work, or celebrating? Say the word and Vellyn will adapt your plan
               instead of expecting a perfect week.
             </p>
             <Button className="w-full rounded-xl" onClick={openPicker}>
@@ -275,7 +275,7 @@ export const LifestyleModeCard = ({ delay = 0 }: { delay?: number }) => {
               )}
 
               <div className="rounded-2xl bg-muted/50 p-4">
-                <p className="text-sm font-medium text-foreground mb-2">Nutrio will</p>
+                <p className="text-sm font-medium text-foreground mb-2">Vellyn will</p>
                 <ul className="space-y-1">
                   {selected.adaptations.map((a) => (
                     <li key={a} className="text-sm text-muted-foreground flex gap-2">

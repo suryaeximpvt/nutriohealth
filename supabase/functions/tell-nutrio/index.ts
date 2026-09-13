@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { buildUserContext, clientFor, contextPrompt, corsHeaders } from "../_shared/userContext.ts";
 
-// Conversational brain for "Tell Nutrio".
+// Conversational brain for "Hey Vellyn".
 // Takes the whole spoken/typed conversation so far plus the working draft,
 // and returns a natural reply, the detected intent and an updated draft.
 serve(async (req) => {
@@ -24,14 +24,14 @@ serve(async (req) => {
     const draft = body?.draft ?? null;
     const meals = Array.isArray(body?.meals) ? body.meals.slice(0, 8) : [];
     const mode = body?.mode === "recap" ? "recap" : "standard";
-    if (!turns.length) return json({ error: "Tell Nutrio what happened." }, 400);
+    if (!turns.length) return json({ error: "Tell us what happened." }, 400);
 
     const key = Deno.env.get("LOVABLE_API_KEY");
     if (!key) return json({ error: "AI is not configured right now." }, 500);
 
     const ctx = await buildUserContext(supabase, user.id);
 
-    const system = `You are Nutrio, a warm British nutrition companion having a SPOKEN conversation.
+    const system = `You are Vellyn, a warm British nutrition companion having a SPOKEN conversation.
 The user is talking to you out loud, so keep every reply to one or two short, natural sentences.
 
 ${contextPrompt(ctx)}
@@ -101,10 +101,10 @@ Current conversation mode: ${mode}.`;
     });
 
     if (!res.ok) {
-      if (res.status === 429) return json({ error: "Nutrio is busy — try again in a moment." }, 429);
+      if (res.status === 429) return json({ error: "Vellyn is busy — try again in a moment." }, 429);
       if (res.status === 402) return json({ error: "AI credits have run out." }, 402);
       console.error("gateway error", res.status, await res.text());
-      return json({ error: "Nutrio couldn't answer just now." }, 502);
+      return json({ error: "Vellyn couldn't answer just now." }, 502);
     }
 
     const data = await res.json();
@@ -112,7 +112,7 @@ Current conversation mode: ${mode}.`;
     const match = raw.match(/\{[\s\S]*\}/);
     if (!match) {
       console.error("no json in reply", JSON.stringify(data).slice(0, 800));
-      return json({ error: "Nutrio couldn't quite follow that — try again." }, 502);
+      return json({ error: "Vellyn couldn't quite follow that — try again." }, 502);
     }
 
     const parsed = JSON.parse(match[0]);

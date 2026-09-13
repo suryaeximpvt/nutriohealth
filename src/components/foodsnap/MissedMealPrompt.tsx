@@ -45,7 +45,7 @@ export const MissedMealPrompt = ({ captures, onSnap, onQuickCapture }: Props) =>
     })();
   }, [user]);
 
-  // Log that Nutrio asked, and which methods it offered.
+  // Log that Vellyn asked, and which methods it offered.
   useEffect(() => {
     if (!user || !missing || promptId) return;
     const methods = orderedMethods(avoidsPhotos ? ["voice", "text"] : ["voice", "text", "photo"]);

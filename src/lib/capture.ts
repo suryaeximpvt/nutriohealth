@@ -1,6 +1,6 @@
 import type { MealType } from "./foodSnap";
 
-/** How a meal reached Nutrio. Ordered by how much detail it gives. */
+/** How a meal reached Vellyn. Ordered by how much detail it gives. */
 export type CaptureMethod = "quick_confirm" | "voice" | "text" | "recap" | "photo";
 
 export const CAPTURE_METHODS: {
@@ -10,7 +10,7 @@ export const CAPTURE_METHODS: {
   emoji: string;
 }[] = [
   { value: "quick_confirm", label: "Just confirm", short: "Confirm", emoji: "✅" },
-  { value: "voice", label: "Tell Nutrio", short: "Tell", emoji: "🎙" },
+  { value: "voice", label: "Hey Vellyn", short: "Tell", emoji: "🎙" },
   { value: "text", label: "Type what I ate", short: "Type", emoji: "⌨️" },
   { value: "recap", label: "Daily recap", short: "Recap", emoji: "📝" },
   { value: "photo", label: "Upload a photo", short: "Photo", emoji: "📸" },

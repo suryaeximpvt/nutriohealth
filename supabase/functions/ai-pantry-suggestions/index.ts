@@ -37,7 +37,7 @@ serve(async (req) => {
       });
     }
 
-    const systemPrompt = `You are Nutrio AI. The user tells you which food items they already have at home. Suggest meals they can actually cook with those items.
+    const systemPrompt = `You are Vellyn AI. The user tells you which food items they already have at home. Suggest meals they can actually cook with those items.
 
 AVAILABLE INGREDIENTS: ${context.ingredients.join(', ')}
 

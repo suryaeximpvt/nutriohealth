@@ -62,7 +62,7 @@ export function supabaseForUser(ctx: ToolContext) {
 
 export function notAuthenticated() {
   return {
-    content: [{ type: "text" as const, text: "Not authenticated. Sign in to Nutrio to use this tool." }],
+    content: [{ type: "text" as const, text: "Not authenticated. Sign in to Vellyn to use this tool." }],
     isError: true,
   };
 }

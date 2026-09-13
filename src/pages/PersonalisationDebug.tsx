@@ -80,7 +80,7 @@ const PersonalisationDebug = () => {
   return (
     <div className="min-h-screen bg-background pb-16">
       <Helmet>
-        <title>Personalisation engine — Nutrio developer view</title>
+        <title>Personalisation engine — Vellyn developer view</title>
         <meta name="robots" content="noindex" />
       </Helmet>
       <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-card px-4 py-3">

@@ -15,18 +15,18 @@ serve(async (req) => {
   try {
     const supabase = clientFor(req);
     const { data } = await supabase.auth.getUser();
-    if (!data.user) return json({ error: "Please sign in again to use Nutrio voice." }, 401);
+    if (!data.user) return json({ error: "Please sign in again to use Vellyn voice." }, 401);
 
     const body = await req.json().catch(() => null);
     const text = typeof body?.text === "string" ? body.text.trim() : "";
     // "mp3" returns one complete audio file (most reliable in mobile browsers).
     // "pcm" keeps the low-latency streaming path for desktop.
     const format = body?.format === "pcm" ? "pcm" : "mp3";
-    if (!text) return json({ error: "There is nothing for Nutrio to say." }, 400);
+    if (!text) return json({ error: "There is nothing for Vellyn to say." }, 400);
     if (text.length > MAX_TEXT_LENGTH) return json({ error: "That reply is too long to read aloud." }, 400);
 
     const key = Deno.env.get("LOVABLE_API_KEY");
-    if (!key) return json({ error: "Nutrio voice is not configured right now." }, 401);
+    if (!key) return json({ error: "Vellyn voice is not configured right now." }, 401);
 
     const upstream = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
       method: "POST",
@@ -48,10 +48,10 @@ serve(async (req) => {
     if (!upstream.ok) {
       const details = await upstream.text().catch(() => "");
       console.error("nutrio-speech gateway", upstream.status, details);
-      let message = "Nutrio couldn't speak just now. You can continue using the transcript.";
-      if (upstream.status === 402) message = "Nutrio voice is paused until AI credits are added.";
-      if (upstream.status === 403) message = "Nutrio voice is currently disabled for this workspace.";
-      if (upstream.status === 429) message = "Nutrio voice is busy. Please wait a moment and try again.";
+      let message = "Vellyn couldn't speak just now. You can continue using the transcript.";
+      if (upstream.status === 402) message = "Vellyn voice is paused until AI credits are added.";
+      if (upstream.status === 403) message = "Vellyn voice is currently disabled for this workspace.";
+      if (upstream.status === 429) message = "Vellyn voice is busy. Please wait a moment and try again.";
       return json({ error: message, details }, upstream.status);
     }
 
@@ -68,6 +68,6 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error("nutrio-speech", error);
-    return json({ error: "Nutrio couldn't speak just now. You can continue using the transcript." }, 500);
+    return json({ error: "Vellyn couldn't speak just now. You can continue using the transcript." }, 500);
   }
 });

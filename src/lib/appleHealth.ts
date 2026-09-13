@@ -13,7 +13,7 @@ interface HealthKitPlugin {
   queryToday(): Promise<AppleHealthSample>;
 }
 
-// Registered lazily. On iOS builds of the Nutrio app this resolves to the
+// Registered lazily. On iOS builds of the Vellyn app this resolves to the
 // native HealthKit bridge; on the web it stays unavailable.
 const HealthKit = registerPlugin<HealthKitPlugin>("HealthKit");
 

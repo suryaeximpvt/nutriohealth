@@ -9,7 +9,7 @@ interface Props {
   delay?: number;
 }
 
-/** Later-day invitation into the same Tell Nutrio voice agent. */
+/** Later-day invitation into the same Hey Vellyn voice agent. */
 export const DailyRecapCard = ({ captures, onOpen, delay = 0 }: Props) => {
   const hour = new Date().getHours();
   const meals = new Set(captures.map((capture) => capture.meal_type));
@@ -30,12 +30,12 @@ export const DailyRecapCard = ({ captures, onOpen, delay = 0 }: Props) => {
         <div className="min-w-0 flex-1">
           <p className="font-semibold text-foreground text-sm">Quick check-in?</p>
           <p className="text-xs text-muted-foreground">
-            Tell Nutrio what you've eaten today and catch up in about 30 seconds.
+            Say what you've eaten today and catch up in about 30 seconds.
           </p>
         </div>
       </div>
       <Button className="w-full mt-3" onClick={onOpen}>
-        <Mic className="w-4 h-4" /> Tell Nutrio
+        <Mic className="w-4 h-4" /> Hey Vellyn
       </Button>
     </motion.div>
   );

@@ -18,7 +18,7 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are Nutrio AI, a friendly and knowledgeable nutrition and fitness coach. You provide personalized advice based on the user's goals and current progress.
+    const systemPrompt = `You are Vellyn AI, a friendly and knowledgeable nutrition and fitness coach. You provide personalized advice based on the user's goals and current progress.
 
 User Context:
 - Goal: ${context.goal?.replace("_", " ") || "general health"}

@@ -11,7 +11,7 @@ import { ChevronRight, ChevronLeft, Loader2, X, Check } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { usePersonalisation } from "@/hooks/usePersonalisation";
 import { useAuth } from "@/hooks/useAuth";
-import { NutrioLogo } from "@/components/NutrioLogo";
+import { VellynLogo } from "@/components/VellynLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -237,7 +237,7 @@ const Onboarding = () => {
       toast.error("We couldn't save everything. Please try again.");
       return;
     }
-    toast.success(`Welcome${values.display_name ? `, ${values.display_name}` : ""}! Nutrio is set up for you.`);
+    toast.success(`Welcome${values.display_name ? `, ${values.display_name}` : ""}! Vellyn is set up for you.`);
     navigate("/");
   };
 
@@ -435,7 +435,7 @@ const Onboarding = () => {
             <button type="button" onClick={handleBack} disabled={step === 0} aria-label="Go back" className="w-10 h-10 rounded-full bg-card shadow-card flex items-center justify-center disabled:opacity-0">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <NutrioLogo className="h-9 w-auto" />
+            <VellynLogo className="h-9 w-auto" />
             <span className="w-10" aria-hidden="true" />
           </div>
           <div className="w-full h-2 bg-muted rounded-full overflow-hidden">

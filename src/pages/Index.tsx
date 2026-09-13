@@ -460,7 +460,7 @@ return (
 
 
 
-        {/* Weekly Nutrio Insight */}
+        {/* Weekly Vellyn Insight */}
         <div className="mb-4">
           <WeeklyInsightCard delay={0.215} />
         </div>
@@ -506,7 +506,7 @@ return (
         >
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="w-5 h-5 text-primary" />
-            <h2 className="font-bold text-foreground">Nutrio AI Picks for Today</h2>
+            <h2 className="font-bold text-foreground">Vellyn AI Picks for Today</h2>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
             Personalized meals based on your {caloriesRemaining} kcal remaining and nutritional goals
@@ -532,7 +532,7 @@ return (
           </div>
         </motion.div>
 
-        {/* Shop Nutrio Button */}
+        {/* Shop Vellyn Button */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -548,7 +548,7 @@ return (
                 <span className="text-xl">🛒</span>
               </div>
               <div className="text-left">
-                <h3 className="font-semibold text-foreground">Shop Nutrio Products</h3>
+                <h3 className="font-semibold text-foreground">Shop Vellyn Products</h3>
                 <p className="text-sm text-muted-foreground">Browse our protein range</p>
               </div>
             </div>

@@ -313,7 +313,7 @@ export const HealthTrackingCard = ({ delay = 0 }: { delay?: number }) => {
             </DialogTitle>
             <DialogDescription>
               {editing === "whoop"
-                ? "Copy these across from your Whoop app — Nutrio uses them to shape your food and training advice."
+                ? "Copy these across from your Whoop app — Vellyn uses them to shape your food and training advice."
                 : "In the iPhone app these fill in on their own. Here you can pop them in yourself."}
             </DialogDescription>
           </DialogHeader>

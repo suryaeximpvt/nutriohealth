@@ -20,7 +20,7 @@ export const NotificationSettings = () => {
           </div>
         </div>
         <p className="text-sm text-muted-foreground">
-          Download the Nutrio mobile app to receive water and meal reminders throughout the day.
+          Download the Vellyn mobile app to receive water and meal reminders throughout the day.
         </p>
       </div>
     );

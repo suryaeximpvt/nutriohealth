@@ -38,7 +38,7 @@ export const RecommendationFeedback = ({ payload, onRate, compact }: Props) => {
   if (done) {
     return (
       <p className="flex items-center gap-1.5 text-xs text-muted-foreground mt-2">
-        <Check className="w-3.5 h-3.5 text-primary" /> Thanks — Nutrio will adjust what it suggests.
+        <Check className="w-3.5 h-3.5 text-primary" /> Thanks — Vellyn will adjust what it suggests.
       </p>
     );
   }

@@ -7,7 +7,7 @@ import type { MealType } from "@/lib/foodSnap";
 type Meal = Exclude<MealType, "snack">;
 
 const FALLBACK: Record<Meal, number> = { breakfast: 8.5, lunch: 13, dinner: 19 };
-/** How long after their usual time Nutrio waits before asking. */
+/** How long after their usual time Vellyn waits before asking. */
 const GRACE_HOURS = 1.5;
 
 const toHours = (t: string | null | undefined) => {

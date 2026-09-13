@@ -44,7 +44,7 @@ export const NextActionCard = ({
             <p className="text-sm text-muted-foreground">{top.body}</p>
             {reminders.length > 1 && (
               <p className="text-xs text-muted-foreground mt-2">
-                {reminders.length - 1} more waiting — Nutrio keeps them to a minimum.
+                {reminders.length - 1} more waiting — Vellyn keeps them to a minimum.
               </p>
             )}
           </div>

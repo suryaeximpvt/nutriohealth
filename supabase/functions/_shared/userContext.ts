@@ -1,4 +1,4 @@
-// Central adaptive personalisation context builder for Nutrio.
+// Central adaptive personalisation context builder for Vellyn.
 // Rule-based + data-driven. No machine learning model is involved.
 import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
