@@ -190,6 +190,7 @@ return (
                     {/* Primary Suggestion Card */}
                     <SuggestionCard
                       suggestion={currentSuggestion}
+                      image={MEAL_IMAGES[mealType]}
                       isSelected={true}
                       onSelect={() => {}}
                       onLog={() => handleLog(currentSuggestion)}
