@@ -24,6 +24,8 @@ interface Props {
   friction: FrictionItem[];
   change: MinimumChange | null;
   loading?: boolean;
+  error?: string | null;
+  needsMoreData?: boolean;
   answered?: boolean;
   onRefresh: () => void;
   onRespond: (tried: "yes" | "no", reason?: string) => void;
@@ -34,6 +36,8 @@ export const SmallestChangeCard = ({
   friction,
   change,
   loading,
+  error,
+  needsMoreData,
   answered,
   onRefresh,
   onRespond,
@@ -48,13 +52,13 @@ export const SmallestChangeCard = ({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
+      transition={{ type: "spring", stiffness: 300, damping: 30, delay }}
       className="bg-card border border-border rounded-2xl p-4 shadow-card"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-primary" />
+          <div className="w-8 h-8 rounded-xl bg-muted flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-foreground" aria-hidden="true" />
           </div>
           <div>
             <h3 className="font-heading font-semibold text-sm">Your smallest realistic change</h3>
@@ -63,19 +67,45 @@ export const SmallestChangeCard = ({
         </div>
         <button
           onClick={onRefresh}
+          disabled={loading}
           aria-label="Get a new suggestion"
-          className="p-2 rounded-lg hover:bg-accent/20 text-muted-foreground"
+          className="press p-2 rounded-lg text-muted-foreground disabled:opacity-50"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} aria-hidden="true" />
         </button>
       </div>
 
-      {!change ? (
-        <p className="text-sm text-muted-foreground">
-          {loading
-            ? "Looking at your week…"
-            : "Snap a few more meals and Nutrio will suggest one tiny change that fits your real life."}
-        </p>
+      {loading ? (
+        <div className="space-y-2" aria-live="polite">
+          <div className="skeleton-block h-4 w-2/3" />
+          <div className="skeleton-block h-4 w-full" />
+          <div className="skeleton-block h-10 w-full" />
+          <p className="text-xs text-muted-foreground">Looking at your week…</p>
+        </div>
+      ) : error ? (
+        <div>
+          <p className="text-sm text-muted-foreground mb-3">{error}</p>
+          <button
+            onClick={onRefresh}
+            className="press rounded-xl bg-muted px-4 py-2 text-sm font-semibold text-foreground"
+          >
+            Try again
+          </button>
+        </div>
+      ) : !change ? (
+        <div>
+          <p className="text-sm text-muted-foreground mb-3">
+            {needsMoreData
+              ? "Nutrio needs a few more meals before it can suggest something that really fits your week."
+              : "Log a couple of meals and Nutrio will suggest one tiny change that fits your real life."}
+          </p>
+          <button
+            onClick={onRefresh}
+            className="press rounded-xl bg-muted px-4 py-2 text-sm font-semibold text-foreground"
+          >
+            Check again
+          </button>
+        </div>
       ) : (
         <>
           <p className="font-heading font-semibold text-base mb-1">{change.title}</p>
@@ -83,13 +113,13 @@ export const SmallestChangeCard = ({
 
           <button
             onClick={() => setShowWhy((v) => !v)}
-            className="flex items-center gap-1 text-xs text-primary font-medium mb-3"
+            className="press flex items-center gap-1 text-xs text-foreground font-semibold mb-3"
           >
             Why Nutrio suggests this
-            <ChevronDown className={`w-3 h-3 transition-transform ${showWhy ? "rotate-180" : ""}`} />
+            <ChevronDown className={`w-3 h-3 transition-transform ${showWhy ? "rotate-180" : ""}`} aria-hidden="true" />
           </button>
           {showWhy && (
-            <p className="text-xs text-muted-foreground bg-accent/20 rounded-xl p-3 mb-3">
+            <p className="text-xs text-muted-foreground bg-muted rounded-xl p-3 mb-3">
               {change.because} Nutrition figures are estimates.
             </p>
           )}
@@ -102,7 +132,7 @@ export const SmallestChangeCard = ({
                 <button
                   key={r.value}
                   onClick={() => onRespond("no", r.value)}
-                  className="px-3 py-1.5 rounded-full text-xs bg-accent/20 hover:bg-accent/40"
+                  className="press px-3 py-2 rounded-full text-xs font-semibold bg-muted text-foreground"
                 >
                   {r.label}
                 </button>
@@ -112,20 +142,21 @@ export const SmallestChangeCard = ({
             <div className="flex gap-2">
               <button
                 onClick={() => onRespond("yes")}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium"
+                className="press flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
               >
-                <Check className="w-4 h-4" /> I'll try this
+                <Check className="w-4 h-4" aria-hidden="true" /> I&rsquo;ll try this
               </button>
               <button
                 onClick={() => setAskReason(true)}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-accent/20 text-sm font-medium"
+                className="press flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-muted text-sm font-semibold text-foreground"
               >
-                <X className="w-4 h-4" /> Not realistic
+                <X className="w-4 h-4" aria-hidden="true" /> Not realistic
               </button>
             </div>
           )}
         </>
       )}
+
 
       {top.length > 0 && (
         <div className="mt-4 pt-3 border-t border-border">
