@@ -66,7 +66,25 @@ const Index = () => {
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
   const [snapOpen, setSnapOpen] = useState(false);
   const [snapMealType, setSnapMealType] = useState<MealType>(guessMealType());
-  const { todays: todaysCaptures, refresh: refreshCaptures } = useFoodCaptures();
+  const { todays: todaysCaptures, captures: recentCaptures, getPhotoUrl, refresh: refreshCaptures } = useFoodCaptures();
+  const [heroPhotoUrl, setHeroPhotoUrl] = useState<string | null>(null);
+
+  // Hero shows the person's own latest food photo when there is one.
+  useEffect(() => {
+    let active = true;
+    const latest = recentCaptures.find((capture) => capture.photo_path);
+    if (!latest?.photo_path) {
+      setHeroPhotoUrl(null);
+      return;
+    }
+    void getPhotoUrl(latest.photo_path).then((url) => {
+      if (active) setHeroPhotoUrl(url);
+    });
+    return () => {
+      active = false;
+    };
+  }, [recentCaptures, getPhotoUrl]);
+
   const { score: realityScore, patterns: foodPatterns, analyse: analyseBehaviour } = useFoodBehaviour();
   const {
     friction,
