@@ -44,39 +44,15 @@ export const usePremium = () => {
 
       if (data) {
         setSubscription(data as unknown as Subscription);
-        return;
-      }
-
-      // No row visible. That is either a genuinely new account or a sign-in
-      // that has expired. Confirm the session before writing anything, so an
-      // expired member is asked to sign in again instead of silently dropping
-      // to the free plan.
-      const { data: verified, error: authError } = await supabase.auth.getUser();
-      if (authError || !verified.user) {
-        await supabase.auth.signOut({ scope: 'local' });
-        setSubscription(null);
-        return;
-      }
-
-      const { data: newSub, error: insertError } = await supabase
-        .from('subscriptions')
-        .insert({ user_id: verified.user.id, plan: 'free', status: 'active' })
-        .select()
-        .single();
-
-      if (insertError) {
-        console.error('Error creating subscription:', insertError);
-        // The account-creation trigger may have just added the row; re-read it.
-        const { data: retry } = await supabase
+      } else {
+        const { data: newSub, error: insertError } = await supabase
           .from('subscriptions')
-          .select('*')
-          .eq('user_id', verified.user.id)
-          .maybeSingle();
-        if (retry) setSubscription(retry as unknown as Subscription);
-        return;
-      }
+          .insert({ user_id: user.id, plan: 'free', status: 'active' })
+          .select()
+          .single();
 
-      if (newSub) setSubscription(newSub as unknown as Subscription);
+        if (!insertError && newSub) setSubscription(newSub as unknown as Subscription);
+      }
     } catch (err) {
       console.error('Failed to fetch subscription:', err);
     } finally {

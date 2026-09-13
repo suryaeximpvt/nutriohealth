@@ -164,12 +164,10 @@ export const useNutrioSpeech = () => {
   }, [play]);
 
   const toggleMuted = useCallback(() => {
-    // Update the ref straight away so an immediate replay() in the same tick
-    // sees the new setting instead of the stale one.
-    const next = !mutedRef.current;
-    mutedRef.current = next;
-    if (next) stop();
-    setMuted(next);
+    setMuted((current) => {
+      if (!current) stop();
+      return !current;
+    });
   }, [stop]);
 
   useEffect(

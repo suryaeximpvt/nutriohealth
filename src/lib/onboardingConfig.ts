@@ -34,7 +34,6 @@ export type OnboardingStep = {
   required?: string[];
   /** Optional steps show a "Skip for now" action. */
   optional?: boolean;
-  presentation?: "question" | "progress" | "summary";
 };
 
 export const FOOD_CULTURES: Option[] = [
@@ -354,16 +353,6 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     ],
   },
   {
-    id: "progress_preview",
-    section: "Your plan",
-    title: "Consistency changes the direction",
-    subtitle: "This projection uses the goal and pace you entered. It updates as your plan changes.",
-    image: goalArt,
-    imageAlt: "A projected progress chart based on your goal",
-    fields: [],
-    presentation: "progress",
-  },
-  {
     id: "routine",
     section: "Daily routine",
     title: "Walk us through a normal day",
@@ -590,15 +579,5 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
       },
       { kind: "toggle", key: "notifications_enabled", label: "Personalised notifications", desc: "Meal, workout, hydration and weekly review reminders." },
     ],
-  },
-  {
-    id: "summary",
-    section: "Your plan",
-    title: "Your Nutrio plan is ready",
-    subtitle: "Built from the goal, body details and routine you shared.",
-    image: goalArt,
-    imageAlt: "Your personalised nutrition plan summary",
-    fields: [],
-    presentation: "summary",
   },
 ];

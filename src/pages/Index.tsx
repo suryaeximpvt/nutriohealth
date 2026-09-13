@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight, Sparkles, Crown, ShoppingBag } from "lucide-react";
+import { ChevronRight, Sparkles, Crown, Loader2 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { BottomNav } from "@/components/BottomNav";
 import { HealthTrackingCard } from "@/components/HealthTrackingCard";
@@ -66,8 +66,7 @@ const Index = () => {
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
   const [snapOpen, setSnapOpen] = useState(false);
   const [snapMealType, setSnapMealType] = useState<MealType>(guessMealType());
-  const { todays: todaysCaptures, captures, loading: capturesLoading, getPhotoUrl, refresh: refreshCaptures } = useFoodCaptures();
-  const [latestPhotoUrl, setLatestPhotoUrl] = useState<string | null>(null);
+  const { todays: todaysCaptures, refresh: refreshCaptures } = useFoodCaptures();
   const { score: realityScore, patterns: foodPatterns, analyse: analyseBehaviour } = useFoodBehaviour();
   const {
     friction,
@@ -117,19 +116,6 @@ const Index = () => {
     if (action) window.history.replaceState({}, "", window.location.pathname);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
-
-  useEffect(() => {
-    let active = true;
-    const latest = captures.find((capture) => capture.photo_path)?.photo_path ?? null;
-    if (!latest) {
-      setLatestPhotoUrl(null);
-      return () => { active = false; };
-    }
-    void getPhotoUrl(latest).then((url) => {
-      if (active) setLatestPhotoUrl(url);
-    });
-    return () => { active = false; };
-  }, [captures, getPhotoUrl]);
 
   useEffect(() => {
     if (!authLoading && !dataLoading && user && profile) {
@@ -298,10 +284,10 @@ const handleLogAIMeal = async (mealType: typeof selectedMealType, suggestion: AI
     }
   };
 
-  if (authLoading) {
+  if (authLoading || (user && dataLoading)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="h-8 w-8 animate-pulse-soft rounded-full bg-muted" aria-label="Loading Nutrio" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -329,8 +315,6 @@ return (
           meals={dailySummary.meals}
           waterGlasses={waterGlasses}
           weight={profile?.weight_kg}
-          loading={dataLoading || capturesLoading}
-          latestPhotoUrl={latestPhotoUrl}
           onSnap={() => openSnap()}
           onVoice={() => openQuick(undefined, true)}
           onManual={(meal) => meal ? handleAddManual(meal) : openQuick(undefined, false)}
@@ -534,7 +518,7 @@ return (
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-nutrio-amber/20 flex items-center justify-center">
-                <ShoppingBag className="h-5 w-5 text-foreground" />
+                <span className="text-xl">🛒</span>
               </div>
               <div className="text-left">
                 <h3 className="font-semibold text-foreground">Shop Nutrio Products</h3>

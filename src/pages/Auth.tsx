@@ -87,7 +87,6 @@ const Auth = () => {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className="w-full max-w-sm"
       >
         {/* Logo */}
@@ -96,7 +95,7 @@ const Auth = () => {
         </div>
 
         {/* Illustration */}
-        <div className="relative mb-7 aspect-[16/9] overflow-hidden rounded-2xl border border-border bg-muted shadow-card">
+        <div className="relative mb-7 aspect-[16/9] rounded-2xl bg-primary/5 border border-border/70 overflow-hidden shadow-card">
           <img
             src={authArt}
             alt="Healthy bowl of greens, avocado, berries, water and a dumbbell"
@@ -109,7 +108,7 @@ const Auth = () => {
 
         {/* Title */}
         <div className="text-center mb-7">
-          <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">Nutrition that adapts to you</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Nutrition that adapts to you</p>
           <h1 className="text-3xl font-bold text-foreground mb-2">
             {isLogin
               ? "Welcome back to Nutrio"
@@ -126,9 +125,9 @@ const Auth = () => {
         <motion.form
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.1 }}
+          transition={{ delay: 0.1 }}
           onSubmit={handleSubmit}
-          className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-soft"
+          className="space-y-4 rounded-2xl bg-card p-5 shadow-soft border border-border/60"
         >
           {!isLogin && (
             <div className="space-y-2">
