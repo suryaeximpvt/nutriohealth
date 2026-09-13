@@ -16,8 +16,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 20%;
 
-    /* Vibrant teal/green - energetic, fresh */
-    --primary: 160 84% 39%;
+    /* Deep teal/green - passes AA with white text */
+    --primary: 162 88% 24%;
     --primary-foreground: 0 0% 100%;
 
     /* Light gray secondary */
@@ -26,33 +26,34 @@
 
     /* Soft muted tones */
     --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 46%;
+    --muted-foreground: 220 10% 38%;
 
-    /* Orange accent - energetic, motivational */
-    --accent: 25 95% 53%;
+    /* Deep orange accent - passes AA with white text */
+    --accent: 20 92% 34%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 160 84% 39%;
+    --border: 220 13% 82%;
+    --input: 220 13% 80%;
+    --ring: 162 88% 24%;
 
     --radius: 1rem;
 
     /* Custom Nutrio tokens */
-    --nutrio-green: 160 84% 39%;
-    --nutrio-green-light: 160 60% 95%;
-    --nutrio-teal: 174 72% 40%;
-    --nutrio-orange: 25 95% 53%;
+    --nutrio-green: 162 88% 24%;
+    --nutrio-green-light: 160 40% 94%;
+    --nutrio-teal: 174 72% 26%;
+    --nutrio-orange: 20 92% 34%;
     --nutrio-orange-light: 25 100% 95%;
     --nutrio-charcoal: 220 15% 20%;
-    --nutrio-gray: 220 10% 46%;
-    --nutrio-yellow: 45 93% 47%;
-    --nutrio-blue: 210 90% 55%;
-    --nutrio-purple: 265 70% 60%;
-    --nutrio-red: 0 84% 60%;
+    --nutrio-gray: 220 10% 38%;
+    --nutrio-yellow: 40 90% 30%;
+    --nutrio-blue: 212 80% 36%;
+    --nutrio-purple: 265 55% 42%;
+    --nutrio-red: 0 72% 40%;
+
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(160 84% 39%), hsl(174 72% 40%));
