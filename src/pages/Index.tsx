@@ -320,6 +320,11 @@ return (
       <div className="container max-w-lg mx-auto px-4">
         <AppHeader userName={userName} />
 
+        {/* Today's mode — asked first when the app opens */}
+        <div className="mb-4">
+          <LifestyleModeCard delay={0.05} />
+        </div>
+
         <CameraFirstDashboard
           caloriesConsumed={caloriesConsumed}
           caloriesRemaining={caloriesRemaining}
