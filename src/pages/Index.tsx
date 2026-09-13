@@ -339,6 +339,8 @@ return (
           onOpenIntake={() => setIntakeBreakdownOpen(true)}
           onAddWater={() => updateWater(waterGlasses + 1)}
           onRemoveWater={() => updateWater(Math.max(0, waterGlasses - 1))}
+          heroPhotoUrl={heroPhotoUrl}
+
         />
 
         {/* Gentle nudge when a usual meal hasn't been seen */}
