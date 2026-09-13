@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { ChoiceRow } from "@/components/ui/choice-row";
 import { ChevronRight, ChevronLeft, Loader2, X, Check } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { usePersonalisation } from "@/hooks/usePersonalisation";
