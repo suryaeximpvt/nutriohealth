@@ -90,10 +90,13 @@ const Index = () => {
     friction,
     change: smallestChange,
     loading: changeLoading,
+    error: changeError,
+    needsMoreData: changeNeedsMore,
     answered: changeAnswered,
     compute: computeChange,
     respond: respondChange,
   } = useMinimumChange();
+
 
   const [quickOpen, setQuickOpen] = useState(false);
   const [quickVoice, setQuickVoice] = useState(false);
@@ -385,10 +388,13 @@ return (
             friction={friction}
             change={smallestChange}
             loading={changeLoading}
+            error={changeError}
+            needsMoreData={changeNeedsMore}
             answered={changeAnswered}
             onRefresh={computeChange}
             onRespond={respondChange}
             delay={0.2}
+
           />
         </div>
 
