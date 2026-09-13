@@ -22,3 +22,17 @@
 - [x] Recompose the Home dashboard around capture and diary scanning
 - [x] Restyle meal suggestions as a swipeable visual carousel
 - [x] Verify mobile layouts and capture interactions
+
+## Cal AI-level redesign + fixes (in progress)
+- [ ] Accessibility fixes: contrast (buttons, small text, borders), 44px water controls
+- [ ] Dashboard: one primary CTA, "Log" verbs, copy fix, MacroBar semantic colours
+- [ ] Neutral-first palette, strict 12/14/16/20/24/32 type scale, 4px spacing
+- [ ] Reusable choice row, segmented toggle, wheel + ruler pickers, pace slider
+- [ ] Thin progress bar + back arrow, disabled→enabled Continue states
+- [ ] Info/projection screen + final goal summary screen (real calculated values only)
+- [ ] Skip fabricated social-proof screen (no fake reviews/user counts)
+- [ ] Press states, spring motion, ring fill animation, lucide meal icons, skeletons, hero fallback
+- [ ] Smallest realistic change card reliability (UI/state only)
+- [ ] Tell Nutrio auto-start on open
+- [ ] More realistic AI suggested meal imagery
+- [ ] Today's mode prompt first on app open
