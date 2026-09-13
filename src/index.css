@@ -16,8 +16,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 20%;
 
-    /* Vibrant teal/green - energetic, fresh */
-    --primary: 160 84% 39%;
+    /* Deep teal/green - passes AA with white text */
+    --primary: 162 88% 24%;
     --primary-foreground: 0 0% 100%;
 
     /* Light gray secondary */
@@ -26,39 +26,41 @@
 
     /* Soft muted tones */
     --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 46%;
+    --muted-foreground: 220 10% 38%;
 
-    /* Orange accent - energetic, motivational */
-    --accent: 25 95% 53%;
+    /* Deep orange accent - passes AA with white text */
+    --accent: 20 92% 34%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 160 84% 39%;
+    --border: 220 13% 82%;
+    --input: 220 13% 80%;
+    --ring: 162 88% 24%;
 
     --radius: 1rem;
 
     /* Custom Nutrio tokens */
-    --nutrio-green: 160 84% 39%;
-    --nutrio-green-light: 160 60% 95%;
-    --nutrio-teal: 174 72% 40%;
-    --nutrio-orange: 25 95% 53%;
+    --nutrio-green: 162 88% 24%;
+    --nutrio-green-light: 160 40% 94%;
+    --nutrio-teal: 174 72% 26%;
+    --nutrio-orange: 20 92% 34%;
     --nutrio-orange-light: 25 100% 95%;
     --nutrio-charcoal: 220 15% 20%;
-    --nutrio-gray: 220 10% 46%;
-    --nutrio-yellow: 45 93% 47%;
-    --nutrio-blue: 210 90% 55%;
-    --nutrio-purple: 265 70% 60%;
-    --nutrio-red: 0 84% 60%;
+    --nutrio-gray: 220 10% 38%;
+    --nutrio-yellow: 40 90% 30%;
+    --nutrio-blue: 212 80% 36%;
+    --nutrio-purple: 265 55% 42%;
+    --nutrio-red: 0 72% 40%;
+
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(160 84% 39%), hsl(174 72% 40%));
-    --gradient-orange: linear-gradient(135deg, hsl(25 95% 53%), hsl(35 95% 55%));
+    --gradient-primary: linear-gradient(135deg, hsl(162 88% 24%), hsl(174 72% 26%));
+    --gradient-orange: linear-gradient(135deg, hsl(20 92% 34%), hsl(28 88% 38%));
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 14% 99%));
     --gradient-capture: linear-gradient(180deg, hsl(220 15% 20% / 0.02), hsl(220 15% 20% / 0.78));
+    --gradient-brand-surface: linear-gradient(150deg, hsl(162 40% 92%), hsl(220 16% 95%));
 
     /* Shadows */
     --shadow-soft: 0 4px 20px -4px hsl(220 15% 20% / 0.08);
@@ -68,12 +70,13 @@
     /* Sidebar tokens */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 220 15% 20%;
-    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary: 162 88% 24%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 14% 96%;
     --sidebar-accent-foreground: 220 15% 20%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 160 84% 39%;
+    --sidebar-border: 220 13% 82%;
+    --sidebar-ring: 162 88% 24%;
+
   }
 
   .dark {
@@ -86,33 +89,34 @@
     --popover: 220 18% 14%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 160 70% 45%;
+    --primary: 162 70% 30%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 15% 20%;
     --secondary-foreground: 0 0% 95%;
 
     --muted: 220 15% 20%;
-    --muted-foreground: 220 10% 60%;
+    --muted-foreground: 220 12% 72%;
 
-    --accent: 25 90% 55%;
+    --accent: 20 84% 38%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 70% 50%;
+    --destructive: 0 65% 42%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 22%;
-    --input: 220 15% 22%;
-    --ring: 160 70% 45%;
+    --border: 220 12% 34%;
+    --input: 220 12% 36%;
+    --ring: 162 70% 38%;
 
     --sidebar-background: 220 20% 10%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 160 70% 45%;
+    --sidebar-primary: 162 70% 30%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 15% 20%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 220 15% 22%;
-    --sidebar-ring: 160 70% 45%;
+    --sidebar-border: 220 12% 34%;
+    --sidebar-ring: 162 70% 38%;
+
   }
 }
 
@@ -184,7 +188,39 @@
   .snap-card {
     scroll-snap-align: start;
   }
+
+  /* Tactile press feedback — applied globally to tappable controls. */
+  .press {
+    transition: transform 140ms ease-out, opacity 140ms ease-out;
+  }
+  .press:active:not(:disabled) {
+    transform: scale(0.96);
+    opacity: 0.92;
+  }
+
+  .brand-surface {
+    background: var(--gradient-brand-surface);
+  }
+
+  .skeleton-block {
+    @apply rounded-xl bg-muted animate-pulse-soft;
+  }
 }
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href] {
+    transition: transform 140ms ease-out, opacity 140ms ease-out, background-color 140ms ease-out,
+      border-color 140ms ease-out, box-shadow 140ms ease-out;
+  }
+
+  button:not(:disabled):active,
+  [role="button"]:not([aria-disabled="true"]):active {
+    transform: scale(0.96);
+  }
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

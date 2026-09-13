@@ -66,16 +66,37 @@ const Index = () => {
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
   const [snapOpen, setSnapOpen] = useState(false);
   const [snapMealType, setSnapMealType] = useState<MealType>(guessMealType());
-  const { todays: todaysCaptures, refresh: refreshCaptures } = useFoodCaptures();
+  const { todays: todaysCaptures, captures: recentCaptures, getPhotoUrl, refresh: refreshCaptures } = useFoodCaptures();
+  const [heroPhotoUrl, setHeroPhotoUrl] = useState<string | null>(null);
+
+  // Hero shows the person's own latest food photo when there is one.
+  useEffect(() => {
+    let active = true;
+    const latest = recentCaptures.find((capture) => capture.photo_path);
+    if (!latest?.photo_path) {
+      setHeroPhotoUrl(null);
+      return;
+    }
+    void getPhotoUrl(latest.photo_path).then((url) => {
+      if (active) setHeroPhotoUrl(url);
+    });
+    return () => {
+      active = false;
+    };
+  }, [recentCaptures, getPhotoUrl]);
+
   const { score: realityScore, patterns: foodPatterns, analyse: analyseBehaviour } = useFoodBehaviour();
   const {
     friction,
     change: smallestChange,
     loading: changeLoading,
+    error: changeError,
+    needsMoreData: changeNeedsMore,
     answered: changeAnswered,
     compute: computeChange,
     respond: respondChange,
   } = useMinimumChange();
+
 
   const [quickOpen, setQuickOpen] = useState(false);
   const [quickVoice, setQuickVoice] = useState(false);
@@ -321,6 +342,8 @@ return (
           onOpenIntake={() => setIntakeBreakdownOpen(true)}
           onAddWater={() => updateWater(waterGlasses + 1)}
           onRemoveWater={() => updateWater(Math.max(0, waterGlasses - 1))}
+          heroPhotoUrl={heroPhotoUrl}
+
         />
 
         {/* Gentle nudge when a usual meal hasn't been seen */}
@@ -365,10 +388,13 @@ return (
             friction={friction}
             change={smallestChange}
             loading={changeLoading}
+            error={changeError}
+            needsMoreData={changeNeedsMore}
             answered={changeAnswered}
             onRefresh={computeChange}
             onRespond={respondChange}
             delay={0.2}
+
           />
         </div>
 

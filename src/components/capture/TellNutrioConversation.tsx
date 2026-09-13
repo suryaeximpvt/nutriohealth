@@ -91,9 +91,15 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
     setTyped("");
     setAwaitingConfirm(false);
     void (async () => {
-      await speech.prime();
-      agent.setState("speaking");
-      await speech.speak(greeting);
+      void speech.prime();
+      if (mode === "recap") {
+        // The recap opener is a real question, so it is spoken before listening.
+        agent.setState("speaking");
+        await speech.speak(greeting);
+        if (openRef.current && !typingRef.current) await listenRef.current();
+        return;
+      }
+      // Standard mode starts listening straight away — no tap, no waiting on audio.
       if (openRef.current && !typingRef.current) await listenRef.current();
     })();
     return () => {
@@ -103,6 +109,7 @@ export const TellNutrioConversation = ({ open, onClose, onSaved, mode = "standar
     // Only reset when the sheet opens or its explicit mode changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, mode]);
+
 
   useEffect(() => {
     if (agent.state === "done" && !savedRef.current) {
