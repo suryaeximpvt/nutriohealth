@@ -366,6 +366,23 @@ const Onboarding = () => {
             <div className={`grid gap-2 ${cols === 3 ? "grid-cols-3" : cols === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
               {options.map((option) => {
                 const active = isMulti ? selected.includes(option.value) : values[field.key] === option.value;
+                if (cols === 1) {
+                  return (
+                    <ChoiceRow
+                      key={option.value}
+                      label={option.label}
+                      description={option.desc}
+                      glyph={option.emoji}
+                      selected={active}
+                      multi={isMulti}
+                      onSelect={() =>
+                        isMulti
+                          ? toggleMulti(field.key, option.value, (field as any).max)
+                          : set(field.key, option.value)
+                      }
+                    />
+                  );
+                }
                 return (
                   <motion.button
                     key={option.value}
