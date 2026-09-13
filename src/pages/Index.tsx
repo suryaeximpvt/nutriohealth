@@ -465,10 +465,6 @@ return (
           <WeeklyInsightCard delay={0.215} />
         </div>
 
-        {/* Lifestyle Mode */}
-        <div className="mb-4">
-          <LifestyleModeCard delay={0.22} />
-        </div>
 
         {/* Today's meal check-in */}
         <div className="mb-4">
