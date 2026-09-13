@@ -207,6 +207,7 @@ return (
                             <div key={idx} className="snap-card flex-[0_0_78%]">
                               <SuggestionCard
                                 suggestion={alt}
+                                image={MEAL_IMAGES[mealType]}
                                 isSelected={selectedOption?.name === alt.name}
                                 isCompact
                                 onSelect={() => handleSelectOption(alt)}
