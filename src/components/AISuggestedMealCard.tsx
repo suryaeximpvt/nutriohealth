@@ -360,7 +360,7 @@ const SuggestionCard = ({
           hasNutrio && "border-nutrio-amber/50"
         )}
       >
-        <div className="h-28 bg-primary/10 flex items-center justify-center text-5xl">{suggestion.emoji}</div>
+        <img src={image} alt={suggestion.name} loading="lazy" className="h-28 w-full object-cover" />
         <div className="flex items-start gap-2 p-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
