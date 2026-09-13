@@ -436,7 +436,7 @@ const Onboarding = () => {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <NutrioLogo className="h-9 w-auto" />
-            <span className="w-10 text-right text-xs font-semibold text-muted-foreground">{step + 1}/{total}</span>
+            <span className="w-10" aria-hidden="true" />
           </div>
           <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
             <motion.div
