@@ -168,12 +168,13 @@ export const SmallestChangeCard = ({
                   <span>{FRICTION_LABELS[f.friction_type] ?? f.friction_type}</span>
                   <span className="text-muted-foreground">{f.score}%</span>
                 </div>
-                <div className="h-1.5 rounded-full bg-accent/30 overflow-hidden">
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-nutrio-amber"
+                    className="h-full rounded-full bg-foreground/60"
                     style={{ width: `${Math.min(100, f.score)}%` }}
                   />
                 </div>
+
               </div>
             ))}
           </div>
