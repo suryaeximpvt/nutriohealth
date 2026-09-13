@@ -188,7 +188,39 @@
   .snap-card {
     scroll-snap-align: start;
   }
+
+  /* Tactile press feedback — applied globally to tappable controls. */
+  .press {
+    transition: transform 140ms ease-out, opacity 140ms ease-out;
+  }
+  .press:active:not(:disabled) {
+    transform: scale(0.96);
+    opacity: 0.92;
+  }
+
+  .brand-surface {
+    background: var(--gradient-brand-surface);
+  }
+
+  .skeleton-block {
+    @apply rounded-xl bg-muted animate-pulse-soft;
+  }
 }
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href] {
+    transition: transform 140ms ease-out, opacity 140ms ease-out, background-color 140ms ease-out,
+      border-color 140ms ease-out, box-shadow 140ms ease-out;
+  }
+
+  button:not(:disabled):active,
+  [role="button"]:not([aria-disabled="true"]):active {
+    transform: scale(0.96);
+  }
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
