@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { ChoiceRow } from "@/components/ui/choice-row";
 import { ChevronRight, ChevronLeft, Loader2, X, Check } from "lucide-react";
 import { useUserData } from "@/hooks/useUserData";
 import { usePersonalisation } from "@/hooks/usePersonalisation";
@@ -366,6 +367,23 @@ const Onboarding = () => {
             <div className={`grid gap-2 ${cols === 3 ? "grid-cols-3" : cols === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
               {options.map((option) => {
                 const active = isMulti ? selected.includes(option.value) : values[field.key] === option.value;
+                if (cols === 1) {
+                  return (
+                    <ChoiceRow
+                      key={option.value}
+                      label={option.label}
+                      description={option.desc}
+                      glyph={option.emoji}
+                      selected={active}
+                      multi={isMulti}
+                      onSelect={() =>
+                        isMulti
+                          ? toggleMulti(field.key, option.value, (field as any).max)
+                          : set(field.key, option.value)
+                      }
+                    />
+                  );
+                }
                 return (
                   <motion.button
                     key={option.value}
@@ -418,7 +436,7 @@ const Onboarding = () => {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <NutrioLogo className="h-9 w-auto" />
-            <span className="w-10 text-right text-xs font-semibold text-muted-foreground">{step + 1}/{total}</span>
+            <span className="w-10" aria-hidden="true" />
           </div>
           <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
             <motion.div

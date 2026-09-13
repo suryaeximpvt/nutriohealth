@@ -5,6 +5,17 @@ import { cn } from "@/lib/utils";
 import { MealOptions, AISuggestion } from "@/hooks/useDailyAISuggestions";
 import { useRecommendationTracking, type TrackPayload } from "@/hooks/useRecommendationTracking";
 import { RecommendationFeedback } from "@/components/RecommendationFeedback";
+import breakfastImg from "@/assets/meals/breakfast.jpg";
+import lunchImg from "@/assets/meals/lunch.jpg";
+import snacksImg from "@/assets/meals/snacks.jpg";
+import dinnerImg from "@/assets/meals/dinner.jpg";
+
+const MEAL_IMAGES: Record<"breakfast" | "lunch" | "snacks" | "dinner", string> = {
+  breakfast: breakfastImg,
+  lunch: lunchImg,
+  snacks: snacksImg,
+  dinner: dinnerImg,
+};
 
 interface AISuggestedMealCardProps {
   title: string;
@@ -179,6 +190,7 @@ return (
                     {/* Primary Suggestion Card */}
                     <SuggestionCard
                       suggestion={currentSuggestion}
+                      image={MEAL_IMAGES[mealType]}
                       isSelected={true}
                       onSelect={() => {}}
                       onLog={() => handleLog(currentSuggestion)}
@@ -195,6 +207,7 @@ return (
                             <div key={idx} className="snap-card flex-[0_0_78%]">
                               <SuggestionCard
                                 suggestion={alt}
+                                image={MEAL_IMAGES[mealType]}
                                 isSelected={selectedOption?.name === alt.name}
                                 isCompact
                                 onSelect={() => handleSelectOption(alt)}
@@ -317,12 +330,14 @@ return (
 // Individual suggestion card component
 const SuggestionCard = ({
   suggestion,
+  image,
   isSelected,
   isCompact = false,
   onSelect,
   onLog,
 }: {
   suggestion: AISuggestion;
+  image: string;
   isSelected: boolean;
   isCompact?: boolean;
   onSelect: () => void;
@@ -345,7 +360,7 @@ const SuggestionCard = ({
           hasNutrio && "border-nutrio-amber/50"
         )}
       >
-        <div className="h-28 bg-primary/10 flex items-center justify-center text-5xl">{suggestion.emoji}</div>
+        <img src={image} alt={suggestion.name} loading="lazy" className="h-28 w-full object-cover" />
         <div className="flex items-start gap-2 p-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -380,7 +395,7 @@ const SuggestionCard = ({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-primary/20 bg-card shadow-elevated">
-      <div className="h-36 bg-primary/10 flex items-center justify-center text-6xl">{suggestion.emoji}</div>
+      <img src={image} alt={suggestion.name} loading="lazy" className="h-36 w-full object-cover" />
       <div className="flex items-start gap-3 p-4">
         <div className="flex-1">
           <h4 className="font-semibold text-foreground">{suggestion.name}</h4>
