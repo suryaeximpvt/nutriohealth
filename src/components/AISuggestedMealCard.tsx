@@ -330,12 +330,14 @@ return (
 // Individual suggestion card component
 const SuggestionCard = ({
   suggestion,
+  image,
   isSelected,
   isCompact = false,
   onSelect,
   onLog,
 }: {
   suggestion: AISuggestion;
+  image: string;
   isSelected: boolean;
   isCompact?: boolean;
   onSelect: () => void;
