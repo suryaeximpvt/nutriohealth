@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
@@ -26,16 +26,31 @@ export const useMinimumChange = () => {
   const [recommendationId, setRecommendationId] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [needsMoreData, setNeedsMoreData] = useState(false);
+  const autoRan = useRef(false);
 
   const compute = useCallback(async () => {
     if (!user) return;
     setLoading(true);
-    const { data } = await supabase.functions.invoke("minimum-change-engine");
-    setFriction((data?.friction ?? []) as FrictionItem[]);
-    setChange((data?.change ?? null) as MinimumChange | null);
-    setRecommendationId(data?.recommendationId ?? null);
-    setAnswered(false);
-    setLoading(false);
+    setError(null);
+    try {
+      const { data, error: invokeError } = await supabase.functions.invoke("minimum-change-engine");
+      if (invokeError) {
+        setError("Nutrio couldn't work that out just now. Try again in a moment.");
+        return;
+      }
+      const next = (data?.change ?? null) as MinimumChange | null;
+      setFriction((data?.friction ?? []) as FrictionItem[]);
+      setChange(next);
+      setRecommendationId(data?.recommendationId ?? null);
+      setNeedsMoreData(!next);
+      setAnswered(false);
+    } catch {
+      setError("Nutrio couldn't work that out just now. Try again in a moment.");
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
   useEffect(() => {
@@ -44,6 +59,7 @@ export const useMinimumChange = () => {
       return;
     }
     let cancelled = false;
+    setLoading(true);
     (async () => {
       const [{ data: f }, { data: r }] = await Promise.all([
         supabase.from("food_friction").select("*").eq("user_id", user.id),
@@ -62,13 +78,21 @@ export const useMinimumChange = () => {
         setChange(r.recommendation_content as unknown as MinimumChange);
         setRecommendationId(r.id);
         setAnswered(Boolean(r.tried));
+        setLoading(false);
+        return;
+      }
+      // Nothing stored yet: work one out straight away rather than sitting empty.
+      if (!autoRan.current) {
+        autoRan.current = true;
+        await compute();
+        return;
       }
       setLoading(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, compute]);
 
   const respond = useCallback(
     async (tried: "yes" | "no", failureReason?: string) => {
@@ -87,5 +111,5 @@ export const useMinimumChange = () => {
     [recommendationId],
   );
 
-  return { friction, change, loading, compute, respond, answered };
+  return { friction, change, loading, error, needsMoreData, compute, respond, answered };
 };
