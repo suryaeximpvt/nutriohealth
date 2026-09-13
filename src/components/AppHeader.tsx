@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Bell, Crown } from "lucide-react";
 import { QuickActionMenu } from "./QuickActionMenu";
@@ -16,12 +16,12 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
   const [waterModalOpen, setWaterModalOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { waterGlasses, updateWater, dailySummary } = useUserData();
-  const loggedCounts = {
+  const loggedCounts = useMemo(() => ({
     breakfast: dailySummary.meals.breakfast?.length ?? 0,
     lunch: dailySummary.meals.lunch?.length ?? 0,
     snacks: dailySummary.meals.snacks?.length ?? 0,
     dinner: dailySummary.meals.dinner?.length ?? 0,
-  };
+  }), [dailySummary.meals]);
   const { reminders } = useSmartReminders({ loggedCounts, waterGlasses });
 
   const getGreeting = () => {
