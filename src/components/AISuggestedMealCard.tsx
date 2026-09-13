@@ -5,6 +5,17 @@ import { cn } from "@/lib/utils";
 import { MealOptions, AISuggestion } from "@/hooks/useDailyAISuggestions";
 import { useRecommendationTracking, type TrackPayload } from "@/hooks/useRecommendationTracking";
 import { RecommendationFeedback } from "@/components/RecommendationFeedback";
+import breakfastImg from "@/assets/meals/breakfast.jpg";
+import lunchImg from "@/assets/meals/lunch.jpg";
+import snacksImg from "@/assets/meals/snacks.jpg";
+import dinnerImg from "@/assets/meals/dinner.jpg";
+
+const MEAL_IMAGES: Record<"breakfast" | "lunch" | "snacks" | "dinner", string> = {
+  breakfast: breakfastImg,
+  lunch: lunchImg,
+  snacks: snacksImg,
+  dinner: dinnerImg,
+};
 
 interface AISuggestedMealCardProps {
   title: string;
