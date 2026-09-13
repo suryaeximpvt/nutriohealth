@@ -16,6 +16,13 @@
 - [x] Support multi-meal recap and safe multi-action completion
 - [x] Move the later-day recap prompt into Hey Vellyn
 - [x] Verify voice, text, errors, mobile layout, and backend calls
+- [x] Launch the full hands-free Hey Vellyn flow from the Ask Vellyn microphone
+
+## Vellyn brand update (complete)
+- [x] Replace the visible logo and app icons with the supplied Vellyn mark
+- [x] Remove the logo from the main top header
+- [x] Use the Vellyn mark as the Ask Vellyn identity
+- [x] Update sitewide and existing route SEO wording
 
 ## Camera-first UI upgrade (complete)
 - [x] Refine authentication and onboarding presentation

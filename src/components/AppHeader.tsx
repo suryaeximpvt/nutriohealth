@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Bell, Crown } from "lucide-react";
 import { QuickActionMenu } from "./QuickActionMenu";
-import { VellynLogo } from "./VellynLogo";
 import { NotificationsSheet } from "./NotificationsSheet";
 import { useSmartReminders } from "@/hooks/useSmartReminders";
 import { WaterIntakeModal } from "./WaterIntakeModal";
@@ -17,12 +16,12 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
   const [waterModalOpen, setWaterModalOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { waterGlasses, updateWater, dailySummary } = useUserData();
-  const loggedCounts = {
+  const loggedCounts = useMemo(() => ({
     breakfast: dailySummary.meals.breakfast?.length ?? 0,
     lunch: dailySummary.meals.lunch?.length ?? 0,
     snacks: dailySummary.meals.snacks?.length ?? 0,
     dinner: dailySummary.meals.dinner?.length ?? 0,
-  };
+  }), [dailySummary.meals]);
   const { reminders } = useSmartReminders({ loggedCounts, waterGlasses });
 
   const getGreeting = () => {
@@ -56,7 +55,6 @@ export const AppHeader = ({ userName = "there" }: AppHeaderProps) => {
             <p className="text-base font-bold text-foreground">{userName}</p>
           </div>
         </div>
-        <VellynLogo className="h-8 w-auto shrink-0" />
         <div className="flex items-center gap-2">
           <button
             aria-label="Vellyn Premium"

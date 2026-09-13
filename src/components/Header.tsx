@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Bell, Settings, LogOut } from "lucide-react";
-import { VellynLogo } from "@/components/VellynLogo";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import {
@@ -36,12 +35,9 @@ export const Header = ({ userName }: HeaderProps) => {
       animate={{ opacity: 1, y: 0 }}
       className="flex items-center justify-between py-4"
     >
-      <div className="flex items-center gap-3">
-        <VellynLogo className="h-10 w-auto" />
-        <div>
-          <p className="text-sm text-muted-foreground">{getGreeting()}</p>
-          <h1 className="text-lg font-semibold text-foreground">{userName}</h1>
-        </div>
+      <div>
+        <p className="text-sm text-muted-foreground">{getGreeting()}</p>
+        <h1 className="text-lg font-semibold text-foreground">{userName}</h1>
       </div>
       <div className="flex items-center gap-2">
         <button className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
