@@ -1,6 +1,7 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import Stripe from "https://esm.sh/stripe@22.0.2";
 import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
+import { getAuthedUser, unauthorized } from "../_shared/auth.ts";
 
 const TRIAL_DAYS = 7;
 
