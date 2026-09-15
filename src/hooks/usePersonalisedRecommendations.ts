@@ -16,6 +16,8 @@ const today = () => new Date().toISOString().split("T")[0];
 
 export const usePersonalisedRecommendations = () => {
   const { user } = useAuth();
+  // Personalisation relies on health-adjacent data, so it only runs with consent.
+  const { healthConsentGranted } = useHealthConsent();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
