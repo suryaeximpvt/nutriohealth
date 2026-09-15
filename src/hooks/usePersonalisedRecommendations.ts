@@ -24,7 +24,7 @@ export const usePersonalisedRecommendations = () => {
   const [error, setError] = useState<string | null>(null);
 
   const generate = useCallback(async () => {
-    if (!user) return;
+    if (!user || !healthConsentGranted) return;
     setGenerating(true);
     setError(null);
     try {
