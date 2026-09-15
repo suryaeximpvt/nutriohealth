@@ -61,7 +61,12 @@ const Auth = () => {
         if (error) throw error;
         toast.success("Welcome back!");
       } else {
-        const { error } = await supabase.auth.signUp({
+        if (!isAdult || !acceptTerms || !healthConsent) {
+          toast.error("Please confirm your age and both consents to create an account.");
+          setLoading(false);
+          return;
+        }
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -72,6 +77,15 @@ const Auth = () => {
           },
         });
         if (error) throw error;
+        // Record the consent that was actually ticked. If the session is not
+        // available yet (email confirmation), the in-app consent gate asks again.
+        if (data.session && data.user) {
+          try {
+            await recordInitialConsent(data.user.id, true);
+          } catch (consentError) {
+            console.error("Could not record consent:", consentError);
+          }
+        }
         toast.success("Account created! You're now logged in.");
       }
     } catch (error: any) {
