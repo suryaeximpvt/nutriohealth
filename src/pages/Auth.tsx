@@ -200,11 +200,63 @@ const Auth = () => {
             </div>
           </div>
 
+          {!isLogin && (
+            <div className="space-y-3 pt-1 text-sm">
+              <label className="flex gap-3 items-start">
+                <Checkbox
+                  checked={isAdult}
+                  onCheckedChange={(v) => setIsAdult(v === true)}
+                  className="mt-0.5"
+                  aria-label="I confirm I am 18 or over"
+                />
+                <span className="text-foreground">
+                  I confirm I am 18 or over. Vellyn is currently for adults only.
+                </span>
+              </label>
+
+              <label className="flex gap-3 items-start">
+                <Checkbox
+                  checked={acceptTerms}
+                  onCheckedChange={(v) => setAcceptTerms(v === true)}
+                  className="mt-0.5"
+                  aria-label="I agree to the Terms of Use and have read the Privacy Notice"
+                />
+                <span className="text-foreground">
+                  I agree to the{" "}
+                  <Link to="/terms" className="text-primary underline">
+                    Terms of Use
+                  </Link>{" "}
+                  and have read the{" "}
+                  <Link to="/privacy" className="text-primary underline">
+                    Privacy Notice
+                  </Link>
+                  .
+                </span>
+              </label>
+
+              <div className="rounded-xl border border-border bg-muted/40 p-3 space-y-2">
+                <label className="flex gap-3 items-start">
+                  <Checkbox
+                    checked={healthConsent}
+                    onCheckedChange={(v) => setHealthConsent(v === true)}
+                    className="mt-0.5"
+                    aria-label="Consent to processing health-adjacent data for nutrition personalisation"
+                  />
+                  <span className="text-foreground">{HEALTH_CONSENT_SUMMARY}</span>
+                </label>
+                <p className="text-xs text-muted-foreground">
+                  This explicit consent is separate from the Terms of Use. You can withdraw it at
+                  any time in Settings → Privacy &amp; Security.
+                </p>
+              </div>
+            </div>
+          )}
+
           <Button
             type="submit"
             className="w-full h-12 rounded-xl shadow-card"
             size="lg"
-            disabled={loading}
+            disabled={loading || (!isLogin && (!isAdult || !acceptTerms || !healthConsent))}
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
