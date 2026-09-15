@@ -19,6 +19,9 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isAdult, setIsAdult] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [healthConsent, setHealthConsent] = useState(false);
   const navigate = useNavigate();
 
   const nextParam = new URLSearchParams(window.location.search).get("next");
