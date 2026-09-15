@@ -38,7 +38,12 @@ export const ConsentGate = () => {
 
   return (
     <Dialog open>
-      <DialogContent className="max-w-md" hideClose>
+      <DialogContent
+        className="max-w-md [&>button]:hidden"
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-2">
             <Shield className="w-5 h-5 text-primary" />
