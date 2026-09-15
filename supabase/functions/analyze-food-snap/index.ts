@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getAuthedUser, unauthorized } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -37,6 +38,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const user = await getAuthedUser(req);
+    if (!user) return unauthorized(corsHeaders);
+
     const { image, mealTypeHint, timeOfDay } = await req.json();
     if (!image || typeof image !== "string") {
       return new Response(JSON.stringify({ error: "An image is required" }), {
