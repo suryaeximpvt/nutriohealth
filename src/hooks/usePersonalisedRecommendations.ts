@@ -42,7 +42,7 @@ export const usePersonalisedRecommendations = () => {
   }, [user]);
 
   const load = useCallback(async () => {
-    if (!user) {
+    if (!user || !healthConsentGranted) {
       setRecommendations([]);
       setLoading(false);
       return;
