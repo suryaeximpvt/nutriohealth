@@ -216,7 +216,7 @@ const Settings = () => {
               className="bg-card rounded-2xl shadow-card overflow-hidden"
             >
               <button
-                onClick={() => toast.info("Privacy settings coming soon!")}
+                onClick={() => navigate("/settings/privacy")}
                 className="w-full p-4 flex items-center gap-4 border-b border-border"
               >
                 <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
@@ -224,7 +224,7 @@ const Settings = () => {
                 </div>
                 <div className="flex-1 text-left">
                   <h3 className="font-medium text-foreground">Privacy & Security</h3>
-                  <p className="text-sm text-muted-foreground">Manage your data</p>
+                  <p className="text-sm text-muted-foreground">Consent, data and deletion requests</p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-muted-foreground" />
               </button>
@@ -244,7 +244,7 @@ const Settings = () => {
               </button>
 
               <button
-                onClick={() => toast.info("Terms & conditions page coming soon!")}
+                onClick={() => navigate("/terms")}
                 className="w-full p-4 flex items-center gap-4"
               >
                 <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">

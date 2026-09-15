@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
 import { VellynLogo } from "@/components/VellynLogo";
@@ -9,6 +9,9 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import authArt from "@/assets/auth-art.jpg";
+import { Checkbox } from "@/components/ui/checkbox";
+import { recordInitialConsent } from "@/hooks/useConsent";
+import { HEALTH_CONSENT_SUMMARY } from "@/lib/legal";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,6 +19,9 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isAdult, setIsAdult] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [healthConsent, setHealthConsent] = useState(false);
   const navigate = useNavigate();
 
   const nextParam = new URLSearchParams(window.location.search).get("next");
@@ -55,7 +61,12 @@ const Auth = () => {
         if (error) throw error;
         toast.success("Welcome back!");
       } else {
-        const { error } = await supabase.auth.signUp({
+        if (!isAdult || !acceptTerms || !healthConsent) {
+          toast.error("Please confirm your age and both consents to create an account.");
+          setLoading(false);
+          return;
+        }
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -66,6 +77,15 @@ const Auth = () => {
           },
         });
         if (error) throw error;
+        // Record the consent that was actually ticked. If the session is not
+        // available yet (email confirmation), the in-app consent gate asks again.
+        if (data.session && data.user) {
+          try {
+            await recordInitialConsent(data.user.id, true);
+          } catch (consentError) {
+            console.error("Could not record consent:", consentError);
+          }
+        }
         toast.success("Account created! You're now logged in.");
       }
     } catch (error: any) {
@@ -180,11 +200,63 @@ const Auth = () => {
             </div>
           </div>
 
+          {!isLogin && (
+            <div className="space-y-3 pt-1 text-sm">
+              <label className="flex gap-3 items-start">
+                <Checkbox
+                  checked={isAdult}
+                  onCheckedChange={(v) => setIsAdult(v === true)}
+                  className="mt-0.5"
+                  aria-label="I confirm I am 18 or over"
+                />
+                <span className="text-foreground">
+                  I confirm I am 18 or over. Vellyn is currently for adults only.
+                </span>
+              </label>
+
+              <label className="flex gap-3 items-start">
+                <Checkbox
+                  checked={acceptTerms}
+                  onCheckedChange={(v) => setAcceptTerms(v === true)}
+                  className="mt-0.5"
+                  aria-label="I agree to the Terms of Use and have read the Privacy Notice"
+                />
+                <span className="text-foreground">
+                  I agree to the{" "}
+                  <Link to="/terms" className="text-primary underline">
+                    Terms of Use
+                  </Link>{" "}
+                  and have read the{" "}
+                  <Link to="/privacy" className="text-primary underline">
+                    Privacy Notice
+                  </Link>
+                  .
+                </span>
+              </label>
+
+              <div className="rounded-xl border border-border bg-muted/40 p-3 space-y-2">
+                <label className="flex gap-3 items-start">
+                  <Checkbox
+                    checked={healthConsent}
+                    onCheckedChange={(v) => setHealthConsent(v === true)}
+                    className="mt-0.5"
+                    aria-label="Consent to processing health-adjacent data for nutrition personalisation"
+                  />
+                  <span className="text-foreground">{HEALTH_CONSENT_SUMMARY}</span>
+                </label>
+                <p className="text-xs text-muted-foreground">
+                  This explicit consent is separate from the Terms of Use. You can withdraw it at
+                  any time in Settings → Privacy &amp; Security.
+                </p>
+              </div>
+            </div>
+          )}
+
           <Button
             type="submit"
             className="w-full h-12 rounded-xl shadow-card"
             size="lg"
-            disabled={loading}
+            disabled={loading || (!isLogin && (!isAdult || !acceptTerms || !healthConsent))}
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />

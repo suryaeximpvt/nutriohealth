@@ -1,6 +1,7 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import Stripe from "https://esm.sh/stripe@22.0.2";
 import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
+import { getAuthedUser, unauthorized } from "../_shared/auth.ts";
 
 const TRIAL_DAYS = 7;
 
@@ -102,6 +103,10 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Identity comes from the caller's session, never from the request body.
+    const user = await getAuthedUser(req);
+    if (!user) return unauthorized(corsHeaders as unknown as Record<string, string>);
+
     const body = await req.json();
     const environment = body.environment === "live" ? "live" : "sandbox";
     if (!body.priceId || !body.returnUrl) throw new Error("priceId and returnUrl are required");
@@ -109,8 +114,8 @@ Deno.serve(async (req) => {
     const clientSecret = await createCheckoutSession({
       priceId: body.priceId,
       quantity: body.quantity,
-      customerEmail: body.customerEmail,
-      userId: body.userId,
+      customerEmail: user.email ?? body.customerEmail,
+      userId: user.id,
       returnUrl: body.returnUrl,
       environment,
     });

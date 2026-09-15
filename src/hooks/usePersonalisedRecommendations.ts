@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
+import { useHealthConsent } from "./useConsent";
 
 export interface Recommendation {
   id: string;
@@ -15,13 +16,15 @@ const today = () => new Date().toISOString().split("T")[0];
 
 export const usePersonalisedRecommendations = () => {
   const { user } = useAuth();
+  // Personalisation relies on health-adjacent data, so it only runs with consent.
+  const { healthConsentGranted } = useHealthConsent();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const generate = useCallback(async () => {
-    if (!user) return;
+    if (!user || !healthConsentGranted) return;
     setGenerating(true);
     setError(null);
     try {
@@ -39,7 +42,7 @@ export const usePersonalisedRecommendations = () => {
   }, [user]);
 
   const load = useCallback(async () => {
-    if (!user) {
+    if (!user || !healthConsentGranted) {
       setRecommendations([]);
       setLoading(false);
       return;
@@ -56,7 +59,7 @@ export const usePersonalisedRecommendations = () => {
     setRecommendations(rows);
     setLoading(false);
     if (rows.length === 0) void generate();
-  }, [user, generate]);
+  }, [user, healthConsentGranted, generate]);
 
   useEffect(() => {
     void load();

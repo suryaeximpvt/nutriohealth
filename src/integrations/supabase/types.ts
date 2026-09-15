@@ -210,6 +210,66 @@ export type Database = {
           },
         ]
       }
+      consent_events: {
+        Row: {
+          action: string
+          consent_type: string
+          created_at: string
+          id: string
+          occurred_at: string
+          user_id: string
+          version: string | null
+        }
+        Insert: {
+          action: string
+          consent_type: string
+          created_at?: string
+          id?: string
+          occurred_at?: string
+          user_id: string
+          version?: string | null
+        }
+        Update: {
+          action?: string
+          consent_type?: string
+          created_at?: string
+          id?: string
+          occurred_at?: string
+          user_id?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
+      data_deletion_requests: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          reason: string | null
+          requested_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          reason?: string | null
+          requested_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          reason?: string | null
+          requested_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       excuse_logs: {
         Row: {
           created_at: string
@@ -1513,6 +1573,57 @@ export type Database = {
           updated_at?: string
           user_id?: string
           weekly_behaviour?: Json | null
+        }
+        Relationships: []
+      }
+      user_consents: {
+        Row: {
+          adult_confirmed_at: string | null
+          created_at: string
+          health_consent_declined_at: string | null
+          health_consent_granted: boolean
+          health_consent_granted_at: string | null
+          health_consent_version: string | null
+          health_consent_withdrawn_at: string | null
+          id: string
+          privacy_accepted_at: string | null
+          privacy_version: string | null
+          terms_accepted_at: string | null
+          terms_version: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          adult_confirmed_at?: string | null
+          created_at?: string
+          health_consent_declined_at?: string | null
+          health_consent_granted?: boolean
+          health_consent_granted_at?: string | null
+          health_consent_version?: string | null
+          health_consent_withdrawn_at?: string | null
+          id?: string
+          privacy_accepted_at?: string | null
+          privacy_version?: string | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          adult_confirmed_at?: string | null
+          created_at?: string
+          health_consent_declined_at?: string | null
+          health_consent_granted?: boolean
+          health_consent_granted_at?: string | null
+          health_consent_version?: string | null
+          health_consent_withdrawn_at?: string | null
+          id?: string
+          privacy_accepted_at?: string | null
+          privacy_version?: string | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
