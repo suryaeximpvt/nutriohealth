@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
 import { VellynLogo } from "@/components/VellynLogo";
@@ -9,6 +9,9 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import authArt from "@/assets/auth-art.jpg";
+import { Checkbox } from "@/components/ui/checkbox";
+import { recordInitialConsent } from "@/hooks/useConsent";
+import { HEALTH_CONSENT_SUMMARY } from "@/lib/legal";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
