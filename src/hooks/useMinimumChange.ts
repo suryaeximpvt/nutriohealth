@@ -22,6 +22,8 @@ export interface MinimumChange {
 /** The friction map plus the single smallest realistic change Vellyn suggests. */
 export const useMinimumChange = () => {
   const { user } = useAuth();
+  // Friction and smallest-change analysis uses health-adjacent data.
+  const { healthConsentGranted } = useHealthConsent();
   const [friction, setFriction] = useState<FrictionItem[]>([]);
   const [change, setChange] = useState<MinimumChange | null>(null);
   const [recommendationId, setRecommendationId] = useState<string | null>(null);
@@ -32,7 +34,7 @@ export const useMinimumChange = () => {
   const autoRan = useRef(false);
 
   const compute = useCallback(async () => {
-    if (!user) return;
+    if (!user || !healthConsentGranted) return;
     setLoading(true);
     setError(null);
     try {
@@ -52,10 +54,10 @@ export const useMinimumChange = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, healthConsentGranted]);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !healthConsentGranted) {
       setLoading(false);
       return;
     }

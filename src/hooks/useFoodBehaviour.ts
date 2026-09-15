@@ -35,13 +35,15 @@ export interface TrackingProfile {
 /** Computes and reads the picture Vellyn has of what the user actually eats. */
 export const useFoodBehaviour = (auto = true) => {
   const { user } = useAuth();
+  // Behaviour analysis uses health-adjacent data, so consent is required.
+  const { healthConsentGranted } = useHealthConsent();
   const [score, setScore] = useState<RealityScore | null>(null);
   const [patterns, setPatterns] = useState<BehaviourPattern[]>([]);
   const [tracking, setTracking] = useState<TrackingProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   const analyse = useCallback(async () => {
-    if (!user) return;
+    if (!user || !healthConsentGranted) return;
     try {
       // Make sure we send a valid, non-expired token (refreshes it if needed).
       const { data: sessionData } = await supabase.auth.getSession();
@@ -60,10 +62,10 @@ export const useFoodBehaviour = (auto = true) => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, healthConsentGranted]);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !healthConsentGranted) {
       setLoading(false);
       return;
     }
