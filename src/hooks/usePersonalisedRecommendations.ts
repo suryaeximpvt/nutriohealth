@@ -59,7 +59,7 @@ export const usePersonalisedRecommendations = () => {
     setRecommendations(rows);
     setLoading(false);
     if (rows.length === 0) void generate();
-  }, [user, generate]);
+  }, [user, healthConsentGranted, generate]);
 
   useEffect(() => {
     void load();
