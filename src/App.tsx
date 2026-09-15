@@ -19,8 +19,12 @@ import OAuthConsent from "./pages/OAuthConsent";
 import PersonalisationDebug from "./pages/PersonalisationDebug";
 import FoodHistory from "./pages/FoodHistory";
 import CheckoutReturn from "./pages/CheckoutReturn";
+import PrivacyNotice from "./pages/PrivacyNotice";
+import Terms from "./pages/Terms";
+import PrivacySecurity from "./pages/PrivacySecurity";
 import { RouteSeo } from "./components/RouteSeo";
 import { AskVellynButton } from "./components/capture/AskVellynButton";
+import { ConsentGate } from "./components/ConsentGate";
 
 const queryClient = new QueryClient();
 
@@ -45,12 +49,16 @@ const App = () => (
           <Route path="/strict-mode" element={<StrictMode />} />
           <Route path="/food-history" element={<FoodHistory />} />
           <Route path="/checkout/return" element={<CheckoutReturn />} />
+          <Route path="/privacy" element={<PrivacyNotice />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/settings/privacy" element={<PrivacySecurity />} />
           <Route path="/personalisation-debug" element={<PersonalisationDebug />} />
           <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
         <AskVellynButton />
+        <ConsentGate />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
