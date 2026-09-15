@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
+import { useHealthConsent } from "./useConsent";
 
 export interface FrictionItem {
   friction_type: string;
