@@ -39,7 +39,7 @@ export const usePersonalisedRecommendations = () => {
     } finally {
       setGenerating(false);
     }
-  }, [user]);
+  }, [user, healthConsentGranted]);
 
   const load = useCallback(async () => {
     if (!user || !healthConsentGranted) {
