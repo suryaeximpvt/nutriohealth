@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { Seo } from "./Seo";
 import { VELLYN_PRODUCTS } from "@/data/vellynProducts";
 
-const SITE_URL = "https://nutriohealth.lovable.app";
+const SITE_URL = "https://heyvellyn.com";
 const SITE_TITLE = "Vellyn | AI Nutrition Coach That Learns Your Habits";
 const SITE_DESCRIPTION =
   "Vellyn learns how you really eat, then gives practical AI nutrition guidance, meal logging and small changes that fit your life.";
