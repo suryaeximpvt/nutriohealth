@@ -138,14 +138,18 @@ const Auth = () => {
         <div className="text-center mb-7">
           <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Nutrition that adapts to you</p>
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            {isLogin
-              ? "Welcome back to Vellyn"
-              : "Meet your everyday nutrition coach"}
+            {isForgot
+              ? "Reset your password"
+              : isLogin
+                ? "Welcome back to Vellyn"
+                : "Meet your everyday nutrition coach"}
           </h1>
           <p className="text-muted-foreground">
-            {isLogin
-              ? "Pick up where you left off."
-              : "Build healthier habits around the food you already enjoy."}
+            {isForgot
+              ? "Enter your email and we'll send you a link to set a new password."
+              : isLogin
+                ? "Pick up where you left off."
+                : "Build healthier habits around the food you already enjoy."}
           </p>
         </div>
 
@@ -157,7 +161,7 @@ const Auth = () => {
           onSubmit={handleSubmit}
           className="space-y-4 rounded-2xl bg-card p-5 shadow-soft border border-border/60"
         >
-          {!isLogin && (
+          {!isLogin && !isForgot && (
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <div className="relative">
@@ -191,24 +195,38 @@ const Auth = () => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 h-12 rounded-xl bg-background"
-                required
-                minLength={6}
-              />
+          {!isForgot && (
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-10 h-12 rounded-xl bg-background"
+                  required
+                  minLength={6}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          {!isLogin && (
+          {isLogin && !isForgot && (
+            <div className="text-right -mt-1">
+              <button
+                type="button"
+                onClick={() => setIsForgot(true)}
+                className="text-sm text-primary hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
+
+          {!isLogin && !isForgot && (
             <div className="space-y-3 pt-1 text-sm">
               <label className="flex gap-3 items-start">
                 <Checkbox
@@ -264,13 +282,13 @@ const Auth = () => {
             type="submit"
             className="w-full h-12 rounded-xl shadow-card"
             size="lg"
-            disabled={loading || (!isLogin && (!isAdult || !acceptTerms || !healthConsent))}
+            disabled={loading || (!isLogin && !isForgot && (!isAdult || !acceptTerms || !healthConsent))}
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                {isLogin ? "Log in" : "Create account"}
+                {isForgot ? "Send reset link" : isLogin ? "Log in" : "Create account"}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </>
             )}
@@ -281,12 +299,17 @@ const Auth = () => {
         <div className="text-center mt-6">
           <button
             type="button"
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => {
+              if (isForgot) setIsForgot(false);
+              else setIsLogin(!isLogin);
+            }}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            {isLogin
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Log in"}
+            {isForgot
+              ? "Back to log in"
+              : isLogin
+                ? "Don't have an account? Sign up"
+                : "Already have an account? Log in"}
           </button>
         </div>
       </motion.div>
