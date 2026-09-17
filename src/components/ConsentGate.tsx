@@ -8,7 +8,7 @@ import { useConsent } from "@/hooks/useConsent";
 import { HEALTH_CONSENT_SUMMARY } from "@/lib/legal";
 import { toast } from "sonner";
 
-const EXEMPT_PATHS = ["/auth", "/privacy", "/terms", "/.lovable/oauth/consent"];
+const EXEMPT_PATHS = ["/auth", "/reset-password", "/privacy", "/terms", "/.lovable/oauth/consent"];
 
 /**
  * One-time prompt for signed-in users who have not yet recorded consent under
